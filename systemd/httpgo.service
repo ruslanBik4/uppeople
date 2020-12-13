@@ -1,0 +1,18 @@
+[Unit]
+Description=UPPeople web-server
+After=syslog.target
+
+[Service]
+Environment=PGPASSWORD=
+Environment=PGUSER=
+Environment=PGDATABASE=
+Environment=PGHOST=
+Environment=TBTOKEN=                                                                                                                               
+Environment=TBCHATID=
+
+ExecStart=/opt/uppeople/httpgo -port :443 -port_redirect :80 -web ./ -debug
+WorkingDirectory=/opt/uppeople
+RootDirectoryStartOnly=true
+Type=simple
+Restart=always
+PrivateTmp=yes

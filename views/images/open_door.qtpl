@@ -1,0 +1,10 @@
+All the text outside function templates is treated as comments,
+i.e. it is just ignored by quicktemplate compiler (`qtc`). It is for humans.
+
+{% stripspace %}
+{% collapsespace %}
+{% func OpenDoor() %}
+image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAABmklEQVRYhWNgGOSAkRLNoQ1X2T5zfopkZ2Vu+vHrrxxMfGeFJUXmIgOcBrl3HP+PTyMTIyMDCzMjg4wwF4OHkRSDn54QAwMDA4NH5wmyHILLUyz4NM3IMEfhv/70k2Hf5RcMJ2+9YdCVF2BwN5RikBLkJKiPEMiYcRKnHF4HwsDD118Z9l1+wXDl4QcGMzURhrowXQYBbjaSHEEuIMqB7WuvMETYyDNE2ykysLEwEVSPL0SQATEhTZQDGRgYGBx0JIhVyhDoYgZnywlgT+YT1xDnCcLBMcBg1IGUglEHUgpGHUgpGHUgpWDUgZSC4e/AKdtvUsMdOAHFDqRa2x4HoNiB2Z7q1HAHTjD80yCtwagDKQWjDqQUjDqQUjDqQErBqAMpBaMOpBQMegcSPQSsLs3HoC3Dz6AsycsgJ8LNwIo2TqjADzGK2kPARDWIXTuPSDH+ZzZmZ2NyZGFkcvn5+6+6AA/rTw1pfjZVSV52VUk+BmMZDrgD6TKIjg8YzzzDKvzujx4LM6MdFzuz58/ffy1//fnHA5OnpgMBms9S/wcaQrQAAAAASUVORK5CYII=
+{% endfunc %}
+{% endstripspace %}
+{% endcollapsespace %}

@@ -1,0 +1,62 @@
+All the text outside function templates is treated as comments,
+i.e. it is just ignored by quicktemplate compiler (`qtc`). It is for humans.
+
+.
+{% func TdImgStyle(tableName, colName string, id int) %}
+<style>
+.hiddenInput{%s colName %}{%d id %} > input[type=file] {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+form > input[type=hidden] + span + img{
+    left:-10000px;
+}
+form > input[type=hidden] + span:hover + img{
+  position: fixed;
+    top: 1%;
+    left: 1%;
+    right: 1%;
+    max-width: 25%;
+    max-height: 75%;
+}
+
+.hiddenInput{%s colName %}{%d id %} {
+    border: 1px solid #ccc;
+    width: 100%;
+    height: 100%;
+    max-height: 100px;
+    display: inline-block;
+    overflow: hidden;
+    cursor: pointer;
+    background: center center no-repeat scroll;
+    background-size: contain;
+}
+.hiddenInputImg{%s colName %}{%d id %} {
+    background-image: url("/api/v1/blob/{%s tableName %}?id={%d id %}&name={%s colName %}");
+}
+.hiddenInputImgNew{%s colName %}{%d id %} {
+    background-image: url("/api/v1/blob/{%s tableName %}?id={%d id %}&name={%s colName %}&v=true");
+}
+</style>
+{% endfunc %}
+{% func TdImgBrowse(preRoute, tableName, colName string, id int) %}
+  {%= TdImgStyle(tableName, colName, id) %}
+    <form id="{%s tableName %}{%s colName %}{%d id %}" method="POST" action="{%s preRoute %}{%s tableName %}/update"
+                enctype="multipart/form-data" style="height: 100%;">
+    <input type="hidden" value="{%d id %}" name="id" />
+    <span class="hiddenInput{%s colName %}{%d id %} hiddenInputImg{%s colName %}{%d id %}">
+        <input name="{%s colName %}" type="file" accept="image"
+        onchange="return saveForm(this.parentElement.parentElement, function(d, t_form) {
+        $('.hiddenInputImg{%s colName %}{%d id %}').removeClass('hiddenInputImg{%s colName %}{%d id %}').addClass('hiddenInputImgNew{%s colName %}{%d id %}');  });" >
+    </span>
+    <img src="/api/v1/blob/{%s tableName %}?id={%d id %}&name={%s colName %}"/>
+    </form>
+{% endfunc %}
+
+{% func TdImgView(preRoute, tableName, colName string, id int) %}
+  {%= TdImgStyle(tableName, colName, id) %}
+    <img src="/api/v1/blob/{%s tableName %}?id={%d id %}&name={%s colName %}" class="hiddenInput{%s colName %}{%d id %}"/>
+   </span>
+{% endfunc %}

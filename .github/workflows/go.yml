@@ -90,7 +90,7 @@ jobs:
         KEY: ${{ secrets.SSH_KEY }}
       with:
         source: "cfg/DB/"
-        target: "/opt/web"
+        target: "/opt/uppeople"
 
     - name: Copy systemd files via scp
       uses: appleboy/scp-action@master
@@ -101,7 +101,7 @@ jobs:
         KEY: ${{ secrets.SSH_KEY }}
       with:
         source: "systemd/*.service"
-        target: "/opt/web/"
+        target: "/opt/uppeople/"
 
     - name: stop services on pm-db.net
       uses: appleboy/ssh-action@master
@@ -128,7 +128,7 @@ jobs:
         KEY: ${{ secrets.SSH_KEY }}
       with:
         source: "httpgo"
-        target: "/opt/web/"
+        target: "/opt/uppeople/"
 
     - name: Restart services
       uses: appleboy/ssh-action@master
