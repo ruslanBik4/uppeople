@@ -18,6 +18,7 @@ import (
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/views"
 	"github.com/ruslanBik4/httpgo/views/templates/layouts"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/data"
@@ -51,6 +52,7 @@ func HandleIndex(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			fullName = filepath.Join(fWeb, subDomain, "index.html")
 		}
 
+		logs.DebugLog(filename)
 		if !bytes.Contains(ctx.Request.Host(), []byte("localhost")) {
 			fasthttp.ServeFile(ctx, fullName)
 			return nil, nil
