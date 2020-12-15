@@ -58,7 +58,7 @@ jobs:
       env:
         PROD_PGDATABASE: ${{secrets.PGDATABASE }}
         PROD_PGUSER: ${{secrets.PGUSER }}
-        PROD_PGPASSWORD: ${{secrets.PGPASSWORD }}
+        PROD_PGPASSWORD: ${{secrets.PGPASS }}
         TBTOKEN: ${{secrets.TBTOKEN }}
         TBCHATID: ${{secrets.TBCHATID }}
       run: |
