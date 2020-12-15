@@ -56,9 +56,9 @@ jobs:
   #  steps:
     - shell: bash
       env:
-        PROD_PGDATABASE: ${{secrets.PROD_PGDATABASE }}
-        PROD_PGUSER: ${{secrets.PROD_PGUSER }}
-        PROD_PGPASSWORD: ${{secrets.PROD_PGPASSWORD }}
+        PROD_PGDATABASE: ${{secrets.PGDATABASE }}
+        PROD_PGUSER: ${{secrets.PGUSER }}
+        PROD_PGPASSWORD: ${{secrets.PGPASSWORD }}
         TBTOKEN: ${{secrets.TBTOKEN }}
         TBCHATID: ${{secrets.TBCHATID }}
       run: |
