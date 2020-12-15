@@ -35,10 +35,10 @@ var (
 func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	uri := ctx.Request.URI()
 	uri.SetHost("back2.uppeople.co")
-	uri.SetScheme("http")
+	// uri.SetScheme("http")
 	// ctx.Request.CopyTo()
 	ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusMovedPermanently)
-	logs.DebugLog("redirect %s", string(uri.FullURI()))
+	logs.DebugLog("redirect %s %s", string(uri.FullURI()), ctx.Method())
 
 	return nil, nil
 }
