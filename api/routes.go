@@ -6,6 +6,7 @@ package api
 
 import (
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 )
 
@@ -20,11 +21,22 @@ var (
 			// Resp:   search.RespGroups(),
 		},
 	}
-	SearchRoutes = apis.ApiRoutes{}
+	SearchRoutes = apis.ApiRoutes{
+		"/api/": {
+			Fnc:  HandleApiRedirect,
+			Desc: "show search results according range of characteristics",
+			// DTO:    &DTOSearch{},
+			// Method: apis.POST,
+			// Resp:   search.RespGroups(),
+		},
+	}
 )
 
 func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	ctx.Redirect("http://back2.uppeople.co"+string(ctx.URI().Path()), fasthttp.StatusMovedPermanently)
+	newURL := "http://back2.uppeople.co/" + string(ctx.URI().Path())
+	logs.DebugLog(newURL)
+	ctx.Redirect(newURL, fasthttp.StatusMovedPermanently)
+
 	return nil, nil
 }
 
