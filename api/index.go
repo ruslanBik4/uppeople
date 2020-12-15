@@ -37,12 +37,12 @@ func HandleIndex(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	filename := strings.TrimLeft(string(ctx.Request.URI().Path()), "/")
 	b := bytes.Split(ctx.Request.URI().Host(), []byte("."))
 	subDomain := string(b[0])
-	if subDomain != "admin" {
+	if subDomain != "admin" || filename != "admin" {
 		if filename == "" {
 			filename = "index.html"
 		}
 
-		if len(b) < 3 {
+		if len(b) < 3 || len(b) == 4 {
 			subDomain = "www/build"
 		}
 
