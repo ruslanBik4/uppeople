@@ -113,7 +113,7 @@ jobs:
           # Next lines it's workaround for the error scp: ... Text file busy
           # And we need stop service before replacing golang binaries
 
-          for sd_unit in /opt/web/systemd/*.service; do
+          for sd_unit in /opt/uppeople/systemd/*.service; do
 
             sudo systemctl stop $(basename "$sd_unit")
             sudo cp $sd_unit /etc/systemd/system/
@@ -138,7 +138,7 @@ jobs:
         KEY:      ${{ secrets.SSH_KEY }}
         SCRIPT: |
           sudo systemctl daemon-reload
-          for sd_unit in /opt/web/systemd/*.service; do
+          for sd_unit in /opt/uppeople/systemd/*.service; do
             #sd_unit = $(echo "$sd_unit" | cut -f 1 -d '.')
 
             sudo systemctl enable $(basename "$sd_unit")
