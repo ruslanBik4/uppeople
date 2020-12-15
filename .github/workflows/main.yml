@@ -51,7 +51,7 @@ jobs:
         path: cfg/
 
  # deploy_prod:
-  #  name: Genarate systemd unit file for go services
+  #  name: Generate systemd unit file for go services
   #  runs-on: ubuntu-latest
   #  steps:
     - shell: bash
@@ -81,27 +81,27 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: systemd/
 
-#    - name: Copy cfg of DB via scp
-#      uses: appleboy/scp-action@master
-#      env:
-#        HOST: ${{ secrets.SSH_PROD_HOST }}
-#        USERNAME: ${{ secrets.SSH_PROD_USER }}
-#        #PORT: 22
-#        KEY: ${{ secrets.SSH_KEY }}
-#      with:
-#        source: "cfg/DB/"
-#        target: "/opt/uppeople"
+    - name: Copy cfg of DB via scp
+      uses: appleboy/scp-action@master
+      env:
+        HOST: ${{ secrets.SSH_PROD_HOST }}
+        USERNAME: ${{ secrets.SSH_PROD_USER }}
+        #PORT: 22
+        KEY: ${{ secrets.SSH_KEY }}
+      with:
+        source: "cfg/DB/"
+        target: "/opt/uppeople"
 
-#    - name: Copy systemd files via scp
-#      uses: appleboy/scp-action@master
-#      env:
-#        HOST: ${{ secrets.SSH_PROD_HOST }}
-#        USERNAME: ${{ secrets.SSH_PROD_USER }}
-#        PORT: 22
-#        KEY: ${{ secrets.SSH_KEY }}
-#      with:
-#        source: "systemd/*.service"
-#        target: "/opt/uppeople/"
+    - name: Copy systemd files via scp
+      uses: appleboy/scp-action@master
+      env:
+        HOST: ${{ secrets.SSH_PROD_HOST }}
+        USERNAME: ${{ secrets.SSH_PROD_USER }}
+        PORT: 22
+        KEY: ${{ secrets.SSH_KEY }}
+      with:
+        source: "systemd/*.service"
+        target: "/opt/uppeople/"
 
     - name: stop services on pm-db.net
       uses: appleboy/ssh-action@master
@@ -146,4 +146,3 @@ jobs:
             sudo systemctl status $(basename "$sd_unit") -l
 
           done
-          sudo systemctl restart httpgo_test
