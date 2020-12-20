@@ -1,0 +1,12 @@
+POST https://back.uppeople.co/api/auth/login
+Content-Type: application/json
+
+{"email":"ed.nazarenkoff@gmail.com","password":"g%S3LmYxz*&RYIn@iQ7B"}
+
+###
+POST https://161.97.144.240/api/auth/login
+Content-Type: application/json
+
+{"email":"ed.nazarenkoff@gmail.com","password":"g%S3LmYxz*&RYIn@iQ7B"}
+
+###

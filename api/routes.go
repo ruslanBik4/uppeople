@@ -40,7 +40,7 @@ func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// ctx.Request.CopyTo(&reg)
 	//
 	// ctx.Request = reg
-	ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusNotModified)
+	ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusPermanentRedirect)
 	logs.DebugLog("redirect %s %s", string(uri.FullURI()), ctx.Method())
 
 	return nil, nil
