@@ -22,19 +22,19 @@ var (
 		},
 	}
 	SearchRoutes = apis.ApiRoutes{
-		// "/api/": {
-		// 	Fnc:  HandleApiRedirect,
-		// 	Desc: "show search results according range of characteristics",
-		// 	// DTO:    &DTOSearch{},
-		// 	// Method: apis.POST,
-		// 	// Resp:   search.RespGroups(),
-		// },
+		"/api/": {
+			Fnc:  HandleApiRedirect,
+			Desc: "show search results according range of characteristics",
+			// DTO:    &DTOSearch{},
+			// Method: apis.POST,
+			// Resp:   search.RespGroups(),
+		},
 	}
 )
 
 func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	uri := ctx.Request.URI()
-	uri.SetHost("back2.uppeople.co")
+	uri.SetHost("back.uppeople.co")
 	// uri.SetScheme("http")
 	// reg := fasthttp.Request{}
 	// ctx.Request.CopyTo(&reg)
