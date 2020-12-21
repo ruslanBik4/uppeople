@@ -17,7 +17,7 @@ type User struct {
 	*db.UsersFields
 	Companies map[int32]map[string]string `json:"companies"`
 	Token     string                      `json:"token"`
-	TokenOld  string                      `json:"token"`
+	TokenOld  string                      `json:"token_old"`
 	Host      string                      `json:"-"`
 }
 
@@ -35,7 +35,7 @@ func GetUserData(ctx *fasthttp.RequestCtx) *User {
 		return token
 	}
 
-	logs.ErrorLog(dbEngine.ErrNotFoundColumn{}, "not user data but %T", token)
+	logs.ErrorLog(dbEngine.ErrNotFoundColumn{}, "%s not user data but %T %[2]v", token)
 
 	return nil
 }
