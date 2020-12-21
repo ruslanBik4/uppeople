@@ -99,14 +99,14 @@ func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 	uri := ctx.Request.URI()
 	uri.SetHost(user.Host)
-	ctx.Request.Header.Set("access_token", user.TokenOld)
+	ctx.Request.Header.Set("Authorization", "Bearer "+user.TokenOld)
 	// uri.SetScheme("http")
 	// reg := fasthttp.Request{}
 	// ctx.Request.CopyTo(&reg)
 	//
 	// ctx.Request = reg
-	ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusPermanentRedirect)
 	logs.DebugLog("redirect %s %s", string(uri.FullURI()), ctx.Method())
+	ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusPermanentRedirect)
 
 	return nil, nil
 }

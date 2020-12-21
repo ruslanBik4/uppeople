@@ -29,4 +29,5 @@ Content-Type: application/json
 
 ###
 GET https://{{host}}/api/main/dashBoardAdmin
-Authorization:Bearer {{auth_token}}
+#Authorization:Bearer {{auth_token}}
+Authorization:Bearer XHJZJ5F3XkX4eo0oSw5MWg==
