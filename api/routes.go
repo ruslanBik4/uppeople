@@ -5,24 +5,35 @@
 package api
 
 import (
+	"bytes"
+
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
 )
 
 var (
-	ApiRoutes   = apis.NewMapRoutes()
-	AdminRoutes = apis.ApiRoutes{
+	ApiRoutes     = apis.NewMapRoutes()
+	ApiPostRoutes = apis.ApiRoutes{
 		"/api/auth/login": {
 			Fnc:  HandleAuth,
 			Desc: "show search results according range of characteristics",
 			// DTO:    &DTOSearch{},
-			Method: apis.POST,
 			// Resp:   search.RespGroups(),
 		},
+		"/api/main/addNewCandidate": {
+			Fnc:      HandleAddCandidate,
+			Desc:     "show search results according range of characteristics",
+			NeedAuth: true,
+		},
+		// 'api/main/returnAllCandidates/':{
+		// 	Fnc:  HandleAuth,
+		// 	Desc: "show search results according range of characteristics",
+		// },
 		"/api/": {
 			Fnc:  HandleApiRedirect,
 			Desc: "show search results according range of characteristics",
@@ -49,11 +60,13 @@ var hosts = []string{
 }
 
 func HandleAuth(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	req := &fasthttp.Request{}
+	ctx.Request.CopyTo(req)
 
 	for _, host := range hosts {
 		resp := &fasthttp.Response{}
 
-		err := doRequest(ctx, resp, host)
+		err := doRequest(req, resp, host)
 		if err != nil {
 			return nil, err
 		}
@@ -83,13 +96,11 @@ func HandleAuth(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return nil, nil
 }
 
-func doRequest(ctx *fasthttp.RequestCtx, resp *fasthttp.Response, host string) error {
-	req := &fasthttp.Request{}
+func doRequest(req *fasthttp.Request, resp *fasthttp.Response, host string) error {
 	c := fasthttp.Client{}
-	uri := ctx.Request.URI()
+	uri := req.URI()
 	uri.SetScheme("http")
 	uri.SetHost(host)
-	ctx.Request.CopyTo(req)
 
 	err := c.Do(req, resp)
 	if err != nil {
@@ -100,14 +111,15 @@ func doRequest(ctx *fasthttp.RequestCtx, resp *fasthttp.Response, host string) e
 }
 
 func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	user := auth.GetUserData(ctx)
-	if user == nil {
-		return nil, apis.ErrWrongParamsList
+	user, err := prepareRequest(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	ctx.Request.Header.Set("Authorization", "Bearer "+user.TokenOld)
+	req := &fasthttp.Request{}
+	ctx.Request.CopyTo(req)
 
-	err := doRequest(ctx, &ctx.Response, user.Host)
+	err = doRequest(req, &ctx.Response, user.Host)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +127,64 @@ func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return nil, nil
 }
 
+func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	user, err := prepareRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var v map[string]interface{}
+	err = jsoniter.Unmarshal(ctx.Request.Body(), &v)
+	if err != nil {
+		return nil, errors.Wrap(err, "unmarshal")
+	}
+
+	req := &fasthttp.Request{}
+	ctx.Request.CopyTo(req)
+
+	req.URI().SetPath("api/main/allCandidates/1")
+	nameCan := v["name"].(string)
+	req.SetBodyString(`{"search":"` + nameCan + `","dateFrom":"","dateTo":"","selectCompanies":[],"selectPlatforms":[],"selectStatuses":[],"selectRecruiter":"","selectTag":[],"selectReason":[],"mySent":false,"dateFromAllCandidates":"","dateToAllCandidates":"","dateFromSentCandidates":"","dateToSentCandidates":"","dateFromFreelancersCandidates":"","dateToFreelancersCandidates":"","dateFollowUpFrom":"","dateFollowUpTo":"","selectSeniority":[]}`)
+	resp := &fasthttp.Response{}
+	err = doRequest(req, resp, user.Host)
+	if err != nil {
+		return nil, err
+	}
+
+	if bytes.Contains(resp.Header.ContentType(), []byte("json")) {
+		err = jsoniter.Unmarshal(resp.Body(), &v)
+		if err != nil {
+			return nil, errors.Wrap(err, "unmarshal")
+		}
+
+		c, ok := v["Count"].(float64)
+		if !ok {
+			logs.DebugLog("%T", v["Count"])
+		} else if c > 0 {
+			return nameCan + " already exists", apis.ErrWrongParamsList
+		} else {
+			logs.DebugLog("%f", v["Count"])
+			return nil, doRequest(&ctx.Request, &ctx.Response, user.Host)
+		}
+	}
+
+	return nil, nil
+}
+
+func prepareRequest(ctx *fasthttp.RequestCtx) (*auth.User, error) {
+	user := auth.GetUserData(ctx)
+	if user == nil {
+		return nil, apis.ErrWrongParamsList
+	}
+
+	ctx.Request.Header.Set("Authorization", "Bearer "+user.TokenOld)
+	return user, nil
+}
+
 func init() {
-	ApiRoutes.AddRoutes(AdminRoutes)
+	for _, route := range ApiPostRoutes {
+		route.Method = apis.POST
+	}
+	ApiRoutes.AddRoutes(ApiPostRoutes)
 	ApiRoutes.AddRoutes(SearchRoutes)
 }
