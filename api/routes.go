@@ -100,7 +100,7 @@ func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	uri := ctx.Request.URI()
 	uri.SetHost(user.Host)
 	ctx.Request.Header.Set("Authorization", "Bearer "+user.TokenOld)
-	// uri.SetScheme("http")
+	uri.SetScheme("http")
 	// reg := fasthttp.Request{}
 	// ctx.Request.CopyTo(&reg)
 	//
