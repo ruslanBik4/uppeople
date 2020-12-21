@@ -1,12 +1,32 @@
-POST https://back.uppeople.co/api/auth/login
+POST https://{{host}}/api/auth/login
 Content-Type: application/json
 
 {"email":"ed.nazarenkoff@gmail.com","password":"g%S3LmYxz*&RYIn@iQ7B"}
 
 ###
-POST https://161.97.144.240/api/auth/login
+POST https://{{host}}/api/auth/login
 Content-Type: application/json
 
-{"email":"ed.nazarenkoff@gmail.com","password":"g%S3LmYxz*&RYIn@iQ7B"}
+{"email":"julia@uppeople.co","password":"g%S3LmYxz*&RYIn@iQ7B"}
+
+> {%
+    client.global.set("auth_token", response.body.token);
+
+    // test
+    client.test("Response content-type is json", function() {
+  var type = response.contentType.mimeType;
+  client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+    client.test("json contain data", function() {
+    var b = response.body;
+  client.assert(b.formActions[0].type == "redirect", "type must equals 'redirect'");
+  client.assert(b.formActions[0].url, "must containt url "+ b.formActions[0]);
+
+ });
+
+%}
 
 ###
+GET https://{{host}}/api/main/dashBoardAdmin
+Authorization:Bearer {{auth_token}}

@@ -30,7 +30,6 @@ import (
 
 	"github.com/ruslanBik4/uppeople/api"
 	"github.com/ruslanBik4/uppeople/auth"
-	"github.com/ruslanBik4/uppeople/data"
 )
 
 //go:generate qtc -dir=views
@@ -79,7 +78,7 @@ func init() {
 	ctxApis.AddValue(api.WEB_PATH, *fWeb)
 	DB := getDB()
 	if DB == nil {
-		panic(" ot DB")
+		logs.DebugLog(" ot DB")
 	}
 
 	ctxApis.AddValue("DB", DB)
@@ -96,10 +95,10 @@ func init() {
 	// 	logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
 	// }
 	//
-	badRoutings = a.AddRoutes(data.RoutesFromDB(DB, data.PathVersion))
-	if len(badRoutings) > 0 {
-		logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
-	}
+	// badRoutings = a.AddRoutes(data.RoutesFromDB(DB, data.PathVersion))
+	// if len(badRoutings) > 0 {
+	// 	logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
+	// }
 
 	cfg, err := httpgo.NewCfgHttp(path.Join(*fSystem, *fCfgPath, "httpgo.yml"))
 	if err != nil || cfg == nil {
@@ -412,7 +411,7 @@ var (
 // @/api/version/
 func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
-	return fmt.Sprintf("polymer (%s) Version: %s, Build Time: %s", Branch, Version, Build), nil
+	return fmt.Sprintf("UPPeople (%s) Version: %s, Build Time: %s", Branch, Version, Build), nil
 }
 
 func main() {

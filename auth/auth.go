@@ -98,29 +98,3 @@ func NewBasic(ctx *fasthttp.RequestCtx, user, pass []byte) auth.TokenData {
 	return u
 
 }
-
-type User struct {
-	*db.UsersFields
-	Companies  map[int32]map[string]string `json:"companies"`
-	Token      string                      `json:"token"`
-	ContentURL string                      `json:"content_url"`
-}
-
-func (u *User) IsAdmin() bool {
-	return u.Id_roles == 1
-}
-
-func (u *User) GetUserID() int {
-	return int(u.Id)
-}
-
-func GetUserData(ctx *fasthttp.RequestCtx) *User {
-	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
-	if ok {
-		return token
-	}
-
-	logs.ErrorLog(dbEngine.ErrNotFoundColumn{}, "not user data but %T", token)
-
-	return nil
-}
