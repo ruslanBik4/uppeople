@@ -3,6 +3,16 @@ Content-Type: application/json
 
 {"email":"ed.nazarenkoff@gmail.com","password":"g%S3LmYxz*&RYIn@iQ7B"}
 
+> {%
+    client.global.set("auth_token", response.body.access_token);
+%}
+
+###
+GET https://{{host}}/api/main/dashBoardAdmin
+Authorization:Bearer {{auth_token}}
+###
+POST https://{{host}}/api/main/viewAllVacancyInCompany/null/1
+Authorization:Bearer {{auth_token}}
 ###
 POST https://{{host}}/api/auth/login
 Content-Type: application/json
@@ -10,7 +20,7 @@ Content-Type: application/json
 {"email":"julia@uppeople.co","password":"g%S3LmYxz*&RYIn@iQ7B"}
 
 > {%
-    client.global.set("auth_token", response.body.token);
+    client.global.set("auth_token", response.body.access_token);
 
     // test
     client.test("Response content-type is json", function() {
@@ -29,9 +39,16 @@ Content-Type: application/json
 
 ###
 GET https://{{host}}/api/main/dashBoardAdmin
-#Authorization:Bearer {{auth_token}}
-Authorization:Bearer XHJZJ5F3XkX4eo0oSw5MWg==
+Authorization:Bearer {{auth_token}}
 ###
-POST https://{{host}}/api/main/viewAllVacancyInCompany/null/1
-#Authorization:Bearer {{auth_token}}
-Authorization:Bearer XHJZJ5F3XkX4eo0oSw5MWg==
+POST https://{{host}}/api/main/viewCandidatesFreelancerOnVacancies/1
+Authorization:Bearer {{auth_token}}
+###
+GET https://{{host}}/api/admin/all-staff
+Authorization:Bearer {{auth_token}}
+Accept: */*
+Content-Type: application/json
+Origin: null
+Pragma: no-cache
+Cache-Control: no-cache
+Accept-Language: en-gb

@@ -8,7 +8,6 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
@@ -50,22 +49,16 @@ var hosts = []string{
 }
 
 func HandleAuth(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	c := fasthttp.Client{}
 
 	for _, host := range hosts {
-		uri := ctx.Request.URI()
-		uri.SetScheme("http")
-		uri.SetHost(host)
-		reg := fasthttp.Request{}
-		ctx.Request.CopyTo(&reg)
-
 		resp := &fasthttp.Response{}
-		err := c.Do(&reg, resp)
+
+		err := doRequest(ctx, resp, host)
 		if err != nil {
-			return nil, errors.Wrap(err, "do")
+			return nil, err
 		}
 
-		if resp.StatusCode() != fasthttp.StatusUnauthorized {
+		if resp.StatusCode() == fasthttp.StatusOK {
 			var v map[string]interface{}
 			err := jsoniter.Unmarshal(resp.Body(), &v)
 			u := &auth.User{
@@ -81,10 +74,8 @@ func HandleAuth(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				return nil, errors.Wrap(err, "Bearer.NewToken")
 			}
 
-			if v["access_token"].(string) != u.Token {
-				logs.DebugLog("token: '%s' \n'%s'", v["access_token"].(string), u.Token)
-			}
 			v["access_token"] = u.Token
+
 			return v, nil
 		}
 	}
@@ -92,21 +83,34 @@ func HandleAuth(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return nil, nil
 }
 
+func doRequest(ctx *fasthttp.RequestCtx, resp *fasthttp.Response, host string) error {
+	req := &fasthttp.Request{}
+	c := fasthttp.Client{}
+	uri := ctx.Request.URI()
+	uri.SetScheme("http")
+	uri.SetHost(host)
+	ctx.Request.CopyTo(req)
+
+	err := c.Do(req, resp)
+	if err != nil {
+		return errors.Wrap(err, "do")
+	}
+
+	return nil
+}
+
 func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	user := auth.GetUserData(ctx)
 	if user == nil {
 		return nil, apis.ErrWrongParamsList
 	}
-	uri := ctx.Request.URI()
-	uri.SetHost(user.Host)
+
 	ctx.Request.Header.Set("Authorization", "Bearer "+user.TokenOld)
-	uri.SetScheme("http")
-	// reg := fasthttp.Request{}
-	// ctx.Request.CopyTo(&reg)
-	//
-	// ctx.Request = reg
-	logs.DebugLog("redirect %s %s", string(uri.FullURI()), ctx.Method())
-	ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusPermanentRedirect)
+
+	err := doRequest(ctx, &ctx.Response, user.Host)
+	if err != nil {
+		return nil, err
+	}
 
 	return nil, nil
 }
