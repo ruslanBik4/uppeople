@@ -45,11 +45,11 @@ var (
 			Desc:     "show search results according range of characteristics",
 			NeedAuth: true,
 		},
-		"/api/main/returnAllCandidates/": {
-			Fnc:      HandleAllCandidate,
-			Desc:     "show search results according range of characteristics",
-			NeedAuth: true,
-		},
+		// "/api/main/returnAllCandidates/": {
+		// 	Fnc:      HandleAllCandidate,
+		// 	Desc:     "show search results according range of characteristics",
+		// 	NeedAuth: true,
+		// },
 		"/api/main/viewCandidatesFreelancerOnVacancies/": {
 			Fnc:      HandleAllCandidate,
 			Desc:     "show search results according range of characteristics",
