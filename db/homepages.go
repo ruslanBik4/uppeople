@@ -9,20 +9,19 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Homepages struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *HomepagesFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type HomepagesFields struct {
+	Id   int32  `json:"id"`
+	Name string `json:"name"`
+	Url  string `json:"url"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *HomepagesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
@@ -30,18 +29,15 @@ func (r *DictionaryFields) RefColValue(name string) interface{} {
 	case "name":
 		return &r.Name
 
-	case "id_languages":
-		return &r.Id_languages
-
-	case "translation":
-		return &r.Translation
+	case "url":
+		return &r.Url
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *HomepagesFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
@@ -49,34 +45,31 @@ func (r *DictionaryFields) ColValue(name string) interface{} {
 	case "name":
 		return r.Name
 
-	case "id_languages":
-		return r.Id_languages
-
-	case "translation":
-		return r.Translation
+	case "url":
+		return r.Url
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewHomepages(db *dbEngine.DB) (*Homepages, error) {
+	table, ok := db.Tables["homepages"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "homepages"}
 	}
 
-	return &Dictionary{
+	return &Homepages{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Homepages) NewRecord() *HomepagesFields {
+	t.Record = &HomepagesFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Homepages) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +83,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Homepages) SelectSelfScanEach(ctx context.Context, each func(record *HomepagesFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +94,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Homepages) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +110,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Homepages) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

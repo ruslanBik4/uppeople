@@ -4,79 +4,87 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Todolists struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *TodolistsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type TodolistsFields struct {
+	Id          int64          `json:"id"`
+	User_id     sql.NullInt64  `json:"user_id"`
+	Date_create time.Time      `json:"date_create"`
+	Text        sql.NullString `json:"text"`
+	Done        sql.NullInt64  `json:"done"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *TodolistsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "user_id":
+		return &r.User_id
 
-	case "id_languages":
-		return &r.Id_languages
+	case "date_create":
+		return &r.Date_create
 
-	case "translation":
-		return &r.Translation
+	case "text":
+		return &r.Text
+
+	case "done":
+		return &r.Done
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *TodolistsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "user_id":
+		return r.User_id
 
-	case "id_languages":
-		return r.Id_languages
+	case "date_create":
+		return r.Date_create
 
-	case "translation":
-		return r.Translation
+	case "text":
+		return r.Text
+
+	case "done":
+		return r.Done
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewTodolists(db *dbEngine.DB) (*Todolists, error) {
+	table, ok := db.Tables["todolists"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "todolists"}
 	}
 
-	return &Dictionary{
+	return &Todolists{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Todolists) NewRecord() *TodolistsFields {
+	t.Record = &TodolistsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Todolists) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +98,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Todolists) SelectSelfScanEach(ctx context.Context, each func(record *TodolistsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +109,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Todolists) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +125,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Todolists) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

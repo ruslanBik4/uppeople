@@ -9,74 +9,109 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Contacts struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *ContactsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type ContactsFields struct {
+	Id            int64          `json:"id"`
+	Company_id    sql.NullInt64  `json:"company_id"`
+	Name          sql.NullString `json:"name"`
+	Email         sql.NullString `json:"email"`
+	Phone         sql.NullString `json:"phone"`
+	Skype         sql.NullString `json:"skype"`
+	Default       sql.NullInt64  `json:"default"`
+	All_platforms sql.NullInt64  `json:"all_platforms"`
+	Not_visible   sql.NullInt64  `json:"not_visible"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *ContactsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
+	case "company_id":
+		return &r.Company_id
+
 	case "name":
 		return &r.Name
 
-	case "id_languages":
-		return &r.Id_languages
+	case "email":
+		return &r.Email
 
-	case "translation":
-		return &r.Translation
+	case "phone":
+		return &r.Phone
+
+	case "skype":
+		return &r.Skype
+
+	case "default":
+		return &r.Default
+
+	case "all_platforms":
+		return &r.All_platforms
+
+	case "not_visible":
+		return &r.Not_visible
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *ContactsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
+	case "company_id":
+		return r.Company_id
+
 	case "name":
 		return r.Name
 
-	case "id_languages":
-		return r.Id_languages
+	case "email":
+		return r.Email
 
-	case "translation":
-		return r.Translation
+	case "phone":
+		return r.Phone
+
+	case "skype":
+		return r.Skype
+
+	case "default":
+		return r.Default
+
+	case "all_platforms":
+		return r.All_platforms
+
+	case "not_visible":
+		return r.Not_visible
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewContacts(db *dbEngine.DB) (*Contacts, error) {
+	table, ok := db.Tables["contacts"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "contacts"}
 	}
 
-	return &Dictionary{
+	return &Contacts{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Contacts) NewRecord() *ContactsFields {
+	t.Record = &ContactsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Contacts) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +125,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Contacts) SelectSelfScanEach(ctx context.Context, each func(record *ContactsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +136,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Contacts) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +152,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Contacts) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

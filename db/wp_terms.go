@@ -9,74 +9,74 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Wp_terms struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Wp_termsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Wp_termsFields struct {
+	Term_id    int64  `json:"term_id"`
+	Name       string `json:"name"`
+	Slug       string `json:"slug"`
+	Term_group int64  `json:"term_group"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Wp_termsFields) RefColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return &r.Id
+	case "term_id":
+		return &r.Term_id
 
 	case "name":
 		return &r.Name
 
-	case "id_languages":
-		return &r.Id_languages
+	case "slug":
+		return &r.Slug
 
-	case "translation":
-		return &r.Translation
+	case "term_group":
+		return &r.Term_group
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Wp_termsFields) ColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return r.Id
+	case "term_id":
+		return r.Term_id
 
 	case "name":
 		return r.Name
 
-	case "id_languages":
-		return r.Id_languages
+	case "slug":
+		return r.Slug
 
-	case "translation":
-		return r.Translation
+	case "term_group":
+		return r.Term_group
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewWp_terms(db *dbEngine.DB) (*Wp_terms, error) {
+	table, ok := db.Tables["wp_terms"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "wp_terms"}
 	}
 
-	return &Dictionary{
+	return &Wp_terms{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Wp_terms) NewRecord() *Wp_termsFields {
+	t.Record = &Wp_termsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Wp_terms) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +90,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Wp_terms) SelectSelfScanEach(ctx context.Context, each func(record *Wp_termsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +101,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_terms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +117,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_terms) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

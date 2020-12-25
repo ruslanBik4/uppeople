@@ -4,79 +4,73 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Password_resets struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Password_resetsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Password_resetsFields struct {
+	Email      string    `json:"email"`
+	Token      string    `json:"token"`
+	Created_at time.Time `json:"created_at"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Password_resetsFields) RefColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return &r.Id
+	case "email":
+		return &r.Email
 
-	case "name":
-		return &r.Name
+	case "token":
+		return &r.Token
 
-	case "id_languages":
-		return &r.Id_languages
-
-	case "translation":
-		return &r.Translation
+	case "created_at":
+		return &r.Created_at
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Password_resetsFields) ColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return r.Id
+	case "email":
+		return r.Email
 
-	case "name":
-		return r.Name
+	case "token":
+		return r.Token
 
-	case "id_languages":
-		return r.Id_languages
-
-	case "translation":
-		return r.Translation
+	case "created_at":
+		return r.Created_at
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewPassword_resets(db *dbEngine.DB) (*Password_resets, error) {
+	table, ok := db.Tables["password_resets"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "password_resets"}
 	}
 
-	return &Dictionary{
+	return &Password_resets{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Password_resets) NewRecord() *Password_resetsFields {
+	t.Record = &Password_resetsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Password_resets) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +84,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Password_resets) SelectSelfScanEach(ctx context.Context, each func(record *Password_resetsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +95,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Password_resets) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +111,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Password_resets) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

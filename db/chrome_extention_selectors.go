@@ -9,74 +9,74 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Chrome_extention_selectors struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Chrome_extention_selectorsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Chrome_extention_selectorsFields struct {
+	Id       int64  `json:"id"`
+	Param    string `json:"param"`
+	Selector string `json:"selector"`
+	Type     string `json:"type"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Chrome_extention_selectorsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "param":
+		return &r.Param
 
-	case "id_languages":
-		return &r.Id_languages
+	case "selector":
+		return &r.Selector
 
-	case "translation":
-		return &r.Translation
+	case "type":
+		return &r.Type
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Chrome_extention_selectorsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "param":
+		return r.Param
 
-	case "id_languages":
-		return r.Id_languages
+	case "selector":
+		return r.Selector
 
-	case "translation":
-		return r.Translation
+	case "type":
+		return r.Type
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewChrome_extention_selectors(db *dbEngine.DB) (*Chrome_extention_selectors, error) {
+	table, ok := db.Tables["chrome_extention_selectors"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "chrome_extention_selectors"}
 	}
 
-	return &Dictionary{
+	return &Chrome_extention_selectors{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Chrome_extention_selectors) NewRecord() *Chrome_extention_selectorsFields {
+	t.Record = &Chrome_extention_selectorsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Chrome_extention_selectors) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +90,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Chrome_extention_selectors) SelectSelfScanEach(ctx context.Context, each func(record *Chrome_extention_selectorsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +101,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Chrome_extention_selectors) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +117,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Chrome_extention_selectors) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

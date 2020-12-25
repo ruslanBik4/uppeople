@@ -17,12 +17,12 @@ type Form_blocks struct {
 
 type Form_blocksFields struct {
 	Id          int32       `json:"id"`
+	Id_forms    int32       `json:"id_forms"`
 	Title       string      `json:"title"`
 	Description string      `json:"description"`
-	Buttons     interface{} `json:"buttons"`
-	Id_forms    int32       `json:"id_forms"`
 	Tablename   string      `json:"tablename"`
 	Columns     []string    `json:"columns"`
+	Buttons     interface{} `json:"buttons"`
 }
 
 func (r *Form_blocksFields) RefColValue(name string) interface{} {
@@ -30,23 +30,23 @@ func (r *Form_blocksFields) RefColValue(name string) interface{} {
 	case "id":
 		return &r.Id
 
+	case "id_forms":
+		return &r.Id_forms
+
 	case "title":
 		return &r.Title
 
 	case "description":
 		return &r.Description
 
-	case "buttons":
-		return &r.Buttons
-
-	case "id_forms":
-		return &r.Id_forms
-
 	case "tablename":
 		return &r.Tablename
 
 	case "columns":
 		return &r.Columns
+
+	case "buttons":
+		return &r.Buttons
 
 	default:
 		return nil
@@ -58,23 +58,23 @@ func (r *Form_blocksFields) ColValue(name string) interface{} {
 	case "id":
 		return r.Id
 
+	case "id_forms":
+		return r.Id_forms
+
 	case "title":
 		return r.Title
 
 	case "description":
 		return r.Description
 
-	case "buttons":
-		return r.Buttons
-
-	case "id_forms":
-		return r.Id_forms
-
 	case "tablename":
 		return r.Tablename
 
 	case "columns":
 		return r.Columns
+
+	case "buttons":
+		return r.Buttons
 
 	default:
 		return nil

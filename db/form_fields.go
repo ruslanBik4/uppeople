@@ -17,6 +17,7 @@ type Form_fields struct {
 
 type Form_fieldsFields struct {
 	Id             int32  `json:"id"`
+	Id_form_blocks int32  `json:"id_form_blocks"`
 	Name           string `json:"name"`
 	Input_type     string `json:"input_type"`
 	Title          string `json:"title"`
@@ -26,13 +27,15 @@ type Form_fieldsFields struct {
 	Disabled       bool   `json:"disabled"`
 	Required       bool   `json:"required"`
 	Readonly       bool   `json:"readonly"`
-	Id_form_blocks int32  `json:"id_form_blocks"`
 }
 
 func (r *Form_fieldsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
+
+	case "id_form_blocks":
+		return &r.Id_form_blocks
 
 	case "name":
 		return &r.Name
@@ -61,9 +64,6 @@ func (r *Form_fieldsFields) RefColValue(name string) interface{} {
 	case "readonly":
 		return &r.Readonly
 
-	case "id_form_blocks":
-		return &r.Id_form_blocks
-
 	default:
 		return nil
 	}
@@ -73,6 +73,9 @@ func (r *Form_fieldsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
+
+	case "id_form_blocks":
+		return r.Id_form_blocks
 
 	case "name":
 		return r.Name
@@ -100,9 +103,6 @@ func (r *Form_fieldsFields) ColValue(name string) interface{} {
 
 	case "readonly":
 		return r.Readonly
-
-	case "id_form_blocks":
-		return r.Id_form_blocks
 
 	default:
 		return nil

@@ -9,74 +9,67 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Contacts_to_platforms struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Contacts_to_platformsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Contacts_to_platformsFields struct {
+	Id          int64         `json:"id"`
+	Contact_id  sql.NullInt64 `json:"contact_id"`
+	Platform_id sql.NullInt64 `json:"platform_id"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Contacts_to_platformsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "contact_id":
+		return &r.Contact_id
 
-	case "id_languages":
-		return &r.Id_languages
-
-	case "translation":
-		return &r.Translation
+	case "platform_id":
+		return &r.Platform_id
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Contacts_to_platformsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "contact_id":
+		return r.Contact_id
 
-	case "id_languages":
-		return r.Id_languages
-
-	case "translation":
-		return r.Translation
+	case "platform_id":
+		return r.Platform_id
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewContacts_to_platforms(db *dbEngine.DB) (*Contacts_to_platforms, error) {
+	table, ok := db.Tables["contacts_to_platforms"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "contacts_to_platforms"}
 	}
 
-	return &Dictionary{
+	return &Contacts_to_platforms{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Contacts_to_platforms) NewRecord() *Contacts_to_platformsFields {
+	t.Record = &Contacts_to_platformsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Contacts_to_platforms) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +83,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Contacts_to_platforms) SelectSelfScanEach(ctx context.Context, each func(record *Contacts_to_platformsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +94,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Contacts_to_platforms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +110,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Contacts_to_platforms) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

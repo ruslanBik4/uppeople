@@ -4,79 +4,94 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Stoplists struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *StoplistsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type StoplistsFields struct {
+	Id          int64          `json:"id"`
+	Company_id  sql.NullInt64  `json:"company_id"`
+	User_id     sql.NullInt64  `json:"user_id"`
+	Name        sql.NullString `json:"name"`
+	Likedin     sql.NullString `json:"likedin"`
+	Date_create time.Time      `json:"date_create"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *StoplistsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
+	case "company_id":
+		return &r.Company_id
+
+	case "user_id":
+		return &r.User_id
+
 	case "name":
 		return &r.Name
 
-	case "id_languages":
-		return &r.Id_languages
+	case "likedin":
+		return &r.Likedin
 
-	case "translation":
-		return &r.Translation
+	case "date_create":
+		return &r.Date_create
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *StoplistsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
+	case "company_id":
+		return r.Company_id
+
+	case "user_id":
+		return r.User_id
+
 	case "name":
 		return r.Name
 
-	case "id_languages":
-		return r.Id_languages
+	case "likedin":
+		return r.Likedin
 
-	case "translation":
-		return r.Translation
+	case "date_create":
+		return r.Date_create
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewStoplists(db *dbEngine.DB) (*Stoplists, error) {
+	table, ok := db.Tables["stoplists"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "stoplists"}
 	}
 
-	return &Dictionary{
+	return &Stoplists{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Stoplists) NewRecord() *StoplistsFields {
+	t.Record = &StoplistsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Stoplists) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +105,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Stoplists) SelectSelfScanEach(ctx context.Context, each func(record *StoplistsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +116,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Stoplists) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +132,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Stoplists) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

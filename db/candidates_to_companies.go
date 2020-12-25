@@ -9,74 +9,74 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Candidates_to_companies struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Candidates_to_companiesFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Candidates_to_companiesFields struct {
+	Id           int64         `json:"id"`
+	Candidate_id sql.NullInt64 `json:"candidate_id"`
+	Company_id   sql.NullInt64 `json:"company_id"`
+	Visible      sql.NullInt64 `json:"visible"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Candidates_to_companiesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "candidate_id":
+		return &r.Candidate_id
 
-	case "id_languages":
-		return &r.Id_languages
+	case "company_id":
+		return &r.Company_id
 
-	case "translation":
-		return &r.Translation
+	case "visible":
+		return &r.Visible
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Candidates_to_companiesFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "candidate_id":
+		return r.Candidate_id
 
-	case "id_languages":
-		return r.Id_languages
+	case "company_id":
+		return r.Company_id
 
-	case "translation":
-		return r.Translation
+	case "visible":
+		return r.Visible
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewCandidates_to_companies(db *dbEngine.DB) (*Candidates_to_companies, error) {
+	table, ok := db.Tables["candidates_to_companies"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "candidates_to_companies"}
 	}
 
-	return &Dictionary{
+	return &Candidates_to_companies{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Candidates_to_companies) NewRecord() *Candidates_to_companiesFields {
+	t.Record = &Candidates_to_companiesFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Candidates_to_companies) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +90,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Candidates_to_companies) SelectSelfScanEach(ctx context.Context, each func(record *Candidates_to_companiesFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +101,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Candidates_to_companies) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +117,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Candidates_to_companies) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

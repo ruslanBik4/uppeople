@@ -4,79 +4,94 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Oauth_auth_codes struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Oauth_auth_codesFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Oauth_auth_codesFields struct {
+	Id         string         `json:"id"`
+	User_id    int64          `json:"user_id"`
+	Client_id  int64          `json:"client_id"`
+	Scopes     sql.NullString `json:"scopes"`
+	Revoked    bool           `json:"revoked"`
+	Expires_at time.Time      `json:"expires_at"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Oauth_auth_codesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "user_id":
+		return &r.User_id
 
-	case "id_languages":
-		return &r.Id_languages
+	case "client_id":
+		return &r.Client_id
 
-	case "translation":
-		return &r.Translation
+	case "scopes":
+		return &r.Scopes
+
+	case "revoked":
+		return &r.Revoked
+
+	case "expires_at":
+		return &r.Expires_at
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Oauth_auth_codesFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "user_id":
+		return r.User_id
 
-	case "id_languages":
-		return r.Id_languages
+	case "client_id":
+		return r.Client_id
 
-	case "translation":
-		return r.Translation
+	case "scopes":
+		return r.Scopes
+
+	case "revoked":
+		return r.Revoked
+
+	case "expires_at":
+		return r.Expires_at
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewOauth_auth_codes(db *dbEngine.DB) (*Oauth_auth_codes, error) {
+	table, ok := db.Tables["oauth_auth_codes"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "oauth_auth_codes"}
 	}
 
-	return &Dictionary{
+	return &Oauth_auth_codes{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Oauth_auth_codes) NewRecord() *Oauth_auth_codesFields {
+	t.Record = &Oauth_auth_codesFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Oauth_auth_codes) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +105,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Oauth_auth_codes) SelectSelfScanEach(ctx context.Context, each func(record *Oauth_auth_codesFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +116,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Oauth_auth_codes) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +132,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Oauth_auth_codes) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

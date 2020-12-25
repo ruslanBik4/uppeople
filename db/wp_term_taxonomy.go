@@ -9,88 +9,88 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Forms struct {
+type Wp_term_taxonomy struct {
 	dbEngine.Table
-	Record *FormsFields
+	Record *Wp_term_taxonomyFields
 	rows   sql.Rows
 }
 
-type FormsFields struct {
-	Id          int32       `json:"id"`
-	Title       string      `json:"title"`
-	Action      string      `json:"action"`
-	Post        bool        `json:"post"`
-	Description string      `json:"description"`
-	HideBlock   interface{} `json:"hideblock"`
+type Wp_term_taxonomyFields struct {
+	Term_taxonomy_id int64   `json:"term_taxonomy_id"`
+	Term_id          float64 `json:"term_id"`
+	Taxonomy         string  `json:"taxonomy"`
+	Description      string  `json:"description"`
+	Parent           float64 `json:"parent"`
+	Count            int64   `json:"count"`
 }
 
-func (r *FormsFields) RefColValue(name string) interface{} {
+func (r *Wp_term_taxonomyFields) RefColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return &r.Id
+	case "term_taxonomy_id":
+		return &r.Term_taxonomy_id
 
-	case "title":
-		return &r.Title
+	case "term_id":
+		return &r.Term_id
 
-	case "action":
-		return &r.Action
-
-	case "post":
-		return &r.Post
+	case "taxonomy":
+		return &r.Taxonomy
 
 	case "description":
 		return &r.Description
 
-	case "hideblock":
-		return &r.HideBlock
+	case "parent":
+		return &r.Parent
+
+	case "count":
+		return &r.Count
 
 	default:
 		return nil
 	}
 }
 
-func (r *FormsFields) ColValue(name string) interface{} {
+func (r *Wp_term_taxonomyFields) ColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return r.Id
+	case "term_taxonomy_id":
+		return r.Term_taxonomy_id
 
-	case "title":
-		return r.Title
+	case "term_id":
+		return r.Term_id
 
-	case "action":
-		return r.Action
-
-	case "post":
-		return r.Post
+	case "taxonomy":
+		return r.Taxonomy
 
 	case "description":
 		return r.Description
 
-	case "hideblock":
-		return r.HideBlock
+	case "parent":
+		return r.Parent
+
+	case "count":
+		return r.Count
 
 	default:
 		return nil
 	}
 }
 
-func NewForms(db *dbEngine.DB) (*Forms, error) {
-	table, ok := db.Tables["forms"]
+func NewWp_term_taxonomy(db *dbEngine.DB) (*Wp_term_taxonomy, error) {
+	table, ok := db.Tables["wp_term_taxonomy"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "forms"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "wp_term_taxonomy"}
 	}
 
-	return &Forms{
+	return &Wp_term_taxonomy{
 		Table: table,
 	}, nil
 }
 
-func (t *Forms) NewRecord() *FormsFields {
-	t.Record = &FormsFields{}
+func (t *Wp_term_taxonomy) NewRecord() *Wp_term_taxonomyFields {
+	t.Record = &Wp_term_taxonomyFields{}
 	return t.Record
 }
 
-func (t *Forms) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Wp_term_taxonomy) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -104,7 +104,7 @@ func (t *Forms) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Forms) SelectSelfScanEach(ctx context.Context, each func(record *FormsFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Wp_term_taxonomy) SelectSelfScanEach(ctx context.Context, each func(record *Wp_term_taxonomyFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -115,7 +115,7 @@ func (t *Forms) SelectSelfScanEach(ctx context.Context, each func(record *FormsF
 		}, t, Options...)
 }
 
-func (t *Forms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_term_taxonomy) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -131,7 +131,7 @@ func (t *Forms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions)
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Forms) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_term_taxonomy) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

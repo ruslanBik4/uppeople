@@ -9,74 +9,81 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Comments_for_companies struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Comments_for_companiesFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Comments_for_companiesFields struct {
+	Id          int64          `json:"id"`
+	User_id     sql.NullInt64  `json:"user_id"`
+	Company_id  sql.NullInt64  `json:"company_id"`
+	Comments    sql.NullString `json:"comments"`
+	Time_create sql.NullString `json:"time_create"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Comments_for_companiesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "user_id":
+		return &r.User_id
 
-	case "id_languages":
-		return &r.Id_languages
+	case "company_id":
+		return &r.Company_id
 
-	case "translation":
-		return &r.Translation
+	case "comments":
+		return &r.Comments
+
+	case "time_create":
+		return &r.Time_create
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Comments_for_companiesFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "user_id":
+		return r.User_id
 
-	case "id_languages":
-		return r.Id_languages
+	case "company_id":
+		return r.Company_id
 
-	case "translation":
-		return r.Translation
+	case "comments":
+		return r.Comments
+
+	case "time_create":
+		return r.Time_create
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewComments_for_companies(db *dbEngine.DB) (*Comments_for_companies, error) {
+	table, ok := db.Tables["comments_for_companies"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "comments_for_companies"}
 	}
 
-	return &Dictionary{
+	return &Comments_for_companies{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Comments_for_companies) NewRecord() *Comments_for_companiesFields {
+	t.Record = &Comments_for_companiesFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Comments_for_companies) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +97,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Comments_for_companies) SelectSelfScanEach(ctx context.Context, each func(record *Comments_for_companiesFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +108,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Comments_for_companies) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +124,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Comments_for_companies) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

@@ -9,74 +9,67 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Wp_term_relationships struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Wp_term_relationshipsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Wp_term_relationshipsFields struct {
+	Object_id        float64 `json:"object_id"`
+	Term_taxonomy_id float64 `json:"term_taxonomy_id"`
+	Term_order       int64   `json:"term_order"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Wp_term_relationshipsFields) RefColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return &r.Id
+	case "object_id":
+		return &r.Object_id
 
-	case "name":
-		return &r.Name
+	case "term_taxonomy_id":
+		return &r.Term_taxonomy_id
 
-	case "id_languages":
-		return &r.Id_languages
-
-	case "translation":
-		return &r.Translation
+	case "term_order":
+		return &r.Term_order
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Wp_term_relationshipsFields) ColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return r.Id
+	case "object_id":
+		return r.Object_id
 
-	case "name":
-		return r.Name
+	case "term_taxonomy_id":
+		return r.Term_taxonomy_id
 
-	case "id_languages":
-		return r.Id_languages
-
-	case "translation":
-		return r.Translation
+	case "term_order":
+		return r.Term_order
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewWp_term_relationships(db *dbEngine.DB) (*Wp_term_relationships, error) {
+	table, ok := db.Tables["wp_term_relationships"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "wp_term_relationships"}
 	}
 
-	return &Dictionary{
+	return &Wp_term_relationships{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Wp_term_relationships) NewRecord() *Wp_term_relationshipsFields {
+	t.Record = &Wp_term_relationshipsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Wp_term_relationships) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +83,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Wp_term_relationships) SelectSelfScanEach(ctx context.Context, each func(record *Wp_term_relationshipsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +94,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_term_relationships) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +110,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_term_relationships) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

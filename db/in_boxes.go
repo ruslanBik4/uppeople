@@ -4,79 +4,87 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type In_boxes struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *In_boxesFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type In_boxesFields struct {
+	Id      int64          `json:"id"`
+	Subject sql.NullString `json:"subject"`
+	From    sql.NullString `json:"from"`
+	Date    time.Time      `json:"date"`
+	Email   sql.NullString `json:"email"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *In_boxesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "subject":
+		return &r.Subject
 
-	case "id_languages":
-		return &r.Id_languages
+	case "from":
+		return &r.From
 
-	case "translation":
-		return &r.Translation
+	case "date":
+		return &r.Date
+
+	case "email":
+		return &r.Email
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *In_boxesFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "subject":
+		return r.Subject
 
-	case "id_languages":
-		return r.Id_languages
+	case "from":
+		return r.From
 
-	case "translation":
-		return r.Translation
+	case "date":
+		return r.Date
+
+	case "email":
+		return r.Email
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewIn_boxes(db *dbEngine.DB) (*In_boxes, error) {
+	table, ok := db.Tables["in_boxes"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "in_boxes"}
 	}
 
-	return &Dictionary{
+	return &In_boxes{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *In_boxes) NewRecord() *In_boxesFields {
+	t.Record = &In_boxesFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *In_boxes) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +98,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *In_boxes) SelectSelfScanEach(ctx context.Context, each func(record *In_boxesFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +109,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *In_boxes) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +125,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *In_boxes) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

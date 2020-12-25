@@ -9,74 +9,74 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Wp_usermeta struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Wp_usermetaFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Wp_usermetaFields struct {
+	Umeta_id   int64          `json:"umeta_id"`
+	User_id    float64        `json:"user_id"`
+	Meta_key   sql.NullString `json:"meta_key"`
+	Meta_value sql.NullString `json:"meta_value"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Wp_usermetaFields) RefColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return &r.Id
+	case "umeta_id":
+		return &r.Umeta_id
 
-	case "name":
-		return &r.Name
+	case "user_id":
+		return &r.User_id
 
-	case "id_languages":
-		return &r.Id_languages
+	case "meta_key":
+		return &r.Meta_key
 
-	case "translation":
-		return &r.Translation
+	case "meta_value":
+		return &r.Meta_value
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Wp_usermetaFields) ColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return r.Id
+	case "umeta_id":
+		return r.Umeta_id
 
-	case "name":
-		return r.Name
+	case "user_id":
+		return r.User_id
 
-	case "id_languages":
-		return r.Id_languages
+	case "meta_key":
+		return r.Meta_key
 
-	case "translation":
-		return r.Translation
+	case "meta_value":
+		return r.Meta_value
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewWp_usermeta(db *dbEngine.DB) (*Wp_usermeta, error) {
+	table, ok := db.Tables["wp_usermeta"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "wp_usermeta"}
 	}
 
-	return &Dictionary{
+	return &Wp_usermeta{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Wp_usermeta) NewRecord() *Wp_usermetaFields {
+	t.Record = &Wp_usermetaFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Wp_usermeta) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +90,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Wp_usermeta) SelectSelfScanEach(ctx context.Context, each func(record *Wp_usermetaFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +101,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_usermeta) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +117,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_usermeta) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

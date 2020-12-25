@@ -9,74 +9,74 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Status_for_vacs struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Status_for_vacsFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Status_for_vacsFields struct {
+	Id        int64          `json:"id"`
+	Status    sql.NullString `json:"status"`
+	Color     string         `json:"color"`
+	Order_num int64          `json:"order_num"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Status_for_vacsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "status":
+		return &r.Status
 
-	case "id_languages":
-		return &r.Id_languages
+	case "color":
+		return &r.Color
 
-	case "translation":
-		return &r.Translation
+	case "order_num":
+		return &r.Order_num
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Status_for_vacsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "status":
+		return r.Status
 
-	case "id_languages":
-		return r.Id_languages
+	case "color":
+		return r.Color
 
-	case "translation":
-		return r.Translation
+	case "order_num":
+		return r.Order_num
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewStatus_for_vacs(db *dbEngine.DB) (*Status_for_vacs, error) {
+	table, ok := db.Tables["status_for_vacs"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "status_for_vacs"}
 	}
 
-	return &Dictionary{
+	return &Status_for_vacs{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Status_for_vacs) NewRecord() *Status_for_vacsFields {
+	t.Record = &Status_for_vacsFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Status_for_vacs) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +90,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Status_for_vacs) SelectSelfScanEach(ctx context.Context, each func(record *Status_for_vacsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +101,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Status_for_vacs) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +117,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Status_for_vacs) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

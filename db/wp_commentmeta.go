@@ -9,74 +9,74 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Wp_commentmeta struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Wp_commentmetaFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Wp_commentmetaFields struct {
+	Meta_id    int64          `json:"meta_id"`
+	Comment_id float64        `json:"comment_id"`
+	Meta_key   sql.NullString `json:"meta_key"`
+	Meta_value sql.NullString `json:"meta_value"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Wp_commentmetaFields) RefColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return &r.Id
+	case "meta_id":
+		return &r.Meta_id
 
-	case "name":
-		return &r.Name
+	case "comment_id":
+		return &r.Comment_id
 
-	case "id_languages":
-		return &r.Id_languages
+	case "meta_key":
+		return &r.Meta_key
 
-	case "translation":
-		return &r.Translation
+	case "meta_value":
+		return &r.Meta_value
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Wp_commentmetaFields) ColValue(name string) interface{} {
 	switch name {
-	case "id":
-		return r.Id
+	case "meta_id":
+		return r.Meta_id
 
-	case "name":
-		return r.Name
+	case "comment_id":
+		return r.Comment_id
 
-	case "id_languages":
-		return r.Id_languages
+	case "meta_key":
+		return r.Meta_key
 
-	case "translation":
-		return r.Translation
+	case "meta_value":
+		return r.Meta_value
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewWp_commentmeta(db *dbEngine.DB) (*Wp_commentmeta, error) {
+	table, ok := db.Tables["wp_commentmeta"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "wp_commentmeta"}
 	}
 
-	return &Dictionary{
+	return &Wp_commentmeta{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Wp_commentmeta) NewRecord() *Wp_commentmetaFields {
+	t.Record = &Wp_commentmetaFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Wp_commentmeta) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +90,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Wp_commentmeta) SelectSelfScanEach(ctx context.Context, each func(record *Wp_commentmetaFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +101,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_commentmeta) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +117,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Wp_commentmeta) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

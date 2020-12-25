@@ -4,79 +4,80 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
 )
 
-type Dictionary struct {
+type Oauth_refresh_tokens struct {
 	dbEngine.Table
-	Record *DictionaryFields
+	Record *Oauth_refresh_tokensFields
 	rows   sql.Rows
 }
 
-type DictionaryFields struct {
-	Id           int32  `json:"id"`
-	Name         string `json:"name"`
-	Id_languages int32  `json:"id_languages"`
-	Translation  string `json:"translation"`
+type Oauth_refresh_tokensFields struct {
+	Id              string    `json:"id"`
+	Access_token_id string    `json:"access_token_id"`
+	Revoked         bool      `json:"revoked"`
+	Expires_at      time.Time `json:"expires_at"`
 }
 
-func (r *DictionaryFields) RefColValue(name string) interface{} {
+func (r *Oauth_refresh_tokensFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
 
-	case "name":
-		return &r.Name
+	case "access_token_id":
+		return &r.Access_token_id
 
-	case "id_languages":
-		return &r.Id_languages
+	case "revoked":
+		return &r.Revoked
 
-	case "translation":
-		return &r.Translation
+	case "expires_at":
+		return &r.Expires_at
 
 	default:
 		return nil
 	}
 }
 
-func (r *DictionaryFields) ColValue(name string) interface{} {
+func (r *Oauth_refresh_tokensFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
 
-	case "name":
-		return r.Name
+	case "access_token_id":
+		return r.Access_token_id
 
-	case "id_languages":
-		return r.Id_languages
+	case "revoked":
+		return r.Revoked
 
-	case "translation":
-		return r.Translation
+	case "expires_at":
+		return r.Expires_at
 
 	default:
 		return nil
 	}
 }
 
-func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables["dictionary"]
+func NewOauth_refresh_tokens(db *dbEngine.DB) (*Oauth_refresh_tokens, error) {
+	table, ok := db.Tables["oauth_refresh_tokens"]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "dictionary"}
+		return nil, dbEngine.ErrNotFoundTable{Table: "oauth_refresh_tokens"}
 	}
 
-	return &Dictionary{
+	return &Oauth_refresh_tokens{
 		Table: table,
 	}, nil
 }
 
-func (t *Dictionary) NewRecord() *DictionaryFields {
-	t.Record = &DictionaryFields{}
+func (t *Oauth_refresh_tokens) NewRecord() *Oauth_refresh_tokensFields {
+	t.Record = &Oauth_refresh_tokensFields{}
 	return t.Record
 }
 
-func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *Oauth_refresh_tokens) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +91,7 @@ func (t *Dictionary) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *DictionaryFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *Oauth_refresh_tokens) SelectSelfScanEach(ctx context.Context, each func(record *Oauth_refresh_tokensFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +102,7 @@ func (t *Dictionary) SelectSelfScanEach(ctx context.Context, each func(record *D
 		}, t, Options...)
 }
 
-func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Oauth_refresh_tokens) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +118,7 @@ func (t *Dictionary) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpt
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Dictionary) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Oauth_refresh_tokens) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)

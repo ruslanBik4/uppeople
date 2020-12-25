@@ -16,7 +16,7 @@ COMMENT ON COLUMN forms.hideBlock IS 'JSON of block hide/show {"pattern": "json"
 create unique index if not exists forms_name_idx
     ON forms (title);
 
-insert into public.forms (id, title, action, post, description)
+insert into public1.forms (id, title, action, post, description)
 values (1, 'form_editor', '/put', 'true', 'Edit from settings on  backend'),
        (3, 'fillers_adv', '/api/v1/table/fillers/put', 'true',
         'Exhausting information for all types of dispersed, reinforcing, and other types of fillers');
