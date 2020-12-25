@@ -21,9 +21,11 @@ type ResCandidates struct {
 	Count, Page, CurrentPage, PerPage int
 	Candidates                        []*db.CandidatesFields
 	Company                           []*db.CompaniesFields
+	Platforms                         []*db.PlatformsFields
+	Statuses                          []*db.StatusesFields
 }
 
-const pageItem = 14
+const pageItem = 15
 
 func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
@@ -33,8 +35,11 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	table, _ := db.NewCandidates(DB)
 	res := ResCandidates{
-		Candidates: make([]*db.CandidatesFields, pageItem),
-		Company:    make([]*db.CompaniesFields, pageItem),
+		Page:        1,
+		CurrentPage: 1,
+		PerPage:     pageItem,
+		Candidates:  make([]*db.CandidatesFields, pageItem),
+		// Company:    make([]*db.CompaniesFields, pageItem),
 	}
 	i := 0
 	err := table.SelectSelfScanEach(ctx,
@@ -55,14 +60,35 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	company, _ := db.NewCompanies(DB)
 
-	i = 0
 	err = company.SelectSelfScanEach(ctx,
 		func(record *db.CompaniesFields) error {
-			res.Company[i] = record
-			i++
-			if i == pageItem {
-				return errLimit
-			}
+			res.Company = append(res.Company, record)
+
+			return nil
+		},
+	)
+	if err != nil && err != errLimit {
+		return nil, errors.Wrap(err, "	")
+	}
+
+	platforms, _ := db.NewPlatforms(DB)
+
+	err = platforms.SelectSelfScanEach(ctx,
+		func(record *db.PlatformsFields) error {
+			res.Platforms = append(res.Platforms, record)
+
+			return nil
+		},
+	)
+	if err != nil && err != errLimit {
+		return nil, errors.Wrap(err, "	")
+	}
+
+	statUses, _ := db.NewStatuses(DB)
+
+	err = statUses.SelectSelfScanEach(ctx,
+		func(record *db.StatusesFields) error {
+			res.Statuses = append(res.Statuses, record)
 
 			return nil
 		},

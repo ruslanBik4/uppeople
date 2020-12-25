@@ -26,11 +26,6 @@ var (
 			Desc:     "show search results according range of characteristics",
 			NeedAuth: true,
 		},
-		"/api/main/allCandidates/": {
-			Fnc:      HandleAllCandidate,
-			Desc:     "show search results according range of characteristics",
-			NeedAuth: true,
-		},
 		// 'api/main/returnAllCandidates/':{
 		// 	Fnc:  HandleAuth,
 		// 	Desc: "show search results according range of characteristics",
@@ -45,6 +40,21 @@ var (
 		},
 	}
 	SearchRoutes = apis.ApiRoutes{
+		"/api/main/allCandidates/": {
+			Fnc:      HandleAllCandidate,
+			Desc:     "show search results according range of characteristics",
+			NeedAuth: true,
+		},
+		"/api/main/returnAllCandidates/": {
+			Fnc:      HandleAllCandidate,
+			Desc:     "show search results according range of characteristics",
+			NeedAuth: true,
+		},
+		"/api/main/viewCandidatesFreelancerOnVacancies/": {
+			Fnc:      HandleAllCandidate,
+			Desc:     "show search results according range of characteristics",
+			NeedAuth: true,
+		},
 		"/api/": {
 			Fnc:      HandleApiRedirect,
 			Desc:     "show search results according range of characteristics",
