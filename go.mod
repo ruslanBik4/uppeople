@@ -17,4 +17,4 @@ require (
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
 )
 
-replace github.com/ruslanBik4/dbEngine => /Users/ruslan/work/src/github.com/ruslanBik4/dbEngine
+//replace github.com/ruslanBik4/dbEngine => /Users/ruslan/work/src/github.com/ruslanBik4/dbEngine
