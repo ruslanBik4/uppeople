@@ -16,7 +16,7 @@ var (
 	ApiRoutes     = apis.NewMapRoutes()
 	ApiPostRoutes = apis.ApiRoutes{
 		"/api/auth/login": {
-			Fnc:  HandleAuth,
+			Fnc:  HandleAuthLogin,
 			Desc: "show search results according range of characteristics",
 			// DTO:    &DTOSearch{},
 			// Resp:   search.RespGroups(),
@@ -27,7 +27,7 @@ var (
 			NeedAuth: true,
 		},
 		// 'api/main/returnAllCandidates/':{
-		// 	Fnc:  HandleAuth,
+		// 	Fnc:  HandleAuthLogin,
 		// 	Desc: "show search results according range of characteristics",
 		// },
 		"/api/": {

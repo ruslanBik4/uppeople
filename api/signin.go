@@ -12,7 +12,7 @@ import (
 	"github.com/ruslanBik4/uppeople/auth"
 )
 
-func HandleAuth(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	req := &fasthttp.Request{}
 	ctx.Request.CopyTo(req)
 

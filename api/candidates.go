@@ -22,6 +22,7 @@ type ResCandidates struct {
 	Candidates                        []*db.CandidatesFields
 	Company                           []*db.CompaniesFields
 	Platforms                         []*db.PlatformsFields
+	Recruters                         []string
 	Statuses                          []*db.StatusesFields
 }
 
