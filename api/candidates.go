@@ -17,6 +17,18 @@ import (
 	"github.com/ruslanBik4/uppeople/db"
 )
 
+type CandidateDTO struct {
+	*db.CandidatesFields
+}
+
+func (c *CandidateDTO) GetValue() interface{} {
+	panic("implement me")
+}
+
+func (c *CandidateDTO) NewValue() interface{} {
+	return &db.CandidatesFields{}
+}
+
 type ResCandidates struct {
 	Count, Page int
 	CurrentPage int                    `json:"currentPage"`
@@ -105,10 +117,75 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	u, ok := ctx.UserValue(apis.JSONParams).(*db.CandidatesFields)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	logs.DebugLog(u)
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewCandidates(DB)
+	i, err := table.Insert(ctx,
+		dbEngine.ColumnsForSelect(
+			"name",
+			"salary",
+			"email",
+			"mobile",
+			"skype",
+			"link",
+			"linkedin",
+			"str_companies",
+			"status",
+			"tag_id",
+			"comments",
+			"date",
+			"recruter_id",
+			"text_rezume",
+			"sfera",
+			"experience",
+			"education",
+			"language",
+			"zapoln_profile",
+			"file",
+			"avatar",
+			"seniority_id",
+			"date_follow_up",
+		),
+		dbEngine.ArgsForSelect(u.Name,
+			u.Salary,
+			u.Email,
+			u.Mobile,
+			u.Skype,
+			u.Link,
+			u.Linkedin,
+			u.Str_companies,
+			u.Status,
+			u.Tag_id,
+			u.Comments,
+			u.Date,
+			u.Recruter_id,
+			u.Text_rezume,
+			u.Sfera,
+			u.Experience,
+			u.Education,
+			u.Language,
+			u.Zapoln_profile,
+			u.File,
+			u.Avatar,
+			u.Seniority_id,
+			u.Date_follow_up,
+		),
+	)
 	user, err := prepareRequest(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	return i, nil
 
 	var v map[string]interface{}
 	err = jsoniter.Unmarshal(ctx.Request.Body(), &v)

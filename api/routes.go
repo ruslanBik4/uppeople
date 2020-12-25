@@ -24,6 +24,7 @@ var (
 		"/api/main/addNewCandidate": {
 			Fnc:      HandleAddCandidate,
 			Desc:     "show search results according range of characteristics",
+			DTO:      &CandidateDTO{},
 			NeedAuth: true,
 		},
 		// 'api/main/returnAllCandidates/':{
@@ -50,11 +51,11 @@ var (
 		// 	Desc:     "show search results according range of characteristics",
 		// 	NeedAuth: true,
 		// },
-		"/api/main/viewCandidatesFreelancerOnVacancies/": {
-			Fnc:      HandleAllCandidate,
-			Desc:     "show search results according range of characteristics",
-			NeedAuth: true,
-		},
+		// "/api/main/viewCandidatesFreelancerOnVacancies/": {
+		// 	Fnc:      HandleAllCandidate,
+		// 	Desc:     "show search results according range of characteristics",
+		// 	NeedAuth: true,
+		// },
 		"/api/": {
 			Fnc:      HandleApiRedirect,
 			Desc:     "show search results according range of characteristics",
