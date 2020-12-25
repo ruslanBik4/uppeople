@@ -18,12 +18,14 @@ import (
 )
 
 type ResCandidates struct {
-	Count, Page, CurrentPage, PerPage int
-	Candidates                        []*db.CandidatesFields
-	Company                           []*db.CompaniesFields
-	Platforms                         []*db.PlatformsFields
-	Recruter                          []string
-	Statuses                          []*db.StatusesFields
+	Count, Page int
+	CurrentPage int                    `json:"currentPage"`
+	PerPage     int                    `json:"perPage"`
+	Candidates  []*db.CandidatesFields `json:"candidates"`
+	Company     []*db.CompaniesFields  `json:"company"`
+	Platforms   []*db.PlatformsFields  `json:"platforms"`
+	Recruiter   []string               `json:"recruiter"`
+	Statuses    []*db.StatusesFields   `json:"statuses"`
 }
 
 const pageItem = 15
@@ -40,6 +42,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		CurrentPage: 1,
 		PerPage:     pageItem,
 		Candidates:  make([]*db.CandidatesFields, pageItem),
+		Recruiter:   []string{},
 		// Company:    make([]*db.CompaniesFields, pageItem),
 	}
 	i := 0
