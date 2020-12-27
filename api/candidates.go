@@ -197,6 +197,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Statuses: []StatusesCandidate{
 			{
 				Candidate_id: int32(table.Record.Id),
+				Status_vac:   &db.Status_for_vacsFields{},
 			},
 		},
 	}
