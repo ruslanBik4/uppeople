@@ -65,6 +65,10 @@ type selectOpt struct {
 	Tags          []*db.TagsFields                   `json:"tags"`
 	VacancyStatus []*db.Status_for_vacsFields        `json:"vacancyStatus"`
 }
+type VacanciesDTO struct {
+	*db.VacanciesFields
+	Platforms *db.PlatformsFields `json:"platforms"`
+}
 type StatusesCandidate struct {
 	Candidate_id     int32                     `json:"candidate_id"`
 	Company          *db.CompaniesFields       `json:"company"`
@@ -78,7 +82,7 @@ type StatusesCandidate struct {
 	Status           int32                     `json:"status"`
 	Status_vac       *db.Status_for_vacsFields `json:"status_vac"`
 	User_id          int32                     `json:"user_id"`
-	Vacancy          *db.VacanciesFields       `json:"vacancy"`
+	Vacancy          VacanciesDTO              `json:"vacancy"`
 	Vacancy_id       int32                     `json:"vacancy_id"`
 }
 type ViewCandidate struct {
@@ -197,8 +201,12 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Statuses: []StatusesCandidate{
 			{
 				Candidate_id: int32(table.Record.Id),
+				Company:      &db.CompaniesFields{},
 				Status_vac:   &db.Status_for_vacsFields{},
-				Vacancy:      &db.VacanciesFields{},
+				Vacancy: VacanciesDTO{
+					&db.VacanciesFields{},
+					&db.PlatformsFields{},
+				},
 			},
 		},
 	}
