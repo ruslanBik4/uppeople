@@ -52,16 +52,16 @@ type ResCandidates struct {
 }
 
 type selectOpt struct {
-	Companies     []*db.CompaniesFields `json:"companies"`
-	Platforms     []*db.PlatformsFields `json:"platforms"`
-	Recruiters    []string              `json:"recruiters"`
-	Statuses      []*db.StatusesFields  `json:"candidateStatus"`
-	Location      []*db.StatusesFields  `json:"location"`
-	RejectReasons []*db.StatusesFields  `json:"reject_reasons"`
-	RejectTag     []*db.StatusesFields  `json:"reject_tag"`
-	Seniorities   []*db.StatusesFields  `json:"seniorities"`
-	Tags          []*db.StatusesFields  `json:"tags"`
-	VacancyStatus []*db.StatusesFields  `json:"vacancyStatus"`
+	Companies     []*db.CompaniesFields              `json:"companies"`
+	Platforms     []*db.PlatformsFields              `json:"platforms"`
+	Recruiters    []string                           `json:"recruiters"`
+	Statuses      []*db.StatusesFields               `json:"candidateStatus"`
+	Location      []*db.Location_for_vacanciesFields `json:"location"`
+	RejectReasons []string                           `json:"reject_reasons"`
+	RejectTag     []*db.TagsFields                   `json:"reject_tag"`
+	Seniorities   []*db.SenioritiesFields            `json:"seniorities"`
+	Tags          []*db.TagsFields                   `json:"tags"`
+	VacancyStatus []*db.Status_for_vacsFields        `json:"vacancyStatus"`
 }
 type ViewCandidate struct {
 	Candidates []*db.CandidatesFields `json:"0"`
@@ -161,55 +161,151 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, errors.Wrap(err, "	")
 	}
 	res := ViewCandidate{
-		// Page:        1,
-		// CurrentPage: 1,
-		// PerPage:     pageItem,
 		Candidates: make([]*db.CandidatesFields, 1),
-		// Recruiter:   []string{},
-		// Company:    make([]*db.CompaniesFields, pageItem),
+		SelectOpt: selectOpt{
+			Companies:     getCompanies(ctx, DB),
+			Platforms:     getPlatforms(ctx, DB),
+			Recruiters:    make([]string, 0),
+			Statuses:      getStatUses(ctx, DB),
+			Location:      getLocations(ctx, DB),
+			RejectReasons: []string{},
+			RejectTag:     getTags(ctx, DB),
+			Seniorities:   getSeniorities(ctx, DB),
+			Tags:          getTags(ctx, DB),
+			VacancyStatus: getStatusVac(ctx, DB),
+		},
+		Statuses: []*db.StatusesFields{},
 	}
 
 	res.Candidates[0] = table.Record
-	company, _ := db.NewCompanies(DB)
-
-	err = company.SelectSelfScanEach(ctx,
-		func(record *db.CompaniesFields) error {
-			res.SelectOpt.Companies = append(res.SelectOpt.Companies, record)
-
-			return nil
-		},
-	)
-	if err != nil && err != errLimit {
-		return nil, errors.Wrap(err, "	")
-	}
-
-	platforms, _ := db.NewPlatforms(DB)
-
-	err = platforms.SelectSelfScanEach(ctx,
-		func(record *db.PlatformsFields) error {
-			res.SelectOpt.Platforms = append(res.SelectOpt.Platforms, record)
-
-			return nil
-		},
-	)
-	if err != nil && err != errLimit {
-		return nil, errors.Wrap(err, "	")
-	}
-
-	statUses, _ := db.NewStatuses(DB)
-
-	err = statUses.SelectSelfScanEach(ctx,
-		func(record *db.StatusesFields) error {
-			res.Statuses = append(res.Statuses, record)
-
-			return nil
-		},
-	)
-	if err != nil && err != errLimit {
-		return nil, errors.Wrap(err, "	")
-	}
 
 	return res, nil
+}
+
+func getStatUses(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.StatusesFields {
+	statUses, _ := db.NewStatuses(DB)
+	res := make([]*db.StatusesFields, 0)
+
+	err := statUses.SelectSelfScanEach(ctx,
+		func(record *db.StatusesFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getStatusVac(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.Status_for_vacsFields {
+	statUses, _ := db.NewStatus_for_vacs(DB)
+	res := make([]*db.Status_for_vacsFields, 0)
+
+	err := statUses.SelectSelfScanEach(ctx,
+		func(record *db.Status_for_vacsFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getTags(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.TagsFields {
+	statUses, _ := db.NewTags(DB)
+	res := make([]*db.TagsFields, 0)
+
+	err := statUses.SelectSelfScanEach(ctx,
+		func(record *db.TagsFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.Location_for_vacanciesFields {
+	statUses, _ := db.NewLocation_for_vacancies(DB)
+	res := make([]*db.Location_for_vacanciesFields, 0)
+
+	err := statUses.SelectSelfScanEach(ctx,
+		func(record *db.Location_for_vacanciesFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getSeniorities(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.SenioritiesFields {
+	statUses, _ := db.NewSeniorities(DB)
+	res := make([]*db.SenioritiesFields, 0)
+
+	err := statUses.SelectSelfScanEach(ctx,
+		func(record *db.SenioritiesFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.PlatformsFields {
+	platforms, _ := db.NewPlatforms(DB)
+	res := make([]*db.PlatformsFields, 0)
+
+	err := platforms.SelectSelfScanEach(ctx,
+		func(record *db.PlatformsFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.CompaniesFields {
+	company, _ := db.NewCompanies(DB)
+	companies := make([]*db.CompaniesFields, 0)
+
+	err := company.SelectSelfScanEach(ctx,
+		func(record *db.CompaniesFields) error {
+			companies = append(companies, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	SelectSelfScanEach")
+	}
+
+	return companies
 }
 
 func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
