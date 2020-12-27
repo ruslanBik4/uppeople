@@ -5,9 +5,6 @@
 package api
 
 import (
-	"bytes"
-
-	"github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -17,16 +14,30 @@ import (
 	"github.com/ruslanBik4/uppeople/db"
 )
 
+type SelectedUnit struct {
+	Id    int32  `json:"id"`
+	Label string `json:"label"`
+	Value string `json:"value"`
+}
+
 type CandidateDTO struct {
 	*db.CandidatesFields
+	Comment           string         `json:"comment"`
+	Date              string         `json:"date"`
+	Phone             string         `json:"phone"`
+	Resume            string         `json:"resume"`
+	SelectPlatform    SelectedUnit   `json:"selectPlatform"`
+	SelectSeniority   SelectedUnit   `json:"selectSeniority"`
+	SelectedTag       SelectedUnit   `json:"selectedTag"`
+	SelectedVacancies []SelectedUnit `json:"selectedVacancies"`
 }
 
 func (c *CandidateDTO) GetValue() interface{} {
-	panic("implement me")
+	return c
 }
 
 func (c *CandidateDTO) NewValue() interface{} {
-	return &db.CandidatesFields{}
+	return &CandidateDTO{CandidatesFields: &db.CandidatesFields{}}
 }
 
 type ResCandidates struct {
@@ -38,6 +49,24 @@ type ResCandidates struct {
 	Platforms   []*db.PlatformsFields  `json:"platforms"`
 	Recruiter   []string               `json:"recruiter"`
 	Statuses    []*db.StatusesFields   `json:"statuses"`
+}
+
+type selectOpt struct {
+	Companies     []*db.CompaniesFields `json:"companies"`
+	Platforms     []*db.PlatformsFields `json:"platforms"`
+	Recruiters    []string              `json:"recruiters"`
+	Statuses      []*db.StatusesFields  `json:"candidateStatus"`
+	Location      []*db.StatusesFields  `json:"location"`
+	RejectReasons []*db.StatusesFields  `json:"reject_reasons"`
+	RejectTag     []*db.StatusesFields  `json:"reject_tag"`
+	Seniorities   []*db.StatusesFields  `json:"seniorities"`
+	Tags          []*db.StatusesFields  `json:"tags"`
+	VacancyStatus []*db.StatusesFields  `json:"vacancyStatus"`
+}
+type ViewCandidate struct {
+	Candidates []*db.CandidatesFields `json:"0"`
+	SelectOpt  selectOpt              `json:"select"`
+	Statuses   []*db.StatusesFields   `json:"statusesCandidate"`
 }
 
 const pageItem = 15
@@ -116,8 +145,75 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return res, nil
 }
 
+func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewCandidates(DB)
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(ctx.UserValue("id")),
+	)
+	if err != nil && err != errLimit {
+		return nil, errors.Wrap(err, "	")
+	}
+	res := ViewCandidate{
+		// Page:        1,
+		// CurrentPage: 1,
+		// PerPage:     pageItem,
+		Candidates: make([]*db.CandidatesFields, 1),
+		// Recruiter:   []string{},
+		// Company:    make([]*db.CompaniesFields, pageItem),
+	}
+
+	res.Candidates[0] = table.Record
+	company, _ := db.NewCompanies(DB)
+
+	err = company.SelectSelfScanEach(ctx,
+		func(record *db.CompaniesFields) error {
+			res.SelectOpt.Companies = append(res.SelectOpt.Companies, record)
+
+			return nil
+		},
+	)
+	if err != nil && err != errLimit {
+		return nil, errors.Wrap(err, "	")
+	}
+
+	platforms, _ := db.NewPlatforms(DB)
+
+	err = platforms.SelectSelfScanEach(ctx,
+		func(record *db.PlatformsFields) error {
+			res.SelectOpt.Platforms = append(res.SelectOpt.Platforms, record)
+
+			return nil
+		},
+	)
+	if err != nil && err != errLimit {
+		return nil, errors.Wrap(err, "	")
+	}
+
+	statUses, _ := db.NewStatuses(DB)
+
+	err = statUses.SelectSelfScanEach(ctx,
+		func(record *db.StatusesFields) error {
+			res.Statuses = append(res.Statuses, record)
+
+			return nil
+		},
+	)
+	if err != nil && err != errLimit {
+		return nil, errors.Wrap(err, "	")
+	}
+
+	return res, nil
+}
+
 func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	u, ok := ctx.UserValue(apis.JSONParams).(*db.CandidatesFields)
+	u, ok := ctx.UserValue(apis.JSONParams).(*CandidateDTO)
 	if !ok {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
@@ -180,47 +276,9 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Date_follow_up,
 		),
 	)
-	user, err := prepareRequest(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return i, nil
-
-	var v map[string]interface{}
-	err = jsoniter.Unmarshal(ctx.Request.Body(), &v)
-	if err != nil {
-		return nil, errors.Wrap(err, "unmarshal")
-	}
-
-	req := &fasthttp.Request{}
-	ctx.Request.CopyTo(req)
-
-	req.URI().SetPath("api/main/allCandidates/1")
-	nameCan := v["name"].(string)
-	req.SetBodyString(`{"search":"` + nameCan + `","dateFrom":"","dateTo":"","selectCompanies":[],"selectPlatforms":[],"selectStatuses":[],"selectRecruiter":"","selectTag":[],"selectReason":[],"mySent":false,"dateFromAllCandidates":"","dateToAllCandidates":"","dateFromSentCandidates":"","dateToSentCandidates":"","dateFromFreelancersCandidates":"","dateToFreelancersCandidates":"","dateFollowUpFrom":"","dateFollowUpTo":"","selectSeniority":[]}`)
-	resp := &fasthttp.Response{}
-	err = doRequest(req, resp, user.Host)
-	if err != nil {
-		return nil, err
-	}
-
-	if bytes.Contains(resp.Header.ContentType(), []byte("json")) {
-		err = jsoniter.Unmarshal(resp.Body(), &v)
-		if err != nil {
-			return nil, errors.Wrap(err, "unmarshal")
-		}
-
-		c, ok := v["Count"].(float64)
-		if !ok {
-			logs.DebugLog("%T", v["Count"])
-		} else if c > 0 {
-			return nameCan + " already exists", apis.ErrWrongParamsList
-		} else {
-			logs.DebugLog("%f", v["Count"])
-			return nil, doRequest(&ctx.Request, &ctx.Response, user.Host)
-		}
-	}
-
-	return nil, nil
 }

@@ -17,31 +17,31 @@ type Candidates struct {
 }
 
 type CandidatesFields struct {
-	Id             int64          `json:"id"`
-	Platform_id    sql.NullInt64  `json:"platform_id"`
-	Name           sql.NullString `json:"name"`
-	Salary         sql.NullString `json:"salary"`
-	Email          sql.NullString `json:"email"`
-	Mobile         sql.NullString `json:"mobile"`
-	Skype          sql.NullString `json:"skype"`
-	Link           sql.NullString `json:"link"`
-	Linkedin       sql.NullString `json:"linkedin"`
-	Str_companies  sql.NullString `json:"str_companies"`
-	Status         sql.NullString `json:"status"`
-	Tag_id         int64          `json:"tag_id"`
-	Comments       sql.NullString `json:"comments"`
-	Date           time.Time      `json:"date"`
-	Recruter_id    sql.NullInt64  `json:"recruter_id"`
-	Text_rezume    sql.NullString `json:"text_rezume"`
-	Sfera          sql.NullString `json:"sfera"`
-	Experience     sql.NullString `json:"experience"`
-	Education      sql.NullString `json:"education"`
-	Language       sql.NullString `json:"language"`
-	Zapoln_profile sql.NullInt64  `json:"zapoln_profile"`
-	File           sql.NullString `json:"file"`
-	Avatar         sql.NullString `json:"avatar"`
-	Seniority_id   sql.NullInt64  `json:"seniority_id"`
-	Date_follow_up *time.Time     `json:"date_follow_up"`
+	Id             int64         `json:"id"`
+	Platform_id    sql.NullInt64 `json:"platform_id"`
+	Name           string        `json:"name"`
+	Salary         string        `json:"salary"`
+	Email          string        `json:"email"`
+	Mobile         string        `json:"mobile"`
+	Skype          string        `json:"skype"`
+	Link           string        `json:"link"`
+	Linkedin       string        `json:"linkedin"`
+	Str_companies  string        `json:"str_companies"`
+	Status         string        `json:"status"`
+	Tag_id         int64         `json:"tag_id"`
+	Comments       string        `json:"comments"`
+	Date           time.Time     `json:"date"`
+	Recruter_id    sql.NullInt64 `json:"recruter_id"`
+	Text_rezume    string        `json:"text_rezume"`
+	Sfera          string        `json:"sfera"`
+	Experience     string        `json:"experience"`
+	Education      string        `json:"education"`
+	Language       string        `json:"language"`
+	Zapoln_profile sql.NullInt64 `json:"zapoln_profile"`
+	File           string        `json:"file"`
+	Avatar         string        `json:"avatar"`
+	Seniority_id   sql.NullInt64 `json:"seniority_id"`
+	Date_follow_up *time.Time    `json:"date_follow_up"`
 }
 
 func (r *CandidatesFields) RefColValue(name string) interface{} {

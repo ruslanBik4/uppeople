@@ -8,17 +8,37 @@ Content-Type: application/json
     client.global.set("auth_token", response.body.access_token);
 %}
 ###
-#POST https://{{host}}/api/main/addNewCandidate
-#Authorization:Bearer {{auth_token}}
-#Content-Type: application/json
-#
-#{
-#  "name": "Ruslan Bikchentaev2",
-#  "selectPlatform":[],"selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},"date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
-#}
+POST https://{{host}}/api/main/addNewCandidate
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{"name":"Ruslan",
+  "selectPlatform":{"id":36,"label":"Backend","value":"backend"},
+  "selectSeniority":{"id":5,"label":"Architect","value":"architect"},
+  "selectedTag":{"id":1,"label":"first contact","value":"first contact"},
+  "date":"2020-12-27",
+  "salary":"5000",
+  "language":"Pre-Intermediate",
+  "phone":"",
+  "skype":"ruslan_bik",
+  "email":"ruslan@artel.ws",
+  "linkedIn":"",
+  "resume":"",
+  "comment":"test",
+  "selectedVacancies":[]
+}
 
 ###
 GET https://{{host}}/api/main/allCandidates/1
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "search": "Ruslan Bikchentaev",
+  "selectPlatform":[],"selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},"date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
+}
+###
+GET https://{{host}}/api/main/viewOneCandidate/9954
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 

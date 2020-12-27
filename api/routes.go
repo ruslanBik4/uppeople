@@ -5,6 +5,8 @@
 package api
 
 import (
+	"go/types"
+
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
@@ -43,8 +45,21 @@ var (
 	SearchRoutes = apis.ApiRoutes{
 		"/api/main/allCandidates/": {
 			Fnc:      HandleAllCandidate,
-			Desc:     "show search results according range of characteristics",
+			Desc:     "show all candidates",
 			NeedAuth: true,
+		},
+		"/api/main/viewOneCandidate/": {
+			Fnc:      HandleViewCandidate,
+			Desc:     "show one candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				{
+					Name:     "id",
+					Desc:     "id of candidate",
+					DefValue: apis.ApisValues(apis.ChildRoutePath),
+					Req:      true,
+					Type:     apis.NewTypeInParam(types.Int32)},
+			},
 		},
 		// "/api/main/returnAllCandidates/": {
 		// 	Fnc:      HandleAllCandidate,
