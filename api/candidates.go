@@ -5,6 +5,8 @@
 package api
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -63,10 +65,26 @@ type selectOpt struct {
 	Tags          []*db.TagsFields                   `json:"tags"`
 	VacancyStatus []*db.Status_for_vacsFields        `json:"vacancyStatus"`
 }
+type StatusesCandidate struct {
+	Candidate_id     int32                             `json:"candidate_id"`
+	Company          *db.CompaniesFields               `json:"company"`
+	Company_id       int32                             `json:"company_id"`
+	Date_create      time.Time                         `json:"date_create"`
+	Date_last_change time.Time                         `json:"date_last_change"`
+	Id               int32                             `json:"id"`
+	Notice           string                            `json:"notice"`
+	Rating           string                            `json:"rating"`
+	Rej_text         string                            `json:"rej_text"`
+	Status           int32                             `json:"status"`
+	Status_vac       *db.Status_for_vacsFields         `json:"status_vac"`
+	User_id          int32                             `json:"user_id"`
+	Vacancy          *db.Vacancies_to_candidatesFields `json:"vacancy"`
+	Vacancy_id       int32                             `json:"vacancy_id"`
+}
 type ViewCandidate struct {
 	Candidates []*db.CandidatesFields `json:"0"`
 	SelectOpt  selectOpt              `json:"select"`
-	Statuses   []*db.StatusesFields   `json:"statusesCandidate"`
+	Statuses   []StatusesCandidate    `json:"statusesCandidate"`
 }
 
 const pageItem = 15
@@ -161,7 +179,9 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, errors.Wrap(err, "	")
 	}
 	res := ViewCandidate{
-		Candidates: make([]*db.CandidatesFields, 1),
+		Candidates: []*db.CandidatesFields{
+			table.Record,
+		},
 		SelectOpt: selectOpt{
 			Companies:     getCompanies(ctx, DB),
 			Platforms:     getPlatforms(ctx, DB),
@@ -174,10 +194,12 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			Tags:          getTags(ctx, DB),
 			VacancyStatus: getStatusVac(ctx, DB),
 		},
-		Statuses: []*db.StatusesFields{},
+		Statuses: []StatusesCandidate{
+			{
+				Candidate_id: int32(table.Record.Id),
+			},
+		},
 	}
-
-	res.Candidates[0] = table.Record
 
 	return res, nil
 }
@@ -210,6 +232,7 @@ func getStatusVac(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.Status_for_va
 
 			return nil
 		},
+		dbEngine.OrderBy("order_num"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -324,6 +347,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect(
 			"name",
+			"platform_id",
 			"salary",
 			"email",
 			"mobile",
@@ -347,20 +371,22 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"seniority_id",
 			"date_follow_up",
 		),
-		dbEngine.ArgsForSelect(u.Name,
+		dbEngine.ArgsForSelect(
+			u.Name,
+			u.SelectPlatform.Id,
 			u.Salary,
 			u.Email,
-			u.Mobile,
+			u.Phone,
 			u.Skype,
 			u.Link,
 			u.Linkedin,
 			u.Str_companies,
 			u.Status,
-			u.Tag_id,
-			u.Comments,
+			u.SelectedTag.Id,
+			u.Comment,
 			u.Date,
 			u.Recruter_id,
-			u.Text_rezume,
+			u.Resume,
 			u.Sfera,
 			u.Experience,
 			u.Education,
@@ -368,7 +394,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Zapoln_profile,
 			u.File,
 			u.Avatar,
-			u.Seniority_id,
+			u.SelectSeniority.Id,
 			u.Date_follow_up,
 		),
 	)
