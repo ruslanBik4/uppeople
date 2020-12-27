@@ -66,20 +66,20 @@ type selectOpt struct {
 	VacancyStatus []*db.Status_for_vacsFields        `json:"vacancyStatus"`
 }
 type StatusesCandidate struct {
-	Candidate_id     int32                             `json:"candidate_id"`
-	Company          *db.CompaniesFields               `json:"company"`
-	Company_id       int32                             `json:"company_id"`
-	Date_create      time.Time                         `json:"date_create"`
-	Date_last_change time.Time                         `json:"date_last_change"`
-	Id               int32                             `json:"id"`
-	Notice           string                            `json:"notice"`
-	Rating           string                            `json:"rating"`
-	Rej_text         string                            `json:"rej_text"`
-	Status           int32                             `json:"status"`
-	Status_vac       *db.Status_for_vacsFields         `json:"status_vac"`
-	User_id          int32                             `json:"user_id"`
-	Vacancy          *db.Vacancies_to_candidatesFields `json:"vacancy"`
-	Vacancy_id       int32                             `json:"vacancy_id"`
+	Candidate_id     int32                     `json:"candidate_id"`
+	Company          *db.CompaniesFields       `json:"company"`
+	Company_id       int32                     `json:"company_id"`
+	Date_create      time.Time                 `json:"date_create"`
+	Date_last_change time.Time                 `json:"date_last_change"`
+	Id               int32                     `json:"id"`
+	Notice           string                    `json:"notice"`
+	Rating           string                    `json:"rating"`
+	Rej_text         string                    `json:"rej_text"`
+	Status           int32                     `json:"status"`
+	Status_vac       *db.Status_for_vacsFields `json:"status_vac"`
+	User_id          int32                     `json:"user_id"`
+	Vacancy          *db.VacanciesFields       `json:"vacancy"`
+	Vacancy_id       int32                     `json:"vacancy_id"`
 }
 type ViewCandidate struct {
 	Candidates []*db.CandidatesFields `json:"0"`
@@ -198,6 +198,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			{
 				Candidate_id: int32(table.Record.Id),
 				Status_vac:   &db.Status_for_vacsFields{},
+				Vacancy:      &db.VacanciesFields{},
 			},
 		},
 	}
