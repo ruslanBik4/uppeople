@@ -45,14 +45,11 @@ func (c *CandidateDTO) NewValue() interface{} {
 
 type CandidateView struct {
 	*db.CandidatesFields
-	Platform  string              `json:"platform,omitempty"`
-	Platforms *db.PlatformsFields `json:"platforms,omitempty"`
-	Seniority string              `json:"seniority"`
-	TagName   string              `json:"tag_name,omitempty"`
-	Tags      *db.TagsFields      `json:"tags,omitempty"`
-	TagColor  string              `json:"tag_color,omitempty"`
-	Recruiter string              `json:"recruiter"`
-	// status
+	Platform  string `json:"platform,omitempty"`
+	Seniority string `json:"seniority"`
+	TagName   string `json:"tag_name,omitempty"`
+	TagColor  string `json:"tag_color,omitempty"`
+	Recruiter string `json:"recruiter"`
 }
 type ResCandidates struct {
 	Count, Page int
@@ -97,8 +94,16 @@ type StatusesCandidate struct {
 	Vacancy          VacanciesDTO              `json:"vacancy"`
 	Vacancy_id       int32                     `json:"vacancy_id"`
 }
+type ViewCandidate struct {
+	*db.CandidatesFields
+	Platform  *db.PlatformsFields `json:"platform,omitempty"`
+	Seniority string              `json:"seniority"`
+	Tags      *db.TagsFields      `json:"tags,omitempty"`
+	Recruiter string              `json:"recruiter"`
+}
+
 type ViewCandidates struct {
-	Candidates []CandidateView     `json:"0"`
+	Candidates []ViewCandidate     `json:"0"`
 	SelectOpt  selectOpt           `json:"select"`
 	Statuses   []StatusesCandidate `json:"statusesCandidate"`
 }
@@ -194,7 +199,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, errors.Wrap(err, "	")
 	}
 	res := ViewCandidates{
-		Candidates: []CandidateView{
+		Candidates: []ViewCandidate{
 			{
 				CandidatesFields: table.Record,
 			},
@@ -226,7 +231,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	for _, p := range res.SelectOpt.Platforms {
 		if p.Id == table.Record.Platform_id.Int64 {
-			res.Candidates[0].Platforms = p
+			res.Candidates[0].Platform = p
 		}
 	}
 
@@ -434,7 +439,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		),
 	)
 	if err != nil {
-		return nil, err
+		return createErrResult(err)
 	}
 
 	return i, nil

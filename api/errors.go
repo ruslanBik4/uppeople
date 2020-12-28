@@ -5,9 +5,34 @@
 package api
 
 import (
+	"regexp"
+
+	"github.com/jackc/pgconn"
 	"github.com/pkg/errors"
+	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 )
 
 var (
-	errLimit = errors.New("limit")
+	errLimit      = errors.New("limit")
+	regKeyWrong   = regexp.MustCompile(`Key\s+\((\w+)\)=\((\w+)\)([^.]+)`)
+	regDuplicated = regexp.MustCompile(`duplicate key value violates unique constraint "(\w*)"`)
 )
+
+func createErrResult(err error) (interface{}, error) {
+	e, ok := errors.Cause(err).(*pgconn.PgError)
+	if ok {
+		if s := regKeyWrong.FindStringSubmatch(e.Detail); len(s) > 0 {
+			return map[string]string{
+				s[1]: "`" + s[2] + "`" + s[3],
+			}, apis.ErrWrongParamsList
+		}
+	} else if s := regDuplicated.FindStringSubmatch(err.Error()); len(s) > 0 {
+		logs.DebugLog("%#v %[1]T", errors.Cause(err))
+		return map[string]string{
+			s[1]: "duplicate key value violates unique constraint",
+		}, apis.ErrWrongParamsList
+	}
+
+	return nil, err
+}
