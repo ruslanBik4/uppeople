@@ -10,6 +10,7 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -28,10 +29,10 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			var v map[string]interface{}
 			err := jsoniter.Unmarshal(resp.Body(), &v)
 			u := &auth.User{
-				Companies: make(map[int32]map[string]string),
-				Host:      host,
-				TokenOld:  v["access_token"].(string),
-				// UsersFields: users.Record,
+				Companies:   make(map[int32]map[string]string),
+				Host:        host,
+				TokenOld:    v["access_token"].(string),
+				UsersFields: &db.UsersFields{Id: int32(v["user"].(map[string]interface{})["id"].(float64))},
 			}
 
 			u.Token, err = auth.Bearer.NewToken(u)

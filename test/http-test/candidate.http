@@ -30,7 +30,7 @@ POST https://{{host}}/api/main/addNewCandidate
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
-{"name":"Ruslan http-test",
+{"name":"Ruslan http-test 1",
   "selectPlatform":{"id":36,"label":"Backend","value":"backend"},
   "selectSeniority":{"id":5,"label":"Architect","value":"architect"},
   "selectedTag":{"id":1,"label":"first contact","value":"first contact"},

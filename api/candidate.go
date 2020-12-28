@@ -13,6 +13,7 @@ import (
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
+	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
@@ -122,12 +123,24 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	tags := getTags(ctx, DB)
 	seniors := getSeniorities(ctx, DB)
+	recTable, _ := db.NewUsers(DB)
 	i := 0
 	err := table.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
 
 			cV := CandidateView{
 				CandidatesFields: record,
+			}
+			if record.Recruter_id.Valid {
+				err := recTable.SelectOneAndScan(ctx,
+					&cV.Recruiter,
+					dbEngine.ColumnsForSelect("name"),
+					dbEngine.WhereForSelect("id"),
+					dbEngine.ArgsForSelect(record.Recruter_id.Int64),
+				)
+				if err != nil {
+					logs.ErrorLog(err, "recTable.SelectOneAndScan")
+				}
 			}
 			for _, tag := range tags {
 				if tag.Id == record.Tag_id {
@@ -391,7 +404,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.SelectedTag.Id,
 			u.Comment,
 			u.Date,
-			u.Recruter_id,
+			auth.GetUserData(ctx).Id,
 			u.Resume,
 			u.Sfera,
 			u.Experience,
