@@ -42,15 +42,24 @@ func (c *CandidateDTO) NewValue() interface{} {
 	return &CandidateDTO{CandidatesFields: &db.CandidatesFields{}}
 }
 
+type CandidateView struct {
+	*db.CandidatesFields
+	Platform  string `json:"platform"`
+	Seniority string `json:"seniority"`
+	TagName   string `json:"tag_name"`
+	TagColor  string `json:"tag_color"`
+	Recruiter string `json:"recruiter"`
+	// status
+}
 type ResCandidates struct {
 	Count, Page int
-	CurrentPage int                    `json:"currentPage"`
-	PerPage     int                    `json:"perPage"`
-	Candidates  []*db.CandidatesFields `json:"candidates"`
-	Company     []*db.CompaniesFields  `json:"company"`
-	Platforms   []*db.PlatformsFields  `json:"platforms"`
-	Recruiter   []string               `json:"recruiter"`
-	Statuses    []*db.StatusesFields   `json:"statuses"`
+	CurrentPage int                   `json:"currentPage"`
+	PerPage     int                   `json:"perPage"`
+	Candidates  []CandidateView       `json:"candidates"`
+	Company     []*db.CompaniesFields `json:"company"`
+	Platforms   []*db.PlatformsFields `json:"platforms"`
+	Recruiter   []string              `json:"recruiter"`
+	Statuses    []*db.StatusesFields  `json:"statuses"`
 }
 
 type selectOpt struct {
@@ -104,14 +113,40 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Page:        1,
 		CurrentPage: 1,
 		PerPage:     pageItem,
-		Candidates:  make([]*db.CandidatesFields, pageItem),
+		Candidates:  make([]CandidateView, pageItem),
 		Recruiter:   []string{},
-		// Company:    make([]*db.CompaniesFields, pageItem),
+		Company:     getCompanies(ctx, DB),
+		Platforms:   getPlatforms(ctx, DB),
+		Statuses:    getStatUses(ctx, DB),
 	}
+
+	tags := getTags(ctx, DB)
+	seniors := getSeniorities(ctx, DB)
 	i := 0
 	err := table.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
-			res.Candidates[i] = record
+
+			cV := CandidateView{
+				CandidatesFields: record,
+			}
+			for _, tag := range tags {
+				if tag.Id == record.Tag_id {
+					cV.TagName = tag.Name
+					cV.TagColor = tag.Color
+				}
+			}
+			for _, s := range seniors {
+				if s.Id == cV.Seniority_id.Int64 {
+					cV.Seniority = s.Nazva.String
+				}
+			}
+			for _, p := range res.Platforms {
+				if p.Id == record.Platform_id.Int64 {
+					cV.Platform = p.Nazva.String
+				}
+			}
+
+			res.Candidates[i] = cV
 			i++
 			if i == pageItem {
 				return errLimit
@@ -120,45 +155,6 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			return nil
 		},
 		dbEngine.OrderBy("date desc"),
-	)
-	if err != nil && err != errLimit {
-		return nil, errors.Wrap(err, "	")
-	}
-
-	company, _ := db.NewCompanies(DB)
-
-	err = company.SelectSelfScanEach(ctx,
-		func(record *db.CompaniesFields) error {
-			res.Company = append(res.Company, record)
-
-			return nil
-		},
-	)
-	if err != nil && err != errLimit {
-		return nil, errors.Wrap(err, "	")
-	}
-
-	platforms, _ := db.NewPlatforms(DB)
-
-	err = platforms.SelectSelfScanEach(ctx,
-		func(record *db.PlatformsFields) error {
-			res.Platforms = append(res.Platforms, record)
-
-			return nil
-		},
-	)
-	if err != nil && err != errLimit {
-		return nil, errors.Wrap(err, "	")
-	}
-
-	statUses, _ := db.NewStatuses(DB)
-
-	err = statUses.SelectSelfScanEach(ctx,
-		func(record *db.StatusesFields) error {
-			res.Statuses = append(res.Statuses, record)
-
-			return nil
-		},
 	)
 	if err != nil && err != errLimit {
 		return nil, errors.Wrap(err, "	")
