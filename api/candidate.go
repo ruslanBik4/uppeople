@@ -45,11 +45,13 @@ func (c *CandidateDTO) NewValue() interface{} {
 
 type CandidateView struct {
 	*db.CandidatesFields
-	Platform  string `json:"platform"`
-	Seniority string `json:"seniority"`
-	TagName   string `json:"tag_name"`
-	TagColor  string `json:"tag_color"`
-	Recruiter string `json:"recruiter"`
+	Platform  string              `json:"platform"`
+	Platforms *db.PlatformsFields `json:"platforms,omitempty"`
+	Seniority string              `json:"seniority"`
+	TagName   string              `json:"tag_name"`
+	Tags      *db.TagsFields      `json:"tags,omitempty"`
+	TagColor  string              `json:"tag_color"`
+	Recruiter string              `json:"recruiter"`
 	// status
 }
 type ResCandidates struct {
@@ -95,10 +97,10 @@ type StatusesCandidate struct {
 	Vacancy          VacanciesDTO              `json:"vacancy"`
 	Vacancy_id       int32                     `json:"vacancy_id"`
 }
-type ViewCandidate struct {
-	Candidates []*db.CandidatesFields `json:"0"`
-	SelectOpt  selectOpt              `json:"select"`
-	Statuses   []StatusesCandidate    `json:"statusesCandidate"`
+type ViewCandidates struct {
+	Candidates []CandidateView     `json:"0"`
+	SelectOpt  selectOpt           `json:"select"`
+	Statuses   []StatusesCandidate `json:"statusesCandidate"`
 }
 
 const pageItem = 15
@@ -191,9 +193,11 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if err != nil && err != errLimit {
 		return nil, errors.Wrap(err, "	")
 	}
-	res := ViewCandidate{
-		Candidates: []*db.CandidatesFields{
-			table.Record,
+	res := ViewCandidates{
+		Candidates: []CandidateView{
+			{
+				CandidatesFields: table.Record,
+			},
 		},
 		SelectOpt: selectOpt{
 			Companies:     getCompanies(ctx, DB),
@@ -218,6 +222,18 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				},
 			},
 		},
+	}
+
+	for _, p := range res.SelectOpt.Platforms {
+		if p.Id == table.Record.Platform_id.Int64 {
+			res.Candidates[0].Platforms = p
+		}
+	}
+
+	for _, tag := range res.SelectOpt.Tags {
+		if tag.Id == table.Record.Tag_id {
+			res.Candidates[0].Tags = tag
+		}
 	}
 
 	return res, nil
