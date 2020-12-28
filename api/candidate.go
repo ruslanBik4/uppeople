@@ -103,7 +103,7 @@ type ViewCandidate struct {
 }
 
 type ViewCandidates struct {
-	Candidates []ViewCandidate     `json:"0"`
+	Candidates *ViewCandidate      `json:"0"`
 	SelectOpt  selectOpt           `json:"select"`
 	Statuses   []StatusesCandidate `json:"statusesCandidate"`
 }
@@ -199,10 +199,8 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, errors.Wrap(err, "	")
 	}
 	res := ViewCandidates{
-		Candidates: []ViewCandidate{
-			{
-				CandidatesFields: table.Record,
-			},
+		Candidates: &ViewCandidate{
+			CandidatesFields: table.Record,
 		},
 		SelectOpt: selectOpt{
 			Companies:     getCompanies(ctx, DB),
@@ -231,13 +229,13 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	for _, p := range res.SelectOpt.Platforms {
 		if p.Id == table.Record.Platform_id.Int64 {
-			res.Candidates[0].Platform = p
+			res.Candidates.Platform = p
 		}
 	}
 
 	for _, tag := range res.SelectOpt.Tags {
 		if tag.Id == table.Record.Tag_id {
-			res.Candidates[0].Tags = tag
+			res.Candidates.Tags = tag
 		}
 	}
 
