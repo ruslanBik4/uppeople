@@ -45,12 +45,12 @@ func (c *CandidateDTO) NewValue() interface{} {
 
 type CandidateView struct {
 	*db.CandidatesFields
-	Platform  string              `json:"platform"`
+	Platform  string              `json:"platform,omitempty"`
 	Platforms *db.PlatformsFields `json:"platforms,omitempty"`
 	Seniority string              `json:"seniority"`
-	TagName   string              `json:"tag_name"`
+	TagName   string              `json:"tag_name,omitempty"`
 	Tags      *db.TagsFields      `json:"tags,omitempty"`
-	TagColor  string              `json:"tag_color"`
+	TagColor  string              `json:"tag_color,omitempty"`
 	Recruiter string              `json:"recruiter"`
 	// status
 }
