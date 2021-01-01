@@ -20,6 +20,16 @@ var (
 		"/api/auth/login": {
 			Fnc:  HandleAuthLogin,
 			Desc: "show search results according range of characteristics",
+			Params: []apis.InParam{
+				{
+					Name: "email",
+					Type: apis.NewTypeInParam(types.String),
+				},
+				{
+					Name: "password",
+					Type: apis.NewTypeInParam(types.String),
+				},
+			},
 			// DTO:    &DTOSearch{},
 			// Resp:   search.RespGroups(),
 		},
