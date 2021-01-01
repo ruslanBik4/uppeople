@@ -926,7 +926,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				"company_id":       nil,
 				"count_platform":   nil,
 				"email":            "julia@uppeople.co",
-				"id":               27,
+				"id":               float64(27),
 				"image":            nil,
 				"name":             "Julia",
 				"password":         "$2y$10$zyDhqar3N./1dBrLg3VE6elvuN8xK2C0YAOcJ5.aXA.EWuDSM9m36",
