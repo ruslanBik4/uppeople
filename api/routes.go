@@ -30,7 +30,7 @@ var (
 					Type: apis.NewTypeInParam(types.String),
 				},
 			},
-			// DTO:    &DTOSearch{},
+			DTO: &DTOAuth{},
 			// Resp:   search.RespGroups(),
 		},
 		"/api/main/addNewCandidate": {

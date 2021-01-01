@@ -7,16 +7,28 @@ package api
 import (
 	"github.com/json-iterator/go"
 	"github.com/pkg/errors"
+	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
+type DTOAuth struct {
+	Email, Password string
+}
+
+func (a *DTOAuth) GetValue() interface{} {
+	return a
+}
+
+func (a *DTOAuth) NewValue() interface{} {
+	return &DTOAuth{}
+}
+
 func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	e, ok := ctx.UserValue("email").(string)
-	p, ok1 := ctx.UserValue("password").(string)
-	if ok && ok1 && e == "test@test.com" && p == "1111" {
+	a, ok := ctx.UserValue(apis.JSONParams).(*DTOAuth)
+	if ok && a.Email == "test@test.com" && a.Password == "1111" {
 		return `{
     "access_token": "EElR0VdJnJzianbkx5y4JQ==",
     "expires_at": "2022-01-01 19:43:20",

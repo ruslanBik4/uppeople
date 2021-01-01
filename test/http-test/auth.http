@@ -6,6 +6,15 @@ Content-Type: application/json
 > {%
     client.global.set("auth_token", response.body.access_token);
 %}
+###
+POST https://{{host}}/api/auth/login
+Content-Type: application/json
+
+{"email":"test@test.com","password":"1111"}
+
+> {%
+    client.global.set("auth_token", response.body.access_token);
+%}
 
 ###
 GET https://{{host}}/api/main/dashBoardAdmin
