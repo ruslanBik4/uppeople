@@ -39,7 +39,7 @@ var (
 			DTO:      &CandidateDTO{},
 			NeedAuth: true,
 		},
-		"/api/main/editCandidate": {
+		"/api/main/editCandidate/": {
 			Fnc:      HandleEditCandidate,
 			Desc:     "show search results according range of characteristics",
 			DTO:      &CandidateDTO{},
