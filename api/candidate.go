@@ -5,6 +5,7 @@
 package api
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/pkg/errors"
@@ -435,6 +436,92 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.SelectSeniority.Id,
 			u.Date_follow_up,
 		),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return i, nil
+}
+func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	u, ok := ctx.UserValue(apis.JSONParams).(*CandidateDTO)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	p, ok := ctx.UserValue(apis.ChildRoutePath).(string)
+	if !ok {
+		return "wrong id", apis.ErrWrongParamsList
+	}
+
+	id, err := strconv.Atoi(p)
+	if err != nil {
+		return err.Error(), apis.ErrWrongParamsList
+	}
+
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewCandidates(DB)
+	columns := dbEngine.ColumnsForSelect(
+		"name",
+		"platform_id",
+		"salary",
+		"email",
+		"mobile",
+		"skype",
+		"link",
+		"linkedin",
+		"str_companies",
+		"status",
+		"tag_id",
+		"comments",
+		"date",
+		"recruter_id",
+		"text_rezume",
+		"sfera",
+		"experience",
+		"education",
+		"language",
+		"zapoln_profile",
+		"file",
+		"avatar",
+		"seniority_id",
+		"date_follow_up",
+	)
+	args := dbEngine.ArgsForSelect(
+		u.Name,
+		u.SelectPlatform.Id,
+		u.Salary,
+		u.Email,
+		u.Phone,
+		u.Skype,
+		u.Link,
+		u.Linkedin,
+		u.Str_companies,
+		u.Status,
+		u.SelectedTag.Id,
+		u.Comment,
+		u.Date,
+		auth.GetUserData(ctx).Id,
+		u.Resume,
+		u.Sfera,
+		u.Experience,
+		u.Education,
+		u.Language,
+		u.Zapoln_profile,
+		u.File,
+		u.Avatar,
+		u.SelectSeniority.Id,
+		u.Date_follow_up,
+		id,
+	)
+	i, err := table.Update(ctx,
+		columns,
+		dbEngine.WhereForSelect("id"),
+		args,
 	)
 	if err != nil {
 		return createErrResult(err)
