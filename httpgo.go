@@ -77,7 +77,7 @@ func init() {
 	ctxApis.AddValue("DB", DB)
 	ctxApis.AddValue("auth", auth.Bearer)
 
-	a := apis.NewApis(ctxApis, api.ApiRoutes, auth.Bearer)
+	a := apis.NewApis(ctxApis, api.Routes, auth.Bearer)
 	badRoutings := a.AddRoutes(routes)
 	if len(badRoutings) > 0 {
 		logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
@@ -101,7 +101,7 @@ func init() {
 
 	httpServer = httpgo.NewHttpgo(cfg, listener, a)
 
-	ctx := context.WithValue(context.TODO(), "mapRouting", api.ApiRoutes)
+	ctx := context.WithValue(context.TODO(), "mapRouting", api.Routes)
 	services.InitServices(ctx, "mail", "crypto", "showLogs")
 
 	if ln, err := net.Listen("tcp", *fPortRdr); err != nil {

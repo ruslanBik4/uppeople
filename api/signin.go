@@ -938,7 +938,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 		u := &auth.User{
 			Companies:   make(map[int32]map[string]string),
-			Host:        "localhost",
+			Host:        hosts[1],
 			TokenOld:    v["access_token"].(string),
 			UsersFields: &db.UsersFields{Id: int32(v["user"].(map[string]interface{})["id"].(float64))},
 		}

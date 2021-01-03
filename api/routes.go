@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	ApiRoutes     = apis.NewMapRoutes()
-	ApiPostRoutes = apis.ApiRoutes{
+	Routes     = apis.NewMapRoutes()
+	PostRoutes = apis.ApiRoutes{
 		"/api/auth/login": {
 			Fnc:  HandleAuthLogin,
 			Desc: "show search results according range of characteristics",
@@ -138,9 +138,9 @@ func prepareRequest(ctx *fasthttp.RequestCtx) (*auth.User, error) {
 }
 
 func init() {
-	for _, route := range ApiPostRoutes {
+	for _, route := range PostRoutes {
 		route.Method = apis.POST
 	}
-	ApiRoutes.AddRoutes(ApiPostRoutes)
-	ApiRoutes.AddRoutes(SearchRoutes)
+	Routes.AddRoutes(PostRoutes)
+	Routes.AddRoutes(SearchRoutes)
 }

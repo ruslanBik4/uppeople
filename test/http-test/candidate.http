@@ -8,14 +8,11 @@ Content-Type: application/json
     client.global.set("auth_token", response.body.access_token);
 %}
 ###
-GET https://{{host}}/api/main/viewOneCandidate/9839
+GET https://{{host}}/api/main/viewOneCandidate/9977
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
-{
-  "search": "Ruslan Bikchentaev",
-  "selectPlatform":[],"selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},"date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
-}
+
 ###
 GET https://{{host}}/api/main/allCandidates/1
 Authorization:Bearer {{auth_token}}

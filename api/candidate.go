@@ -96,7 +96,7 @@ type StatusesCandidate struct {
 }
 type ViewCandidate struct {
 	*db.CandidatesFields
-	Platform  *db.PlatformsFields `json:"platform,omitempty"`
+	Platform  *db.PlatformsFields `json:"platforms,omitempty"`
 	Seniority string              `json:"seniority"`
 	Tags      *db.TagsFields      `json:"tags,omitempty"`
 	Recruiter string              `json:"recruiter"`
@@ -116,7 +116,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	table, _ := db.NewCandidates(DB)
+	candidates, _ := db.NewCandidates(DB)
 	res := ResCandidates{
 		Page:        1,
 		CurrentPage: 1,
@@ -132,7 +132,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	seniors := getSeniorities(ctx, DB)
 	recTable, _ := db.NewUsers(DB)
 	i := 0
-	err := table.SelectSelfScanEach(ctx,
+	err := candidates.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
 
 			cV := CandidateView{
