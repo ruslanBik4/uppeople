@@ -27,6 +27,10 @@ func (a *DTOAuth) NewValue() interface{} {
 }
 
 func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+	ctx.Response.Header.Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token")
+	ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST, GET")
+
 	a, ok := ctx.UserValue(apis.JSONParams).(*DTOAuth)
 	if ok && a.Email == "test@test.com" && a.Password == "1111" {
 		v := map[string]interface{}{
