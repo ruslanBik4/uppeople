@@ -44,23 +44,35 @@ func (c *CandidateDTO) NewValue() interface{} {
 	return &CandidateDTO{CandidatesFields: &db.CandidatesFields{}}
 }
 
+type statusCandidate struct {
+	Date         time.Time  `json:"date"`
+	Comments     string     `json:"comments"`
+	CompId       int32      `json:"comp_id"`
+	Recruiter    string     `json:"recruiter"`
+	DateFollowUp *time.Time `json:"date_follow_up"`
+}
+
 type CandidateView struct {
 	*db.CandidatesFields
-	Platform  string `json:"platform,omitempty"`
-	Seniority string `json:"seniority"`
-	TagName   string `json:"tag_name,omitempty"`
-	TagColor  string `json:"tag_color,omitempty"`
-	Recruiter string `json:"recruiter"`
+	Platform  string          `json:"platform,omitempty"`
+	Seniority string          `json:"seniority"`
+	TagName   string          `json:"tag_name,omitempty"`
+	TagColor  string          `json:"tag_color,omitempty"`
+	Recruiter string          `json:"recruiter"`
+	Status    statusCandidate `json:"status"`
 }
 type ResCandidates struct {
 	Count, Page int
-	CurrentPage int                   `json:"currentPage"`
-	PerPage     int                   `json:"perPage"`
-	Candidates  []CandidateView       `json:"candidates"`
-	Company     []*db.CompaniesFields `json:"company"`
-	Platforms   []*db.PlatformsFields `json:"platforms"`
-	Recruiter   []string              `json:"recruiter"`
-	Statuses    []*db.StatusesFields  `json:"statuses"`
+	CurrentPage int                     `json:"currentPage"`
+	PerPage     int                     `json:"perPage"`
+	Candidates  []CandidateView         `json:"candidates"`
+	Company     []*db.CompaniesFields   `json:"company"`
+	Platforms   []*db.PlatformsFields   `json:"platforms"`
+	Recruiter   []*db.UsersFields       `json:"recruiter"`
+	Reasons     []*db.TagsFields        `json:"reasons"`
+	Seniority   []*db.SenioritiesFields `json:"seniority"`
+	Statuses    []*db.StatusesFields    `json:"statuses"`
+	Tags        []*db.TagsFields        `json:"tags"`
 }
 
 type selectOpt struct {
@@ -71,10 +83,12 @@ type selectOpt struct {
 	Location      []*db.Location_for_vacanciesFields `json:"location"`
 	RejectReasons []string                           `json:"reject_reasons"`
 	RejectTag     []*db.TagsFields                   `json:"reject_tag"`
+	Recruiter     []*db.UsersFields                  `json:"recruiter"`
 	Seniorities   []*db.SenioritiesFields            `json:"seniorities"`
 	Tags          []*db.TagsFields                   `json:"tags"`
 	VacancyStatus []*db.Status_for_vacsFields        `json:"vacancyStatus"`
 }
+
 type VacanciesDTO struct {
 	*db.VacanciesFields
 	Platforms *db.PlatformsFields `json:"platforms"`
@@ -123,13 +137,21 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		CurrentPage: 1,
 		PerPage:     pageItem,
 		Candidates:  make([]CandidateView, pageItem),
-		Recruiter:   []string{},
 		Company:     getCompanies(ctx, DB),
+		Reasons:     make([]*db.TagsFields, 0),
 		Platforms:   getPlatforms(ctx, DB),
+		Recruiter:   getRecruter(ctx, DB),
+		Seniority:   getSeniorities(ctx, DB),
 		Statuses:    getStatUses(ctx, DB),
+		Tags:        getTags(ctx, DB),
 	}
 
-	tags := getTags(ctx, DB)
+	for _, tag := range res.Tags {
+		if tag.Parent_id == 3 {
+			res.Reasons = append(res.Reasons, tag)
+		}
+	}
+
 	seniors := getSeniorities(ctx, DB)
 	recTable, _ := db.NewUsers(DB)
 	i := 0
@@ -138,6 +160,13 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 			cV := CandidateView{
 				CandidatesFields: record,
+				Status: statusCandidate{
+					Date:         record.Date,
+					Comments:     record.Comments,
+					CompId:       0,
+					Recruiter:    "",
+					DateFollowUp: record.Date_follow_up,
+				},
 			}
 			if record.Recruter_id.Valid {
 				err := recTable.SelectOneAndScan(ctx,
@@ -149,8 +178,9 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				if err != nil {
 					logs.ErrorLog(err, "recTable.SelectOneAndScan")
 				}
+				cV.Status.Recruiter = cV.Recruiter
 			}
-			for _, tag := range tags {
+			for _, tag := range res.Tags {
 				if tag.Id == record.Tag_id {
 					cV.TagName = tag.Name
 					cV.TagColor = tag.Color
@@ -340,6 +370,24 @@ func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.PlatformsFiel
 
 	err := platforms.SelectSelfScanEach(ctx,
 		func(record *db.PlatformsFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getRecruter(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.UsersFields {
+	users, _ := db.NewUsers(DB)
+	res := make([]*db.UsersFields, 0)
+
+	err := users.SelectSelfScanEach(ctx,
+		func(record *db.UsersFields) error {
 			res = append(res, record)
 
 			return nil
