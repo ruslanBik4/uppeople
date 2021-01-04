@@ -51,21 +51,26 @@ type statusCandidate struct {
 	Recruiter    string     `json:"recruiter"`
 	DateFollowUp *time.Time `json:"date_follow_up"`
 }
+type ViewCandidate struct {
+	*db.CandidatesFields
+	Platform  *db.PlatformsFields `json:"platforms,omitempty"`
+	Seniority string              `json:"seniority"`
+	Tags      *db.TagsFields      `json:"tags,omitempty"`
+	Recruiter string              `json:"recruiter"`
+}
 
 type CandidateView struct {
-	*db.CandidatesFields
-	Platform  string          `json:"platform,omitempty"`
-	Seniority string          `json:"seniority"`
-	TagName   string          `json:"tag_name,omitempty"`
-	TagColor  string          `json:"tag_color,omitempty"`
-	Recruiter string          `json:"recruiter"`
-	Status    statusCandidate `json:"status"`
+	*ViewCandidate
+	Platform string          `json:"platform,omitempty"`
+	TagName  string          `json:"tag_name,omitempty"`
+	TagColor string          `json:"tag_color,omitempty"`
+	Status   statusCandidate `json:"status"`
 }
 type ResCandidates struct {
 	Count, Page int
 	CurrentPage int                     `json:"currentPage"`
 	PerPage     int                     `json:"perPage"`
-	Candidates  []CandidateView         `json:"candidates"`
+	Candidates  []*CandidateView        `json:"candidates"`
 	Company     []*db.CompaniesFields   `json:"company"`
 	Platforms   []*db.PlatformsFields   `json:"platforms"`
 	Recruiter   []*db.UsersFields       `json:"recruiter"`
@@ -76,17 +81,17 @@ type ResCandidates struct {
 }
 
 type selectOpt struct {
-	Companies     []*db.CompaniesFields              `json:"companies"`
-	Platforms     []*db.PlatformsFields              `json:"platforms"`
-	Recruiters    []string                           `json:"recruiters"`
-	Statuses      []*db.StatusesFields               `json:"candidateStatus"`
-	Location      []*db.Location_for_vacanciesFields `json:"location"`
-	RejectReasons []string                           `json:"reject_reasons"`
-	RejectTag     []*db.TagsFields                   `json:"reject_tag"`
-	Recruiter     []*db.UsersFields                  `json:"recruiter"`
-	Seniorities   []*db.SenioritiesFields            `json:"seniorities"`
-	Tags          []*db.TagsFields                   `json:"tags"`
-	VacancyStatus []*db.Status_for_vacsFields        `json:"vacancyStatus"`
+	Companies     []*db.CompaniesFields               `json:"companies"`
+	Platforms     []*db.PlatformsFields               `json:"platforms"`
+	Recruiters    []*db.UsersFields                   `json:"recruiters"`
+	Statuses      []*db.StatusesFields                `json:"candidateStatus"`
+	Location      []*db.Location_for_vacanciesFields  `json:"location"`
+	RejectReasons []*db.TagsFields                    `json:"reject_reasons"`
+	RejectTag     []*db.TagsFields                    `json:"reject_tag"`
+	Recruiter     []*db.UsersFields                   `json:"recruiter"`
+	Seniorities   []*db.SenioritiesFields             `json:"seniorities"`
+	Tags          []*db.TagsFields                    `json:"tags"`
+	VacancyStatus []*db.Vacancies_to_candidatesFields `json:"vacancyStatus"`
 }
 
 type VacanciesDTO struct {
@@ -109,14 +114,6 @@ type StatusesCandidate struct {
 	Vacancy          VacanciesDTO              `json:"vacancy"`
 	Vacancy_id       int32                     `json:"vacancy_id"`
 }
-type ViewCandidate struct {
-	*db.CandidatesFields
-	Platform  *db.PlatformsFields `json:"platforms,omitempty"`
-	Seniority string              `json:"seniority"`
-	Tags      *db.TagsFields      `json:"tags,omitempty"`
-	Recruiter string              `json:"recruiter"`
-}
-
 type ViewCandidates struct {
 	Candidates *ViewCandidate      `json:"0"`
 	SelectOpt  selectOpt           `json:"select"`
@@ -136,7 +133,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Page:        1,
 		CurrentPage: 1,
 		PerPage:     pageItem,
-		Candidates:  make([]CandidateView, pageItem),
+		Candidates:  make([]*CandidateView, pageItem),
 		Company:     getCompanies(ctx, DB),
 		Reasons:     make([]*db.TagsFields, 0),
 		Platforms:   getPlatforms(ctx, DB),
@@ -158,44 +155,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	err := candidates.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
 
-			cV := CandidateView{
-				CandidatesFields: record,
-				Status: statusCandidate{
-					Date:         record.Date,
-					Comments:     record.Comments,
-					CompId:       0,
-					Recruiter:    "",
-					DateFollowUp: record.Date_follow_up,
-				},
-			}
-			if record.Recruter_id.Valid {
-				err := recTable.SelectOneAndScan(ctx,
-					&cV.Recruiter,
-					dbEngine.ColumnsForSelect("name"),
-					dbEngine.WhereForSelect("id"),
-					dbEngine.ArgsForSelect(record.Recruter_id.Int64),
-				)
-				if err != nil {
-					logs.ErrorLog(err, "recTable.SelectOneAndScan")
-				}
-				cV.Status.Recruiter = cV.Recruiter
-			}
-			for _, tag := range res.Tags {
-				if tag.Id == record.Tag_id {
-					cV.TagName = tag.Name
-					cV.TagColor = tag.Color
-				}
-			}
-			for _, s := range seniors {
-				if s.Id == cV.Seniority_id.Int64 {
-					cV.Seniority = s.Nazva.String
-				}
-			}
-			for _, p := range res.Platforms {
-				if p.Id == record.Platform_id.Int64 {
-					cV.Platform = p.Nazva.String
-				}
-			}
+			cV := NewCandidateView(ctx, record, recTable, res.Tags, res.Platforms, seniors)
 
 			res.Candidates[i] = cV
 			i++
@@ -214,6 +174,59 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return res, nil
 }
 
+func NewCandidateView(ctx *fasthttp.RequestCtx,
+	record *db.CandidatesFields,
+	recTable *db.Users,
+	tags []*db.TagsFields,
+	platforms []*db.PlatformsFields,
+	seniors []*db.SenioritiesFields,
+) *CandidateView {
+	ref := &CandidateView{
+		ViewCandidate: &ViewCandidate{CandidatesFields: record},
+		Status: statusCandidate{
+			Date:         record.Date,
+			Comments:     record.Comments,
+			CompId:       0,
+			Recruiter:    "",
+			DateFollowUp: record.Date_follow_up,
+		},
+	}
+	if record.Recruter_id.Valid {
+		err := recTable.SelectOneAndScan(ctx,
+			&ref.Recruiter,
+			dbEngine.ColumnsForSelect("name"),
+			dbEngine.WhereForSelect("id"),
+			dbEngine.ArgsForSelect(record.Recruter_id.Int64),
+		)
+		if err != nil {
+			logs.ErrorLog(err, "recTable.SelectOneAndScan")
+		}
+		ref.Status.Recruiter = ref.Recruiter
+	}
+
+	for _, tag := range tags {
+		if tag.Id == record.Tag_id {
+			ref.TagName = tag.Name
+			ref.TagColor = tag.Color
+			ref.Tags = tag
+		}
+	}
+	for _, s := range seniors {
+		if s.Id == ref.Seniority_id.Int64 {
+			ref.Seniority = s.Nazva.String
+		}
+	}
+
+	for _, p := range platforms {
+		if p.Id == record.Platform_id.Int64 {
+			ref.Platform = p.Nazva.String
+			ref.ViewCandidate.Platform = p
+		}
+	}
+
+	return ref
+}
+
 func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -229,21 +242,22 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if err != nil && err != errLimit {
 		return nil, errors.Wrap(err, "	")
 	}
+
+	tags := getTags(ctx, DB)
+	platforms := getPlatforms(ctx, DB)
+	seniorities := getSeniorities(ctx, DB)
 	res := ViewCandidates{
-		Candidates: &ViewCandidate{
-			CandidatesFields: table.Record,
-		},
 		SelectOpt: selectOpt{
 			Companies:     getCompanies(ctx, DB),
 			Platforms:     getPlatforms(ctx, DB),
-			Recruiters:    make([]string, 0),
+			Recruiters:    getRecruter(ctx, DB),
 			Statuses:      getStatUses(ctx, DB),
 			Location:      getLocations(ctx, DB),
-			RejectReasons: []string{},
-			RejectTag:     getTags(ctx, DB),
-			Seniorities:   getSeniorities(ctx, DB),
-			Tags:          getTags(ctx, DB),
-			VacancyStatus: getStatusVac(ctx, DB),
+			RejectReasons: make([]*db.TagsFields, 0),
+			RejectTag:     make([]*db.TagsFields, 0),
+			Seniorities:   seniorities,
+			Tags:          make([]*db.TagsFields, 0),
+			VacancyStatus: getVacToCand(ctx, DB),
 		},
 		Statuses: []StatusesCandidate{
 			{
@@ -258,17 +272,16 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		},
 	}
 
-	for _, p := range res.SelectOpt.Platforms {
-		if p.Id == table.Record.Platform_id.Int64 {
-			res.Candidates.Platform = p
+	for _, tag := range tags {
+		if tag.Parent_id == 3 {
+			res.SelectOpt.RejectReasons = append(res.SelectOpt.RejectReasons, tag)
 		}
+
 	}
 
-	for _, tag := range res.SelectOpt.Tags {
-		if tag.Id == table.Record.Tag_id {
-			res.Candidates.Tags = tag
-		}
-	}
+	recTable, _ := db.NewUsers(DB)
+
+	res.Candidates = NewCandidateView(ctx, table.Record, recTable, tags, platforms, seniorities).ViewCandidate
 
 	return res, nil
 }
@@ -279,6 +292,24 @@ func getStatUses(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.StatusesFields
 
 	err := statUses.SelectSelfScanEach(ctx,
 		func(record *db.StatusesFields) error {
+			res = append(res, record)
+
+			return nil
+		},
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.Vacancies_to_candidatesFields {
+	vacCand, _ := db.NewVacancies_to_candidates(DB)
+	res := make([]*db.Vacancies_to_candidatesFields, 0)
+
+	err := vacCand.SelectSelfScanEach(ctx,
+		func(record *db.Vacancies_to_candidatesFields) error {
 			res = append(res, record)
 
 			return nil
