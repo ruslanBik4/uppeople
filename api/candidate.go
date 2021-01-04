@@ -5,6 +5,7 @@
 package api
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -520,8 +521,70 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	return i, nil
+	return createResult(i)
 }
+
+type FollowUpDTO struct {
+	CandidateId  int32
+	DateFollowUp *time.Time
+	Comment      string
+}
+
+func (f *FollowUpDTO) GetValue() interface{} {
+	panic("implement me")
+}
+
+func (f *FollowUpDTO) NewValue() interface{} {
+	return &FollowUpDTO{
+		DateFollowUp: &time.Time{},
+	}
+}
+
+func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	u, ok := ctx.UserValue(apis.JSONParams).(*FollowUpDTO)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	candidates, _ := db.NewCandidates(DB)
+
+	i, err := candidates.Update(ctx,
+		dbEngine.ColumnsForSelect("date", "date_follow_up", "comments"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(time.Now(), u.DateFollowUp, u.Comment, u.CandidateId),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	log, _ := db.NewLogs(DB)
+	user := auth.GetUserData(ctx)
+	_, err = log.Insert(ctx,
+		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
+			"kod_deystviya"),
+		dbEngine.ArgsForSelect(user.Id, u.CandidateId,
+			fmt.Sprintf("Пользователь %s проработал кандидата #%d. Follow-Up: %v . Comment: %s",
+				user.Name, u.CandidateId, u.DateFollowUp, u.Comment),
+			time.Now(),
+			time.Now(),
+			102),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return createResult(i)
+}
+
+func createResult(i int64) (interface{}, error) {
+	return fmt.Sprintf("'message': 'Successfully', 'i': %d", i), nil
+}
+
 func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	u, ok := ctx.UserValue(apis.JSONParams).(*CandidateDTO)
 	if !ok {
@@ -606,5 +669,5 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	return i, nil
+	return createResult(i)
 }

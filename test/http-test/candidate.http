@@ -43,4 +43,7 @@ Content-Type: application/json
   "selectedVacancies":[]
 }
 
+### follow UP
+POST /api/main/saveFollowUp
+"candidate_id":9977,"date_follow_up":"sands","comment":"Test testedit"
 

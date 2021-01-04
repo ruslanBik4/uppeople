@@ -45,6 +45,12 @@ var (
 			DTO:      &CandidateDTO{},
 			NeedAuth: true,
 		},
+		"/api/main/saveFollowUp": {
+			Fnc:      HandleFollowUpCandidate,
+			Desc:     "show search results according range of characteristics",
+			DTO:      &FollowUpDTO{},
+			NeedAuth: true,
+		},
 		// 'api/main/returnAllCandidates/':{
 		// 	Fnc:  HandleAuthLogin,
 		// 	Desc: "show search results according range of characteristics",
