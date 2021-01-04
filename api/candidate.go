@@ -54,10 +54,11 @@ type statusCandidate struct {
 }
 type ViewCandidate struct {
 	*db.CandidatesFields
-	Platform  *db.PlatformsFields `json:"platforms,omitempty"`
-	Seniority string              `json:"seniority"`
-	Tags      *db.TagsFields      `json:"tags,omitempty"`
-	Recruiter string              `json:"recruiter"`
+	Platform  *db.PlatformsFields      `json:"platforms,omitempty"`
+	Seniority string                   `json:"seniority"`
+	Tags      *db.TagsFields           `json:"tags,omitempty"`
+	Recruiter string                   `json:"recruiter"`
+	Vacancies []map[string]interface{} `json:"vacancies"`
 }
 
 type CandidateView struct {
@@ -283,6 +284,18 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	recTable, _ := db.NewUsers(DB)
 
 	res.Candidates = NewCandidateView(ctx, table.Record, recTable, tags, platforms, seniorities).ViewCandidate
+	res.Candidates.Vacancies, err = DB.Conn.SelectToMaps(ctx,
+		`select vacancies.id, concat(companies.nazva, ' ("', platforms.nazva, '")') as name, 
+LOWER(CONCAT(companies.nazva, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
+		companies, vacancies.company_id, companies.id
+FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
+	JOIN vacancies_to_candidates on (vacancies.id = vacancies_to_candidates.vacancy_id)
+	JOIN platforms ON (vacancies.platform_id = platforms.id)
+	WHERE vacancies_to_candidates.candidate_id=$1`, res.Candidates.Id)
+
+	if err != nil {
+		logs.ErrorLog(err, "")
+	}
 
 	return res, nil
 }
