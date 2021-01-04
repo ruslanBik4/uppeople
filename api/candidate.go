@@ -525,18 +525,18 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 type FollowUpDTO struct {
-	CandidateId  int32
-	DateFollowUp *time.Time
-	Comment      string
+	CandidateId  int32  `json:"candidate_id"`
+	DateFollowUp string `json:"date_follow_up"`
+	Comment      string `json:"comment"`
 }
 
 func (f *FollowUpDTO) GetValue() interface{} {
-	panic("implement me")
+	return f
 }
 
 func (f *FollowUpDTO) NewValue() interface{} {
 	return &FollowUpDTO{
-		DateFollowUp: &time.Time{},
+		// DateFollowUp: &time.Time{},
 	}
 }
 
@@ -582,7 +582,10 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func createResult(i int64) (interface{}, error) {
-	return fmt.Sprintf("'message': 'Successfully', 'i': %d", i), nil
+	return map[string]interface{}{
+		"message": "Successfully",
+		"i":       i,
+	}, nil
 }
 
 func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {

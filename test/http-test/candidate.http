@@ -44,6 +44,10 @@ Content-Type: application/json
 }
 
 ### follow UP
-POST /api/main/saveFollowUp
-"candidate_id":9977,"date_follow_up":"sands","comment":"Test testedit"
+POST https://{{host}}/api/main/saveFollowUp
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{"candidate_id":9977,"date_follow_up":"01.01.2021","comment":"Test testedit"
+}
 
