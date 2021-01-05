@@ -1,0 +1,53 @@
+
+POST https://{{host}}/api/auth/login
+Content-Type: application/json
+
+{"email":"ed.nazarenkoff@gmail.com","password":"g%S3LmYxz*&RYIn@iQ7B"}
+
+> {%
+    client.global.set("auth_token", response.body.access_token);
+%}
+###
+POST https://{{host}}/api/main/viewAllVacancyInCompany/null/1
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "selectPlatforms":[
+  {"id":36,"label":"Backend","value":"backend"},
+  {"id":101,"label":".NET+Angular","value":".net+angular"}
+  ],
+  "selectSeniorities":[
+    {"id":2,"label":"Mid","value":"mid"},
+    {"id":6,"label":"Jun-Mid","value":"jun-mid"}
+  ],
+  "selectCandidateStatus":[
+    {"id":1,"label":"Before pre-screen","value":"before pre-screen"}
+  ],
+  "selectStatuses":[
+    {"id":0,"label":"Hot","value":"hot"},
+    {"id":1,"label":"Open","value":"open"},
+    {"id":3,"label":"Open","value":"open"},
+    null,
+    null
+  ]
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+    // test
+ client.test("Response content-type is json", function() {
+  var type = response.contentType.mimeType;
+  client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+  client.test("json contain data", function() {
+    var b = response.body;
+  client.assert(b.platforms, "must containt platforms ");
+  client.assert(b.vacancies, "must containt vacancies");
+
+ });
+%}

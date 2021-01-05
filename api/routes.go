@@ -55,6 +55,11 @@ var (
 		// 	Fnc:  HandleAuthLogin,
 		// 	Desc: "show search results according range of characteristics",
 		// },
+		"/api/main/viewAllVacancyInCompany/": {
+			Fnc:  HandleViewAllVacancyInCompany,
+			Desc: "get list of vacancies",
+			DTO:  &vacDTO{},
+		},
 		"/api/": {
 			Fnc:  HandleApiRedirect,
 			Desc: "show search results according range of characteristics",
