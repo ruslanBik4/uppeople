@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -28,11 +29,20 @@ func (v *vacDTO) NewValue() interface{} {
 	return &vacDTO{}
 }
 
+type VacanciesView struct {
+	*db.VacanciesFields
+	Date      string `json:"date"`
+	Platform  string `json:"platform"`
+	Company   string `json:"company"`
+	Location  string `json:"location"`
+	Seniority string `json:"seniority"`
+}
+
 type ResVacancies struct {
 	*ResList
-	CandidateStatus SelectedUnits         `json:"candidateStatus"`
-	VacancyStatus   SelectedUnits         `json:"vacancyStatus"`
-	Vacancies       []*db.VacanciesFields `json:"vacancies"`
+	CandidateStatus SelectedUnits   `json:"candidateStatus"`
+	VacancyStatus   SelectedUnits   `json:"vacancyStatus"`
+	Vacancies       []VacanciesView `json:"vacancies"`
 }
 
 func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -87,7 +97,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	vacancies, _ := db.NewVacancies(DB)
 	res := ResVacancies{
 		ResList:         NewResList(ctx, DB),
-		Vacancies:       make([]*db.VacanciesFields, 0),
+		Vacancies:       make([]VacanciesView, 0),
 		CandidateStatus: getStatusVac(ctx, DB),
 		VacancyStatus:   getStatuses(ctx, DB),
 	}
@@ -100,9 +110,56 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		options = append(options, dbEngine.ArgsForSelect(args...))
 	}
 	i := 0
+	companies, _ := db.NewCompanies(DB)
+	locs, _ := db.NewLocation_for_vacancies(DB)
 	err := vacancies.SelectSelfScanEach(ctx,
 		func(record *db.VacanciesFields) error {
-			res.Vacancies = append(res.Vacancies, record)
+			view := VacanciesView{
+				VacanciesFields: record,
+				Date:            record.Date_create.Format("2002-01-02"),
+				Company:         "",
+				Location:        "",
+			}
+			if record.Company_id.Valid {
+				err := companies.SelectOneAndScan(ctx,
+					&view.Company,
+					dbEngine.ColumnsForSelect("nazva"),
+					dbEngine.WhereForSelect("id"),
+					dbEngine.ArgsForSelect(record.Company_id.Int64),
+				)
+				if err != nil {
+					logs.ErrorLog(err, "companies.SelectOneAndScan")
+				}
+			}
+
+			if record.Location_id.Valid {
+				err := locs.SelectOneAndScan(ctx,
+					&view.Location,
+					dbEngine.ColumnsForSelect("name"),
+					dbEngine.WhereForSelect("id"),
+					dbEngine.ArgsForSelect(record.Location_id.Int64),
+				)
+				if err != nil {
+					logs.ErrorLog(err, "locs.SelectOneAndScan")
+				}
+
+			}
+
+			for _, s := range res.Seniority {
+				if s.Id == int32(record.Seniority_id) {
+					view.Seniority = s.Label
+					break
+				}
+			}
+
+			for _, s := range res.Platforms {
+				if s.Id == int32(record.Platform_id.Int64) {
+					view.Platform = s.Label
+					break
+				}
+			}
+
+			res.Vacancies = append(res.Vacancies, view)
 
 			i++
 			if i == pageItem {
