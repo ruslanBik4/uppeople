@@ -30,8 +30,8 @@ func (v *vacDTO) NewValue() interface{} {
 
 type ResVacancies struct {
 	*ResList
-	CandidateStatus SelectedUnits         `json:"candidate_status"`
-	VacancyStatus   SelectedUnits         `json:"vacancy_status"`
+	CandidateStatus SelectedUnits         `json:"candidateStatus"`
+	VacancyStatus   SelectedUnits         `json:"vacancyStatus"`
 	Vacancies       []*db.VacanciesFields `json:"vacancies"`
 }
 
