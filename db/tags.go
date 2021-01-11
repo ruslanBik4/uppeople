@@ -23,6 +23,25 @@ type TagsFields struct {
 	Order_num int64  `json:"order_num"`
 }
 
+func (r *TagsFields) GetFields(columns []dbEngine.Column) []interface{} {
+	if len(columns) == 0 {
+		return []interface{}{
+			&r.Id,
+			&r.Name,
+			&r.Color,
+			&r.Parent_id,
+			&r.Order_num,
+		}
+	}
+
+	v := make([]interface{}, len(columns))
+	for i, col := range columns {
+		v[i] = r.RefColValue(col.Name())
+	}
+
+	return v
+}
+
 func (r *TagsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":

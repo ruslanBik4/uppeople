@@ -65,12 +65,12 @@ type CandidateView struct {
 
 type ResCandidates struct {
 	*ResList
-	Candidates []*CandidateView      `json:"candidates"`
-	Company    []*db.CompaniesFields `json:"company"`
-	Recruiter  []*db.UsersFields     `json:"recruiter"`
-	Reasons    []*db.TagsFields      `json:"reasons"`
-	Statuses   SelectedUnits         `json:"statuses"`
-	Tags       []*db.TagsFields      `json:"tags"`
+	Candidates []*CandidateView `json:"candidates"`
+	Company    SelectedUnits    `json:"company"`
+	Recruiter  SelectedUnits    `json:"recruiter"`
+	Reasons    SelectedUnits    `json:"reasons"`
+	Statuses   SelectedUnits    `json:"statuses"`
+	Tags       SelectedUnits    `json:"tags"`
 }
 
 type VacanciesDTO struct {
@@ -112,25 +112,18 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		ResList:    NewResList(ctx, DB),
 		Candidates: make([]*CandidateView, pageItem),
 		Company:    getCompanies(ctx, DB),
-		Reasons:    make([]*db.TagsFields, 0),
-		Recruiter:  getRecruter(ctx, DB),
+		Reasons:    getRejectReason(ctx, DB),
+		Recruiter:  getRecruters(ctx, DB),
 		Statuses:   getStatuses(ctx, DB),
 		Tags:       getTags(ctx, DB),
 	}
 
-	for _, tag := range res.Tags {
-		if tag.Parent_id == 3 {
-			res.Reasons = append(res.Reasons, tag)
-		}
-	}
-
 	seniors := getSeniorities(ctx, DB)
-	recTable, _ := db.NewUsers(DB)
 	i := 0
 	err := candidates.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
 
-			cV := NewCandidateView(ctx, record, recTable, res.Tags, res.Platforms, seniors)
+			cV := NewCandidateView(ctx, record, DB, res.Platforms, seniors)
 
 			res.Candidates[i] = cV
 			i++
@@ -172,14 +165,13 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		SelectOpt: selectOpt{
 			Companies:     getCompanies(ctx, DB),
 			Platforms:     getPlatforms(ctx, DB),
-			Recruiters:    getRecruter(ctx, DB),
+			Recruiters:    getRecruters(ctx, DB),
 			Statuses:      getStatuses(ctx, DB),
 			Location:      getLocations(ctx, DB),
-			RejectReasons: make([]*db.TagsFields, 0),
-			RejectTag:     make([]*db.TagsFields, 0),
+			RejectReasons: getRejectReason(ctx, DB),
 			Seniorities:   seniorities,
-			Tags:          make([]*db.TagsFields, 0),
-			VacancyStatus: getVacToCand(ctx, DB),
+			Tags:          getTags(ctx, DB),
+			VacancyStatus: getStatusVac(ctx, DB),
 		},
 		Statuses: []StatusesCandidate{
 			{
@@ -195,18 +187,15 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	for _, tag := range tags {
-		if tag.Parent_id == 3 {
-			res.SelectOpt.RejectReasons = append(res.SelectOpt.RejectReasons, tag)
+		if tag.Id == 3 {
+			res.SelectOpt.RejectTag = SelectedUnits{tag}
 		}
-
 	}
 
-	recTable, _ := db.NewUsers(DB)
-
-	res.Candidates = NewCandidateView(ctx, table.Record, recTable, tags, platforms, seniorities).ViewCandidate
+	res.Candidates = NewCandidateView(ctx, table.Record, DB, platforms, seniorities).ViewCandidate
 	res.Candidates.Vacancies, err = DB.Conn.SelectToMaps(ctx,
-		`select vacancies.id, concat(companies.nazva, ' ("', platforms.nazva, '")') as name, 
-LOWER(CONCAT(companies.nazva, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
+		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
+LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
 		companies, vacancies.company_id, companies.id
 FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	JOIN vacancies_to_candidates on (vacancies.id = vacancies_to_candidates.vacancy_id)
@@ -380,6 +369,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	table, _ := db.NewCandidates(DB)
+	// todo: date & recruter chg accordint TS
 	columns := dbEngine.ColumnsForSelect(
 		"name",
 		"platform_id",

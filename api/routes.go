@@ -69,7 +69,12 @@ var (
 			// Resp:   search.RespGroups(),
 		},
 	}
-	SearchRoutes = apis.ApiRoutes{
+	GetRoutes = apis.ApiRoutes{
+		"/api/main/returnOptionsForSelects": {
+			Fnc:      HandleReturnOptionsForSelects,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+		},
 		"/api/main/allCandidates/": {
 			Fnc:      HandleAllCandidate,
 			Desc:     "show all candidates",
@@ -159,5 +164,5 @@ func init() {
 		route.Method = apis.POST
 	}
 	Routes.AddRoutes(PostRoutes)
-	Routes.AddRoutes(SearchRoutes)
+	Routes.AddRoutes(GetRoutes)
 }

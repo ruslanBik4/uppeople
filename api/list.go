@@ -14,13 +14,15 @@ import (
 
 func NewCandidateView(ctx *fasthttp.RequestCtx,
 	record *db.CandidatesFields,
-	recTable *db.Users,
-	tags []*db.TagsFields,
+	DB *dbEngine.DB,
 	platforms SelectedUnits,
 	seniors SelectedUnits,
 ) *CandidateView {
 	ref := &CandidateView{
-		ViewCandidate: &ViewCandidate{CandidatesFields: record},
+		ViewCandidate: &ViewCandidate{
+			CandidatesFields: record,
+			Tags:             &db.TagsFields{},
+		},
 		Status: statusCandidate{
 			Date:         record.Date,
 			Comments:     record.Comments,
@@ -30,6 +32,8 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		},
 	}
 	if record.Recruter_id.Valid {
+		recTable, _ := db.NewUsers(DB)
+
 		err := recTable.SelectOneAndScan(ctx,
 			&ref.Recruiter,
 			dbEngine.ColumnsForSelect("name"),
@@ -42,13 +46,20 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.Status.Recruiter = ref.Recruiter
 	}
 
-	for _, tag := range tags {
-		if tag.Id == record.Tag_id {
-			ref.TagName = tag.Name
-			ref.TagColor = tag.Color
-			ref.Tags = tag
-		}
+	tagTable, _ := db.NewTags(DB)
+
+	err := tagTable.SelectOneAndScan(ctx,
+		ref.Tags,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(record.Tag_id),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "recTable.SelectOneAndScan")
+	} else {
+		ref.TagName = ref.Tags.Name
+		ref.TagColor = ref.Tags.Color
 	}
+
 	for _, s := range seniors {
 		if s.Id == int32(ref.Seniority_id.Int64) {
 			ref.Seniority = s.Label
@@ -113,29 +124,26 @@ func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) *ResList {
 }
 
 type selectOpt struct {
-	Companies     []*db.CompaniesFields               `json:"companies"`
-	Platforms     SelectedUnits                       `json:"platforms"`
-	Recruiters    []*db.UsersFields                   `json:"recruiters"`
-	Statuses      SelectedUnits                       `json:"candidateStatus"`
-	Location      []*db.Location_for_vacanciesFields  `json:"location"`
-	RejectReasons []*db.TagsFields                    `json:"reject_reasons"`
-	RejectTag     []*db.TagsFields                    `json:"reject_tag"`
-	Recruiter     []*db.UsersFields                   `json:"recruiter"`
-	Seniorities   SelectedUnits                       `json:"seniorities"`
-	Tags          []*db.TagsFields                    `json:"tags"`
-	VacancyStatus []*db.Vacancies_to_candidatesFields `json:"vacancyStatus"`
+	Companies     SelectedUnits `json:"companies"`
+	Platforms     SelectedUnits `json:"platforms"`
+	Recruiters    SelectedUnits `json:"recruiters"`
+	Statuses      SelectedUnits `json:"candidateStatus"`
+	Location      SelectedUnits `json:"location"`
+	RejectReasons SelectedUnits `json:"reject_reasons"`
+	RejectTag     SelectedUnits `json:"reject_tag"`
+	Recruiter     SelectedUnits `json:"recruiter"`
+	Seniorities   SelectedUnits `json:"seniorities"`
+	Tags          SelectedUnits `json:"tags"`
+	VacancyStatus SelectedUnits `json:"vacancyStatus"`
+	// vacancies
 }
 
-func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.Vacancies_to_candidatesFields {
+func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 	vacCand, _ := db.NewVacancies_to_candidates(DB)
-	res := make([]*db.Vacancies_to_candidatesFields, 0)
-
-	err := vacCand.SelectSelfScanEach(ctx,
-		func(record *db.Vacancies_to_candidatesFields) error {
-			res = append(res, record)
-
-			return nil
-		},
+	err := vacCand.SelectAndScanEach(ctx,
+		nil,
+		&res,
+		dbEngine.ColumnsForSelect("id", "status as label", "LOWER(status) as value"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -175,16 +183,13 @@ func getStatuses(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) 
 	return res
 }
 
-func getTags(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.TagsFields {
+func getTags(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 	statUses, _ := db.NewTags(DB)
-	res := make([]*db.TagsFields, 0)
 
-	err := statUses.SelectSelfScanEach(ctx,
-		func(record *db.TagsFields) error {
-			res = append(res, record)
-
-			return nil
-		},
+	err := statUses.SelectAndScanEach(ctx,
+		nil,
+		&res,
+		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -193,16 +198,30 @@ func getTags(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.TagsFields {
 	return res
 }
 
-func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.Location_for_vacanciesFields {
+func getRejectReason(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
+	statUses, _ := db.NewTags(DB)
+
+	err := statUses.SelectAndScanEach(ctx,
+		nil,
+		&res,
+		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
+		dbEngine.WhereForSelect("parent_id"),
+		dbEngine.ArgsForSelect(3),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "	")
+	}
+
+	return res
+}
+
+func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 	statUses, _ := db.NewLocation_for_vacancies(DB)
-	res := make([]*db.Location_for_vacanciesFields, 0)
 
-	err := statUses.SelectSelfScanEach(ctx,
-		func(record *db.Location_for_vacanciesFields) error {
-			res = append(res, record)
-
-			return nil
-		},
+	err := statUses.SelectAndScanEach(ctx,
+		nil,
+		&res,
+		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -241,16 +260,13 @@ func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 	return res
 }
 
-func getRecruter(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.UsersFields {
+func getRecruters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 	users, _ := db.NewUsers(DB)
-	res := make([]*db.UsersFields, 0)
 
-	err := users.SelectSelfScanEach(ctx,
-		func(record *db.UsersFields) error {
-			res = append(res, record)
-
-			return nil
-		},
+	err := users.SelectAndScanEach(ctx,
+		nil,
+		&res,
+		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -259,20 +275,17 @@ func getRecruter(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.UsersFields {
 	return res
 }
 
-func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) []*db.CompaniesFields {
+func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 	company, _ := db.NewCompanies(DB)
-	companies := make([]*db.CompaniesFields, 0)
 
-	err := company.SelectSelfScanEach(ctx,
-		func(record *db.CompaniesFields) error {
-			companies = append(companies, record)
-
-			return nil
-		},
+	err := company.SelectAndScanEach(ctx,
+		nil,
+		&res,
+		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	SelectSelfScanEach")
 	}
 
-	return companies
+	return
 }
