@@ -25,7 +25,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		companies.id as compId, companies.name as compName, vacancies.id as vacId, 
 		CONCAT_WS(' - ', platforms.nazva, seniorities.nazva) as vac
 		from logs left Join companies on (logs.company_id = companies.id)
-			join vacancies ON (logs.vacancy_id = vacancies.id)
+			left join vacancies ON (logs.vacancy_id = vacancies.id)
 			join users ON (logs.user_id = users.id)
 			join candidates can ON (logs.candidate_id = can.id)
 			left Join platforms ON (vacancies.platform_id = platforms.id)
