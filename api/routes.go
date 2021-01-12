@@ -93,6 +93,19 @@ var (
 					Type:     apis.NewTypeInParam(types.Int32)},
 			},
 		},
+		"/api/admin/returnLogsForCand/": {
+			Fnc:      HandleReturnLogsForCand,
+			Desc:     "show logs of candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				{
+					Name:     "id",
+					Desc:     "id of candidate",
+					DefValue: apis.ApisValues(apis.ChildRoutePath),
+					Req:      true,
+					Type:     apis.NewTypeInParam(types.Int32)},
+			},
+		},
 		// "/api/main/returnAllCandidates/": {
 		// 	Fnc:      HandleAllCandidate,
 		// 	Desc:     "show search results according range of characteristics",

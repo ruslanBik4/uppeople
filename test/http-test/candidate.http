@@ -52,5 +52,9 @@ Content-Type: application/json
 }
 
 ###
+GET https://{{host}}/api/admin/returnLogsForCand/9988
+Authorization:Bearer {{auth_token}}
+
+###
 GET https://{{host}}/api/main/returnOptionsForSelects
 Authorization:Bearer {{auth_token}}
