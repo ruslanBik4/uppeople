@@ -370,7 +370,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	table, _ := db.NewCandidates(DB)
 	// todo: date & recruter chg accordint TS
-	columns := dbEngine.ColumnsForSelect(
+	columns := []string{
 		"name",
 		"platform_id",
 		"salary",
@@ -383,8 +383,6 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"status",
 		"tag_id",
 		"comments",
-		"date",
-		"recruter_id",
 		"text_rezume",
 		"sfera",
 		"experience",
@@ -395,8 +393,8 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"avatar",
 		"seniority_id",
 		"date_follow_up",
-	)
-	args := dbEngine.ArgsForSelect(
+	}
+	args := []interface{}{
 		u.Name,
 		u.SelectPlatform.Id,
 		u.Salary,
@@ -409,8 +407,6 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Status,
 		u.SelectedTag.Id,
 		u.Comment,
-		u.Date,
-		auth.GetUserData(ctx).Id,
 		u.Resume,
 		u.Sfera,
 		u.Experience,
@@ -422,11 +418,16 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.SelectSeniority.Id,
 		u.Date_follow_up,
 		id,
-	)
+	}
+
+	if u.Tag_id == 3 || u.Tag_id == 4 {
+		columns = append(columns, "recruter_id")
+		args = append(args, auth.GetUserData(ctx).Id)
+	}
 	i, err := table.Update(ctx,
-		columns,
+		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),
-		args,
+		dbEngine.ArgsForSelect(args...),
 	)
 	if err != nil {
 		return createErrResult(err)
