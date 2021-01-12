@@ -280,6 +280,15 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
+	err = table.SelectOneAndScan(ctx,
+		&u.Id,
+		dbEngine.ColumnsForSelect("id"),
+		dbEngine.WhereForSelect("name"),
+		dbEngine.ArgsForSelect(u.Name),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "table.SelectOneAndScan")
+	}
 	toLogCandidate(ctx, DB, int32(u.Id), u.Comment, 101)
 
 	return createResult(i)
@@ -439,7 +448,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogCandidate(ctx, DB, int32(u.Id), " some data", 100)
+		toLogCandidate(ctx, DB, int32(id), " some data", 100)
 	}
 
 	return createResult(i)
