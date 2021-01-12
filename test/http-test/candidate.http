@@ -52,7 +52,7 @@ Content-Type: application/json
 }
 
 ###
-GET https://{{host}}/api/admin/returnLogsForCand/9988
+GET https://{{host}}/api/admin/returnLogsForCand/10000
 Authorization:Bearer {{auth_token}}
 
 ###

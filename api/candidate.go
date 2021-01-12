@@ -245,7 +245,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"language",
 			"zapoln_profile",
 			"file",
-			// "avatar",
+			"avatar",
 			"seniority_id",
 			"date_follow_up",
 		),
@@ -271,7 +271,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Language,
 			u.Zapoln_profile,
 			u.File,
-			// u.Avatar,
+			u.Avatar,
 			u.SelectSeniority.Id,
 			u.Date_follow_up,
 		),
@@ -279,6 +279,8 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if err != nil {
 		return createErrResult(err)
 	}
+
+	toLogCandidate(ctx, DB, int32(u.Id), u.Comment, 101)
 
 	return createResult(i)
 }
@@ -321,23 +323,27 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	log, _ := db.NewLogs(DB)
-	user := auth.GetUserData(ctx)
-	_, err = log.Insert(ctx,
-		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
-			"kod_deystviya"),
-		dbEngine.ArgsForSelect(user.Id, u.CandidateId,
-			fmt.Sprintf("Пользователь %s проработал кандидата #%d. Follow-Up: %v . Comment: %s",
-				user.Name, u.CandidateId, u.DateFollowUp, u.Comment),
-			time.Now(),
-			time.Now(),
-			102),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
+	toLogCandidate(ctx, DB, u.CandidateId,
+		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment), 102)
 
 	return createResult(i)
+}
+
+func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, CandidateId int32, text string, code int32) {
+	log, _ := db.NewLogs(DB)
+	user := auth.GetUserData(ctx)
+	_, err := log.Insert(ctx,
+		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
+			"kod_deystviya"),
+		dbEngine.ArgsForSelect(user.Id, CandidateId,
+			text,
+			time.Now(),
+			time.Now(),
+			code),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "toLogCandidate")
+	}
 }
 
 func createResult(i int64) (interface{}, error) {
@@ -389,7 +395,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"language",
 		"zapoln_profile",
 		"file",
-		"avatar",
+		// "avatar",
 		"seniority_id",
 		"date_follow_up",
 	}
@@ -413,7 +419,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Language,
 		u.Zapoln_profile,
 		u.File,
-		u.Avatar,
+		// u.Avatar,
 		u.SelectSeniority.Id,
 		u.Date_follow_up,
 		id,
@@ -430,6 +436,10 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	)
 	if err != nil {
 		return createErrResult(err)
+	}
+
+	if i > 0 {
+		toLogCandidate(ctx, DB, int32(u.Id), " some data", 100)
 	}
 
 	return createResult(i)
