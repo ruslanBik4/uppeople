@@ -123,7 +123,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 			if record.Company_id.Valid {
 				err := companies.SelectOneAndScan(ctx,
 					&view.Company,
-					dbEngine.ColumnsForSelect("nazva"),
+					dbEngine.ColumnsForSelect("name"),
 					dbEngine.WhereForSelect("id"),
 					dbEngine.ArgsForSelect(record.Company_id.Int64),
 				)
