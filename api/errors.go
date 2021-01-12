@@ -20,14 +20,19 @@ var (
 )
 
 func createErrResult(err error) (interface{}, error) {
+	msg := err.Error()
 	e, ok := errors.Cause(err).(*pgconn.PgError)
 	if ok {
-		if s := regKeyWrong.FindStringSubmatch(e.Detail); len(s) > 0 {
-			return map[string]string{
-				s[1]: "`" + s[2] + "`" + s[3],
-			}, apis.ErrWrongParamsList
-		}
-	} else if s := regDuplicated.FindStringSubmatch(err.Error()); len(s) > 0 {
+		msg = e.Detail
+	}
+
+	if s := regKeyWrong.FindStringSubmatch(msg); len(s) > 0 {
+		return map[string]string{
+			s[1]: "`" + s[2] + "`" + s[3],
+		}, apis.ErrWrongParamsList
+	}
+
+	if s := regDuplicated.FindStringSubmatch(msg); len(s) > 0 {
 		logs.DebugLog("%#v %[1]T", errors.Cause(err))
 		return map[string]string{
 			s[1]: "duplicate key value violates unique constraint",

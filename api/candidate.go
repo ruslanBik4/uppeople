@@ -369,7 +369,6 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	table, _ := db.NewCandidates(DB)
-	// todo: date & recruter chg accordint TS
 	columns := []string{
 		"name",
 		"platform_id",
