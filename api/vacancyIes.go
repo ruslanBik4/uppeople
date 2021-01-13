@@ -90,7 +90,7 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		userIDs += fmt.Sprintf("%s%d", comma, unit.Id)
 		comma = "-"
 	}
-	table, _ := db.NewCandidates(DB)
+	table, _ := db.NewVacancies(DB)
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect(
 			"platform_id",
