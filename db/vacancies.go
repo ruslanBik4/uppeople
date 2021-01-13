@@ -23,8 +23,8 @@ type VacanciesFields struct {
 	User_ids     string         `json:"user_ids"`
 	Nazva        sql.NullString `json:"nazva"`
 	Opus         sql.NullString `json:"opus"`
-	Details      sql.NullString `json:"details"`
-	Link         sql.NullString `json:"link"`
+	Details      string         `json:"details"`
+	Link         string         `json:"link"`
 	File         sql.NullString `json:"file"`
 	Date_create  time.Time      `json:"date_create"`
 	Ord          sql.NullInt64  `json:"ord"`
