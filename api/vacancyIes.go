@@ -5,6 +5,7 @@
 package api
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
@@ -19,17 +20,28 @@ import (
 
 type VacancyDTO struct {
 	*db.VacanciesFields
-	Comment               string       `json:"comment"`
-	Description           string       `json:"description"`
-	Phone                 string       `json:"phone"`
-	Status                string       `json:"selectedVacancyStatus"`
-	SelectCompany         SelectedUnit `json:"selectCompany"`
-	SelectLocation        SelectedUnit `json:"selectLocation"`
-	SelectPlatform        SelectedUnit `json:"selectPlatform"`
-	SelectSeniority       SelectedUnit `json:"selectSeniority"`
-	SelectRecruiter       SelectedUnit `json:"selectRecruiter"`
-	selectedVacancyStatus int32        `json:"selectedVacancyStatus"`
+	Comment               string         `json:"comment"`
+	Description           string         `json:"description"`
+	Phone                 string         `json:"phone"`
+	Status                string         `json:"selectedVacancyStatus"`
+	SelectCompany         SelectedUnit   `json:"selectCompany"`
+	SelectLocation        SelectedUnit   `json:"selectLocation"`
+	SelectPlatform        SelectedUnit   `json:"selectPlatform"`
+	SelectSeniority       SelectedUnit   `json:"selectSeniority"`
+	SelectRecruiter       []SelectedUnit `json:"selectRecruiter"`
+	SelectedVacancyStatus int32          `json:"selectedVacancyStatus"`
 }
+
+func (v *VacancyDTO) GetValue() interface{} {
+	return v
+}
+
+func (v *VacancyDTO) NewValue() interface{} {
+	return &VacancyDTO{
+		VacanciesFields: &db.VacanciesFields{},
+	}
+}
+
 type vacDTO struct {
 	SelectPlatforms       []SelectedUnit `json:"selectPlatforms"`
 	SelectSeniorities     []SelectedUnit `json:"selectSeniorities"`
@@ -73,6 +85,11 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
+	userIDs, comma := "", ""
+	for _, unit := range u.SelectRecruiter {
+		userIDs += fmt.Sprintf("%s%d", comma, unit.Id)
+		comma = "-"
+	}
 	table, _ := db.NewCandidates(DB)
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect(
@@ -85,6 +102,7 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"link",
 			"status",
 			"salary",
+			"user_ids",
 		),
 		dbEngine.ArgsForSelect(
 			u.SelectPlatform.Id,
@@ -94,8 +112,9 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Description,
 			u.Details.String,
 			u.Link.String,
-			u.selectedVacancyStatus,
+			u.SelectedVacancyStatus,
 			u.Salary,
+			userIDs,
 		),
 	)
 	if err != nil {

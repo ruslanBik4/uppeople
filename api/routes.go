@@ -36,7 +36,7 @@ var (
 		"/api/main/addNewVacancy": {
 			Fnc:      HandleAddVacancy,
 			Desc:     "show search results according range of characteristics",
-			DTO:      &CandidateDTO{},
+			DTO:      &VacancyDTO{},
 			NeedAuth: true,
 		},
 		"/api/main/addNewCandidate": {
