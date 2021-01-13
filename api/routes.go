@@ -33,6 +33,12 @@ var (
 			DTO: &DTOAuth{},
 			// Resp:   search.RespGroups(),
 		},
+		"/api/main/addNewVacancy": {
+			Fnc:      HandleAddVacancy,
+			Desc:     "show search results according range of characteristics",
+			DTO:      &CandidateDTO{},
+			NeedAuth: true,
+		},
 		"/api/main/addNewCandidate": {
 			Fnc:      HandleAddCandidate,
 			Desc:     "show search results according range of characteristics",

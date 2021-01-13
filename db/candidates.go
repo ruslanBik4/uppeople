@@ -22,7 +22,7 @@ type CandidatesFields struct {
 	Name           string        `json:"name"`
 	Salary         string        `json:"salary"`
 	Email          string        `json:"email"`
-	Mobile         string        `json:"mobile"`
+	Phone          string        `json:"phone"`
 	Skype          string        `json:"skype"`
 	Link           string        `json:"link"`
 	Linkedin       string        `json:"linkedin"`
@@ -61,8 +61,8 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "email":
 		return &r.Email
 
-	case "mobile":
-		return &r.Mobile
+	case "phone":
+		return &r.Phone
 
 	case "skype":
 		return &r.Skype
@@ -143,8 +143,8 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "email":
 		return r.Email
 
-	case "mobile":
-		return r.Mobile
+	case "phone":
+		return r.Phone
 
 	case "skype":
 		return r.Skype

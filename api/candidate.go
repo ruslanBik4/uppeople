@@ -228,7 +228,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"platform_id",
 			"salary",
 			"email",
-			"mobile",
+			"phone",
 			"skype",
 			"link",
 			"linkedin",
@@ -339,17 +339,20 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, CandidateId int32, text string, code int32) {
-	log, _ := db.NewLogs(DB)
 	user := auth.GetUserData(ctx)
-	_, err := log.Insert(ctx,
+	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
 			"kod_deystviya"),
 		dbEngine.ArgsForSelect(user.Id, CandidateId,
 			text,
 			time.Now(),
 			time.Now(),
-			code),
-	)
+			code))
+}
+
+func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.BuildSqlOptions) {
+	log, _ := db.NewLogs(DB)
+	_, err := log.Insert(ctx, columns, args)
 	if err != nil {
 		logs.ErrorLog(err, "toLogCandidate")
 	}
@@ -389,7 +392,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"platform_id",
 		"salary",
 		"email",
-		"mobile",
+		"phone",
 		"skype",
 		"link",
 		"linkedin",

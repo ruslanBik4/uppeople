@@ -5,15 +5,31 @@
 package api
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
+	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
+type VacancyDTO struct {
+	*db.VacanciesFields
+	Comment               string       `json:"comment"`
+	Description           string       `json:"description"`
+	Phone                 string       `json:"phone"`
+	Status                string       `json:"selectedVacancyStatus"`
+	SelectCompany         SelectedUnit `json:"selectCompany"`
+	SelectLocation        SelectedUnit `json:"selectLocation"`
+	SelectPlatform        SelectedUnit `json:"selectPlatform"`
+	SelectSeniority       SelectedUnit `json:"selectSeniority"`
+	SelectRecruiter       SelectedUnit `json:"selectRecruiter"`
+	selectedVacancyStatus int32        `json:"selectedVacancyStatus"`
+}
 type vacDTO struct {
 	SelectPlatforms       []SelectedUnit `json:"selectPlatforms"`
 	SelectSeniorities     []SelectedUnit `json:"selectSeniorities"`
@@ -43,6 +59,62 @@ type ResVacancies struct {
 	CandidateStatus SelectedUnits   `json:"candidateStatus"`
 	VacancyStatus   SelectedUnits   `json:"vacancyStatus"`
 	Vacancies       []VacanciesView `json:"vacancies"`
+}
+
+func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	u, ok := ctx.UserValue(apis.JSONParams).(*VacancyDTO)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	logs.DebugLog(u)
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewCandidates(DB)
+	i, err := table.Insert(ctx,
+		dbEngine.ColumnsForSelect(
+			"platform_id",
+			"seniority_id",
+			"company_id",
+			"location_id",
+			"opus",
+			"details",
+			"link",
+			"status",
+			"salary",
+		),
+		dbEngine.ArgsForSelect(
+			u.SelectPlatform.Id,
+			u.SelectSeniority.Id,
+			u.SelectCompany.Id,
+			u.SelectLocation.Id,
+			u.Description,
+			u.Details.String,
+			u.Link.String,
+			u.selectedVacancyStatus,
+			u.Salary,
+		),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	err = table.SelectOneAndScan(ctx,
+		&u.Id,
+		dbEngine.ColumnsForSelect("id"),
+		dbEngine.WhereForSelect("company_id", "platform_id", "seniority_id"),
+		dbEngine.ArgsForSelect(u.SelectCompany.Id, u.SelectPlatform.Id, u.SelectSeniority.Id),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "table.SelectOneAndScan")
+	}
+
+	toLogVacancy(ctx, DB, u.SelectCompany.Id, int32(u.Id), u.Description, 101)
+
+	return createResult(i)
 }
 
 func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -177,4 +249,16 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 	return res, nil
 
+}
+
+func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string, code int32) {
+	user := auth.GetUserData(ctx)
+	toLog(ctx, DB,
+		dbEngine.ColumnsForSelect("user_id", "company_id", "vacancy_id", "text", "date_create", "d_c",
+			"kod_deystviya"),
+		dbEngine.ArgsForSelect(user.Id, companyId, vacancyId,
+			text,
+			time.Now(),
+			time.Now(),
+			code))
 }
