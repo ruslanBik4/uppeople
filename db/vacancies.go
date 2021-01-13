@@ -30,7 +30,7 @@ type VacanciesFields struct {
 	Ord          sql.NullInt64  `json:"ord"`
 	Status       sql.NullInt64  `json:"status"`
 	Seniority_id int64          `json:"seniority_id"`
-	Salary       sql.NullInt64  `json:"salary"`
+	Salary       int32          `json:"salary"`
 	Location_id  sql.NullInt64  `json:"location_id"`
 }
 
