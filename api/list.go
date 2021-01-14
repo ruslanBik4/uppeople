@@ -138,6 +138,27 @@ type selectOpt struct {
 	// vacancies
 }
 
+func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {
+	s := selectOpt{
+		Companies:     getCompanies(ctx, DB),
+		Platforms:     getPlatforms(ctx, DB),
+		Recruiters:    getRecruters(ctx, DB),
+		Statuses:      getStatuses(ctx, DB),
+		Location:      getLocations(ctx, DB),
+		RejectReasons: getRejectReason(ctx, DB),
+		Seniorities:   getSeniorities(ctx, DB),
+		Tags:          getTags(ctx, DB),
+		VacancyStatus: getStatusVac(ctx, DB),
+	}
+	for _, tag := range s.Tags {
+		if tag.Id == 3 {
+			s.RejectTag = SelectedUnits{tag}
+		}
+	}
+
+	return s
+}
+
 func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 	vacCand, _ := db.NewVacancies_to_candidates(DB)
 	err := vacCand.SelectAndScanEach(ctx,

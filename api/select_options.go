@@ -15,23 +15,7 @@ func HandleReturnOptionsForSelects(ctx *fasthttp.RequestCtx) (interface{}, error
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	res := selectOpt{
-		Companies:     getCompanies(ctx, DB),
-		Platforms:     getPlatforms(ctx, DB),
-		Recruiters:    getRecruters(ctx, DB),
-		Statuses:      getStatuses(ctx, DB),
-		Location:      getLocations(ctx, DB),
-		RejectReasons: getRejectReason(ctx, DB),
-		Seniorities:   getSeniorities(ctx, DB),
-		Tags:          getTags(ctx, DB),
-		VacancyStatus: getStatusVac(ctx, DB),
-	}
-
-	for _, tag := range res.Tags {
-		if tag.Id == 3 {
-			res.RejectTag = SelectedUnits{tag}
-		}
-	}
+	res := NewSelectOpt(ctx, DB)
 
 	return res, nil
 }

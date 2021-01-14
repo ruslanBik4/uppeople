@@ -73,6 +73,25 @@ type ResVacancies struct {
 	Vacancies       []VacanciesView `json:"vacancies"`
 }
 
+func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewVacancies(DB)
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(ctx.UserValue("id")),
+	)
+	if err != nil && err != errLimit {
+		return nil, errors.Wrap(err, "	")
+	}
+
+	return table.Record, nil
+}
+
 func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	u, ok := ctx.UserValue(apis.JSONParams).(*VacancyDTO)
 	if !ok {

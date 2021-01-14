@@ -99,6 +99,19 @@ var (
 					Type:     apis.NewTypeInParam(types.Int32)},
 			},
 		},
+		"/api/main/viewVacancy/": {
+			Fnc:      HandleViewVacancy,
+			Desc:     "show one candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				{
+					Name:     "id",
+					Desc:     "id of candidate",
+					DefValue: apis.ApisValues(apis.ChildRoutePath),
+					Req:      true,
+					Type:     apis.NewTypeInParam(types.Int32)},
+			},
+		},
 		"/api/admin/returnLogsForCand/": {
 			Fnc:      HandleReturnLogsForCand,
 			Desc:     "show logs of candidate",

@@ -158,21 +158,8 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, errors.Wrap(err, "	")
 	}
 
-	tags := getTags(ctx, DB)
-	platforms := getPlatforms(ctx, DB)
-	seniorities := getSeniorities(ctx, DB)
 	res := ViewCandidates{
-		SelectOpt: selectOpt{
-			Companies:     getCompanies(ctx, DB),
-			Platforms:     getPlatforms(ctx, DB),
-			Recruiters:    getRecruters(ctx, DB),
-			Statuses:      getStatuses(ctx, DB),
-			Location:      getLocations(ctx, DB),
-			RejectReasons: getRejectReason(ctx, DB),
-			Seniorities:   seniorities,
-			Tags:          getTags(ctx, DB),
-			VacancyStatus: getStatusVac(ctx, DB),
-		},
+		SelectOpt: NewSelectOpt(ctx, DB),
 		Statuses: []StatusesCandidate{
 			{
 				Candidate_id: int32(table.Record.Id),
@@ -186,13 +173,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		},
 	}
 
-	for _, tag := range tags {
-		if tag.Id == 3 {
-			res.SelectOpt.RejectTag = SelectedUnits{tag}
-		}
-	}
-
-	res.Candidates = NewCandidateView(ctx, table.Record, DB, platforms, seniorities).ViewCandidate
+	res.Candidates = NewCandidateView(ctx, table.Record, DB, res.SelectOpt.Platforms, res.SelectOpt.Seniorities).ViewCandidate
 	res.Candidates.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
