@@ -21,7 +21,6 @@ import (
 type VacancyDTO struct {
 	*db.VacanciesFields
 	Comment               string         `json:"comment"`
-	Description           string         `json:"description"`
 	Phone                 string         `json:"phone"`
 	Status                string         `json:"selectedVacancyStatus"`
 	SelectCompany         SelectedUnit   `json:"selectCompany"`
@@ -109,32 +108,53 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		userIDs += fmt.Sprintf("%s%d", comma, unit.Id)
 		comma = "-"
 	}
+	columns := []string{
+		"platform_id",
+		"seniority_id",
+		"company_id",
+		"location_id",
+		"description",
+		"details",
+		"link",
+		"status",
+		"salary",
+		"user_ids",
+	}
+	args := []interface{}{
+		u.SelectPlatform.Id,
+		u.SelectSeniority.Id,
+		u.SelectCompany.Id,
+		u.SelectLocation.Id,
+		u.Description,
+		u.Details,
+		u.Link,
+		u.SelectedVacancyStatus,
+		u.Salary,
+		userIDs,
+	}
+
 	table, _ := db.NewVacancies(DB)
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if ok {
+		i, err := table.Update(ctx,
+			dbEngine.ColumnsForSelect(columns...),
+			dbEngine.WhereForSelect("id"),
+			dbEngine.ArgsForSelect(append(args, id)...),
+		)
+		if err != nil {
+			return createErrResult(err)
+		}
+
+		if i > 0 {
+			toLogVacancy(ctx, DB, u.SelectCompany.Id, id, u.Description, 101)
+		}
+
+		return createResult(i)
+	}
+
 	i, err := table.Insert(ctx,
-		dbEngine.ColumnsForSelect(
-			"platform_id",
-			"seniority_id",
-			"company_id",
-			"location_id",
-			"opus",
-			"details",
-			"link",
-			"status",
-			"salary",
-			"user_ids",
-		),
-		dbEngine.ArgsForSelect(
-			u.SelectPlatform.Id,
-			u.SelectSeniority.Id,
-			u.SelectCompany.Id,
-			u.SelectLocation.Id,
-			u.Description,
-			u.Details,
-			u.Link,
-			u.SelectedVacancyStatus,
-			u.Salary,
-			userIDs,
-		),
+		dbEngine.ColumnsForSelect(columns...),
+		dbEngine.ArgsForSelect(args...),
 	)
 	if err != nil {
 		return createErrResult(err)

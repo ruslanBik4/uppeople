@@ -15,6 +15,16 @@ import (
 )
 
 var (
+	ParamID = apis.InParam{
+		Name:     "id",
+		Desc:     "id of candidate",
+		DefValue: apis.ApisValues(apis.ChildRoutePath),
+		Req:      true,
+		Type:     apis.NewTypeInParam(types.Int32),
+	}
+)
+
+var (
 	Routes     = apis.NewMapRoutes()
 	PostRoutes = apis.ApiRoutes{
 		"/api/auth/login": {
@@ -39,6 +49,15 @@ var (
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,
 		},
+		"/api/main/editVacancy/": {
+			Fnc:      HandleAddVacancy,
+			Desc:     "show search results according range of characteristics",
+			DTO:      &VacancyDTO{},
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/addNewCandidate": {
 			Fnc:      HandleAddCandidate,
 			Desc:     "show search results according range of characteristics",
@@ -50,6 +69,9 @@ var (
 			Desc:     "show search results according range of characteristics",
 			DTO:      &CandidateDTO{},
 			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
 		},
 		"/api/main/saveFollowUp": {
 			Fnc:      HandleFollowUpCandidate,
@@ -91,12 +113,7 @@ var (
 			Desc:     "show one candidate",
 			NeedAuth: true,
 			Params: []apis.InParam{
-				{
-					Name:     "id",
-					Desc:     "id of candidate",
-					DefValue: apis.ApisValues(apis.ChildRoutePath),
-					Req:      true,
-					Type:     apis.NewTypeInParam(types.Int32)},
+				ParamID,
 			},
 		},
 		"/api/main/viewVacancy/": {
@@ -104,12 +121,7 @@ var (
 			Desc:     "show one candidate",
 			NeedAuth: true,
 			Params: []apis.InParam{
-				{
-					Name:     "id",
-					Desc:     "id of candidate",
-					DefValue: apis.ApisValues(apis.ChildRoutePath),
-					Req:      true,
-					Type:     apis.NewTypeInParam(types.Int32)},
+				ParamID,
 			},
 		},
 		"/api/admin/returnLogsForCand/": {
@@ -117,12 +129,7 @@ var (
 			Desc:     "show logs of candidate",
 			NeedAuth: true,
 			Params: []apis.InParam{
-				{
-					Name:     "id",
-					Desc:     "id of candidate",
-					DefValue: apis.ApisValues(apis.ChildRoutePath),
-					Req:      true,
-					Type:     apis.NewTypeInParam(types.Int32)},
+				ParamID,
 			},
 		},
 		// "/api/main/returnAllCandidates/": {

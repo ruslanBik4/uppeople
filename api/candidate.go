@@ -6,7 +6,6 @@ package api
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/pkg/errors"
@@ -352,14 +351,11 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	p, ok := ctx.UserValue(apis.ChildRoutePath).(string)
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
-		return "wrong id", apis.ErrWrongParamsList
-	}
-
-	id, err := strconv.Atoi(p)
-	if err != nil {
-		return err.Error(), apis.ErrWrongParamsList
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
 	}
 
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)

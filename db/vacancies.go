@@ -22,7 +22,7 @@ type VacanciesFields struct {
 	Platform_id  sql.NullInt64  `json:"platform_id"`
 	User_ids     string         `json:"user_ids"`
 	Name         sql.NullString `json:"name"`
-	Opus         sql.NullString `json:"opus"`
+	Description  string         `json:"description"`
 	Details      string         `json:"details"`
 	Link         string         `json:"link"`
 	File         sql.NullString `json:"file"`
@@ -51,8 +51,8 @@ func (r *VacanciesFields) RefColValue(name string) interface{} {
 	case "name":
 		return &r.Name
 
-	case "opus":
-		return &r.Opus
+	case "description":
+		return &r.Description
 
 	case "details":
 		return &r.Details
@@ -103,8 +103,8 @@ func (r *VacanciesFields) ColValue(name string) interface{} {
 	case "name":
 		return r.Name
 
-	case "opus":
-		return r.Opus
+	case "description":
+		return r.Description
 
 	case "details":
 		return r.Details
