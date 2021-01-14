@@ -21,8 +21,6 @@ import (
 type VacancyDTO struct {
 	*db.VacanciesFields
 	Comment               string         `json:"comment"`
-	Phone                 string         `json:"phone"`
-	Status                string         `json:"selectedVacancyStatus"`
 	SelectCompany         SelectedUnit   `json:"selectCompany"`
 	SelectLocation        SelectedUnit   `json:"selectLocation"`
 	SelectPlatform        SelectedUnit   `json:"selectPlatform"`
@@ -146,7 +144,7 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if i > 0 {
-			toLogVacancy(ctx, DB, u.SelectCompany.Id, id, u.Description, 101)
+			toLogVacancy(ctx, DB, u.SelectCompany.Id, id, u.Description, 100)
 		}
 
 		return createResult(i)
@@ -170,7 +168,7 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		logs.ErrorLog(err, "table.SelectOneAndScan")
 	}
 
-	toLogVacancy(ctx, DB, u.SelectCompany.Id, int32(u.Id), u.Description, 101)
+	toLogVacancy(ctx, DB, u.SelectCompany.Id, u.Id, u.Description, 101)
 
 	return createResult(i)
 }

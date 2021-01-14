@@ -17,7 +17,7 @@ type Vacancies struct {
 }
 
 type VacanciesFields struct {
-	Id           int64          `json:"id"`
+	Id           int32          `json:"id"`
 	Company_id   sql.NullInt64  `json:"company_id"`
 	Platform_id  sql.NullInt64  `json:"platform_id"`
 	User_ids     string         `json:"user_ids"`

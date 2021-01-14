@@ -45,13 +45,13 @@ var (
 		},
 		"/api/main/addNewVacancy": {
 			Fnc:      HandleAddVacancy,
-			Desc:     "show search results according range of characteristics",
+			Desc:     "add new vacancy",
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,
 		},
 		"/api/main/editVacancy/": {
 			Fnc:      HandleAddVacancy,
-			Desc:     "show search results according range of characteristics",
+			Desc:     "edit vacancy",
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,
 			Params: []apis.InParam{
