@@ -157,6 +157,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, errors.Wrap(err, "	")
 	}
 
+	auth.PutEditCandidate(ctx, table.Record)
 	res := ViewCandidates{
 		SelectOpt: NewSelectOpt(ctx, DB),
 		Statuses: []StatusesCandidate{
@@ -318,26 +319,6 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return createResult(i)
 }
 
-func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, CandidateId int32, text string, code int32) {
-	user := auth.GetUserData(ctx)
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
-			"kod_deystviya"),
-		dbEngine.ArgsForSelect(user.Id, CandidateId,
-			text,
-			time.Now(),
-			time.Now(),
-			code))
-}
-
-func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.BuildSqlOptions) {
-	log, _ := db.NewLogs(DB)
-	_, err := log.Insert(ctx, columns, args)
-	if err != nil {
-		logs.ErrorLog(err, "toLogCandidate")
-	}
-}
-
 func createResult(i int64) (interface{}, error) {
 	return map[string]interface{}{
 		"message": "Successfully",
@@ -346,9 +327,9 @@ func createResult(i int64) (interface{}, error) {
 }
 
 func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	u, ok := ctx.UserValue(apis.JSONParams).(*CandidateDTO)
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
-		return "wrong DTO", apis.ErrWrongParamsList
+		return nil, dbEngine.ErrDBNotFound
 	}
 
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
@@ -358,61 +339,83 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	u, ok := ctx.UserValue(apis.JSONParams).(*CandidateDTO)
 	if !ok {
-		return nil, dbEngine.ErrDBNotFound
+		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
+	u.Platform_id.Int32 = u.SelectPlatform.Id
+	u.Seniority_id.Int32 = u.SelectSeniority.Id
+	u.Tag_id = u.SelectedTag.Id
+
+	oldData := auth.GetEditCandidate(ctx)
 	table, _ := db.NewCandidates(DB)
-	columns := []string{
-		"name",
-		"platform_id",
-		"salary",
-		"email",
-		"phone",
-		"skype",
-		"link",
-		"linkedin",
-		"str_companies",
-		"status",
-		"tag_id",
-		"comments",
-		"text_rezume",
-		"sfera",
-		"experience",
-		"education",
-		"language",
-		"zapoln_profile",
-		"file",
-		// "avatar",
-		"seniority_id",
-		"date_follow_up",
+	columns := make([]string, 0)
+	args := make([]interface{}, 0)
+	if oldData != nil {
+		for _, col := range table.Columns() {
+			name := col.Name()
+			if name == "id" {
+				continue
+			}
+
+			if oldData.ColValue(name) != u.ColValue(name) {
+				columns = append(columns, name)
+				args = append(args, u.ColValue(name))
+			}
+		}
+	} else {
+		columns = []string{
+			"name",
+			"platform_id",
+			"salary",
+			"email",
+			"phone",
+			"skype",
+			"link",
+			"linkedin",
+			"str_companies",
+			"status",
+			"tag_id",
+			"comments",
+			"text_rezume",
+			"sfera",
+			"experience",
+			"education",
+			"language",
+			"zapoln_profile",
+			"file",
+			// "avatar",
+			"seniority_id",
+			"date_follow_up",
+		}
+		args = []interface{}{
+			u.Name,
+			u.SelectPlatform.Id,
+			u.Salary,
+			u.Email,
+			u.Phone,
+			u.Skype,
+			u.Link,
+			u.Linkedin,
+			u.Str_companies,
+			u.Status,
+			u.SelectedTag.Id,
+			u.Comment,
+			u.Resume,
+			u.Sfera,
+			u.Experience,
+			u.Education,
+			u.Language,
+			u.Zapoln_profile,
+			u.File,
+			// u.Avatar,
+			u.SelectSeniority.Id,
+			u.Date_follow_up,
+		}
 	}
-	args := []interface{}{
-		u.Name,
-		u.SelectPlatform.Id,
-		u.Salary,
-		u.Email,
-		u.Phone,
-		u.Skype,
-		u.Link,
-		u.Linkedin,
-		u.Str_companies,
-		u.Status,
-		u.SelectedTag.Id,
-		u.Comment,
-		u.Resume,
-		u.Sfera,
-		u.Experience,
-		u.Education,
-		u.Language,
-		u.Zapoln_profile,
-		u.File,
-		// u.Avatar,
-		u.SelectSeniority.Id,
-		u.Date_follow_up,
-		id,
-	}
+
+	args = append(args, id)
 
 	if u.Tag_id == 3 || u.Tag_id == 4 {
 		columns = append(columns, "recruter_id")
@@ -428,7 +431,15 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogCandidate(ctx, DB, int32(id), " some data", 100)
+		text := ""
+		for i, col := range columns {
+			if i > 0 {
+				text += ", "
+			}
+
+			text += fmt.Sprintf("%s=%v", col, args[i])
+		}
+		toLogCandidate(ctx, DB, int32(id), text, 100)
 	}
 
 	return createResult(i)

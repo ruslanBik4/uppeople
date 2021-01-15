@@ -18,7 +18,7 @@ type Candidates struct {
 
 type CandidatesFields struct {
 	Id             int64         `json:"id"`
-	Platform_id    sql.NullInt64 `json:"platform_id"`
+	Platform_id    sql.NullInt32 `json:"platform_id"`
 	Name           string        `json:"name"`
 	Salary         string        `json:"salary"`
 	Email          string        `json:"email"`
@@ -28,19 +28,19 @@ type CandidatesFields struct {
 	Linkedin       string        `json:"linkedin"`
 	Str_companies  string        `json:"str_companies"`
 	Status         string        `json:"status"`
-	Tag_id         int64         `json:"tag_id"`
+	Tag_id         int32         `json:"tag_id"`
 	Comments       string        `json:"comments"`
 	Date           time.Time     `json:"date"`
-	Recruter_id    sql.NullInt64 `json:"recruter_id"`
+	Recruter_id    sql.NullInt32 `json:"recruter_id"`
 	Text_rezume    string        `json:"text_rezume"`
 	Sfera          string        `json:"sfera"`
 	Experience     string        `json:"experience"`
 	Education      string        `json:"education"`
 	Language       string        `json:"language"`
-	Zapoln_profile sql.NullInt64 `json:"zapoln_profile"`
+	Zapoln_profile sql.NullInt32 `json:"zapoln_profile"`
 	File           string        `json:"file"`
 	Avatar         string        `json:"avatar"`
-	Seniority_id   sql.NullInt64 `json:"seniority_id"`
+	Seniority_id   sql.NullInt32 `json:"seniority_id"`
 	Date_follow_up *time.Time    `json:"date_follow_up"`
 }
 

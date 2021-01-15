@@ -38,7 +38,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 			&ref.Recruiter,
 			dbEngine.ColumnsForSelect("name"),
 			dbEngine.WhereForSelect("id"),
-			dbEngine.ArgsForSelect(record.Recruter_id.Int64),
+			dbEngine.ArgsForSelect(record.Recruter_id.Int32),
 		)
 		if err != nil {
 			logs.ErrorLog(err, "recTable.SelectOneAndScan")
@@ -61,13 +61,13 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	}
 
 	for _, s := range seniors {
-		if s.Id == int32(ref.Seniority_id.Int64) {
+		if s.Id == int32(ref.Seniority_id.Int32) {
 			ref.Seniority = s.Label
 		}
 	}
 
 	for _, p := range platforms {
-		if p.Id == int32(record.Platform_id.Int64) {
+		if p.Id == int32(record.Platform_id.Int32) {
 			ref.Platform = p.Label
 			ref.ViewCandidate.Platform = p
 		}

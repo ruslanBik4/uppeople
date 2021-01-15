@@ -5,8 +5,14 @@
 package api
 
 import (
+	"time"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
+
+	"github.com/ruslanBik4/uppeople/auth"
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -34,4 +40,24 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		order by logs.d_c DESC`,
 		ctx.UserValue("id"),
 	)
+}
+
+func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, CandidateId int32, text string, code int32) {
+	user := auth.GetUserData(ctx)
+	toLog(ctx, DB,
+		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
+			"kod_deystviya"),
+		dbEngine.ArgsForSelect(user.Id, CandidateId,
+			text,
+			time.Now(),
+			time.Now(),
+			code))
+}
+
+func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.BuildSqlOptions) {
+	log, _ := db.NewLogs(DB)
+	_, err := log.Insert(ctx, columns, args)
+	if err != nil {
+		logs.ErrorLog(err, "toLogCandidate")
+	}
 }
