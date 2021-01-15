@@ -161,7 +161,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		SelectOpt: NewSelectOpt(ctx, DB),
 		Statuses: []StatusesCandidate{
 			{
-				Candidate_id: int32(table.Record.Id),
+				Candidate_id: table.Record.Id,
 				Company:      &db.CompaniesFields{},
 				Status_vac:   &db.Status_for_vacsFields{},
 				Vacancy: VacanciesDTO{

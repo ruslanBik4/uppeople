@@ -50,7 +50,7 @@ var (
 			NeedAuth: true,
 		},
 		"/api/main/editVacancy/": {
-			Fnc:      HandleAddVacancy,
+			Fnc:      HandleEditVacancy,
 			Desc:     "edit vacancy",
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,

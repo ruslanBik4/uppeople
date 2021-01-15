@@ -82,11 +82,115 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(ctx.UserValue("id")),
 	)
-	if err != nil && err != errLimit {
+	if err != nil {
 		return nil, errors.Wrap(err, "	")
 	}
 
+	auth.PutEditVacancy(ctx, table.Record)
+
 	return table.Record, nil
+}
+
+func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+	u, ok := ctx.UserValue(apis.JSONParams).(*VacancyDTO)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	u.User_ids = ""
+	for i, unit := range u.SelectRecruiter {
+		if i > 0 {
+			u.User_ids += ", "
+		}
+		u.User_ids += fmt.Sprintf("%d", unit.Id)
+	}
+
+	table, _ := db.NewVacancies(DB)
+	oldData := auth.GetEditCandidate(ctx)
+	columns := make([]string, 0)
+	args := make([]interface{}, 0)
+	stopColumns := map[string]bool{
+		"recruter_id": true,
+		"id":          true,
+		"name":        true,
+		"ord":         true,
+	}
+	u.Platform_id = u.SelectPlatform.Id
+	u.Seniority_id = u.SelectSeniority.Id
+	u.Company_id = u.SelectCompany.Id
+	u.Location_id = u.SelectLocation.Id
+	u.Status = u.SelectedVacancyStatus
+	if oldData != nil {
+		for _, col := range table.Columns() {
+			name := col.Name()
+			if stopColumns[name] {
+				continue
+			}
+
+			if oldData.ColValue(name) != u.ColValue(name) {
+				columns = append(columns, name)
+				args = append(args, u.ColValue(name))
+			}
+		}
+	} else {
+		columns = []string{
+			"platform_id",
+			"seniority_id",
+			"company_id",
+			"location_id",
+			"description",
+			"details",
+			"link",
+			"status",
+			"salary",
+			"user_ids",
+		}
+		args = []interface{}{
+			u.SelectPlatform.Id,
+			u.SelectSeniority.Id,
+			u.SelectCompany.Id,
+			u.SelectLocation.Id,
+			u.Description,
+			u.Details,
+			u.Link,
+			u.SelectedVacancyStatus,
+			u.Salary,
+			u.User_ids,
+		}
+	}
+	i, err := table.Update(ctx,
+		dbEngine.ColumnsForSelect(columns...),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(append(args, id)...),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	if i > 0 {
+		text := ""
+		for i, col := range columns {
+			if i > 0 {
+				text += ", "
+			}
+
+			text += fmt.Sprintf("%s=%v", col, args[i])
+		}
+		toLogVacancy(ctx, DB, u.SelectCompany.Id, id, text, 100)
+	}
+
+	return createResult(i)
 }
 
 func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -95,7 +199,6 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	logs.DebugLog(u)
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
@@ -132,24 +235,6 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	table, _ := db.NewVacancies(DB)
-	id, ok := ctx.UserValue(ParamID.Name).(int32)
-	if ok {
-		i, err := table.Update(ctx,
-			dbEngine.ColumnsForSelect(columns...),
-			dbEngine.WhereForSelect("id"),
-			dbEngine.ArgsForSelect(append(args, id)...),
-		)
-		if err != nil {
-			return createErrResult(err)
-		}
-
-		if i > 0 {
-			toLogVacancy(ctx, DB, u.SelectCompany.Id, id, u.Description, 100)
-		}
-
-		return createResult(i)
-	}
-
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.ArgsForSelect(args...),
@@ -248,24 +333,24 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 				Company:         "",
 				Location:        "",
 			}
-			if record.Company_id.Valid {
+			if record.Company_id > 0 {
 				err := companies.SelectOneAndScan(ctx,
 					&view.Company,
 					dbEngine.ColumnsForSelect("name"),
 					dbEngine.WhereForSelect("id"),
-					dbEngine.ArgsForSelect(record.Company_id.Int64),
+					dbEngine.ArgsForSelect(record.Company_id),
 				)
 				if err != nil {
 					logs.ErrorLog(err, "companies.SelectOneAndScan")
 				}
 			}
 
-			if record.Location_id.Valid {
+			if record.Location_id > 0 {
 				err := locs.SelectOneAndScan(ctx,
 					&view.Location,
 					dbEngine.ColumnsForSelect("name"),
 					dbEngine.WhereForSelect("id"),
-					dbEngine.ArgsForSelect(record.Location_id.Int64),
+					dbEngine.ArgsForSelect(record.Location_id),
 				)
 				if err != nil {
 					logs.ErrorLog(err, "locs.SelectOneAndScan")
@@ -281,7 +366,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 			}
 
 			for _, s := range res.Platforms {
-				if s.Id == int32(record.Platform_id.Int64) {
+				if s.Id == record.Platform_id {
 					view.Platform = s.Label
 					break
 				}

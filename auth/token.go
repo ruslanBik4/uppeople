@@ -62,3 +62,21 @@ func GetEditCandidate(ctx *fasthttp.RequestCtx) *db.CandidatesFields {
 
 	return nil
 }
+
+func PutEditVacancy(ctx *fasthttp.RequestCtx, data *db.VacanciesFields) bool {
+	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	if ok {
+		token.LastEdit.Vacancy = data
+	}
+
+	return ok
+}
+
+func GetEditVacancy(ctx *fasthttp.RequestCtx) *db.VacanciesFields {
+	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	if ok {
+		return token.LastEdit.Vacancy
+	}
+
+	return nil
+}

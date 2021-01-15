@@ -17,7 +17,7 @@ type Candidates struct {
 }
 
 type CandidatesFields struct {
-	Id             int64         `json:"id"`
+	Id             int32         `json:"id"`
 	Platform_id    sql.NullInt32 `json:"platform_id"`
 	Name           string        `json:"name"`
 	Salary         string        `json:"salary"`

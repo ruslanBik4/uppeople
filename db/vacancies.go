@@ -18,8 +18,8 @@ type Vacancies struct {
 
 type VacanciesFields struct {
 	Id           int32          `json:"id"`
-	Company_id   sql.NullInt64  `json:"company_id"`
-	Platform_id  sql.NullInt64  `json:"platform_id"`
+	Company_id   int32          `json:"company_id"`
+	Platform_id  int32          `json:"platform_id"`
 	User_ids     string         `json:"user_ids"`
 	Name         sql.NullString `json:"name"`
 	Description  string         `json:"description"`
@@ -28,10 +28,10 @@ type VacanciesFields struct {
 	File         sql.NullString `json:"file"`
 	Date_create  time.Time      `json:"date_create"`
 	Ord          sql.NullInt64  `json:"ord"`
-	Status       sql.NullInt64  `json:"status"`
-	Seniority_id int64          `json:"seniority_id"`
+	Status       int32          `json:"status"`
+	Seniority_id int32          `json:"seniority_id"`
 	Salary       int32          `json:"salary"`
-	Location_id  sql.NullInt64  `json:"location_id"`
+	Location_id  int32          `json:"location_id"`
 }
 
 func (r *VacanciesFields) RefColValue(name string) interface{} {

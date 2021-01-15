@@ -67,7 +67,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	}
 
 	for _, p := range platforms {
-		if p.Id == int32(record.Platform_id.Int32) {
+		if p.Id == record.Platform_id.Int32 {
 			ref.Platform = p.Label
 			ref.ViewCandidate.Platform = p
 		}
