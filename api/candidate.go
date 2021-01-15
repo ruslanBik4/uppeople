@@ -22,7 +22,6 @@ type CandidateDTO struct {
 	*db.CandidatesFields
 	Comment           string         `json:"comment"`
 	Date              string         `json:"date"`
-	Phone             string         `json:"phone"`
 	Resume            string         `json:"resume"`
 	SelectPlatform    SelectedUnit   `json:"selectPlatform"`
 	SelectSeniority   SelectedUnit   `json:"selectSeniority"`
