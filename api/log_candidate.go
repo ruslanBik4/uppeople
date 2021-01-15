@@ -30,7 +30,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		CASE WHEN candidate_id > 0 THEN CONCAT(' кандидата ', can.name)
 			 WHEN vacancy_id > 0 THEN CONCAT(' вакансию компании ', companies.name)
 			ELSE '' END,
-		, ' ', logs.text) as text, 
+			' ', logs.text) as text, 
 		logs.d_c as date, 
 		companies.id as compId, companies.name as compName, vacancies.id as vacId, 
 		CONCAT_WS(' - ', platforms.nazva, seniorities.nazva) as vac
