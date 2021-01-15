@@ -345,7 +345,9 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	u.Platform_id.Int32 = u.SelectPlatform.Id
+	u.Platform_id.Valid = true
 	u.Seniority_id.Int32 = u.SelectSeniority.Id
+	u.Seniority_id.Valid = true
 	u.Tag_id = u.SelectedTag.Id
 
 	oldData := auth.GetEditCandidate(ctx)
