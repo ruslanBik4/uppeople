@@ -349,15 +349,22 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	u.Seniority_id.Int32 = u.SelectSeniority.Id
 	u.Seniority_id.Valid = true
 	u.Tag_id = u.SelectedTag.Id
+	u.Comments = u.Comment
 
 	oldData := auth.GetEditCandidate(ctx)
 	table, _ := db.NewCandidates(DB)
 	columns := make([]string, 0)
 	args := make([]interface{}, 0)
+	stopColumns := map[string]bool{
+		"recruter_id": true,
+		"id":          true,
+		"date":        true,
+		"avatar":      true,
+	}
 	if oldData != nil {
 		for _, col := range table.Columns() {
 			name := col.Name()
-			if name == "id" {
+			if stopColumns[name] {
 				continue
 			}
 
