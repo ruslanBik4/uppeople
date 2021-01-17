@@ -61,16 +61,6 @@ type CandidateView struct {
 	Status   statusCandidate `json:"status"`
 }
 
-type ResCandidates struct {
-	*ResList
-	Candidates []*CandidateView `json:"candidates"`
-	Company    SelectedUnits    `json:"company"`
-	Recruiter  SelectedUnits    `json:"recruiter"`
-	Reasons    SelectedUnits    `json:"reasons"`
-	Statuses   SelectedUnits    `json:"statuses"`
-	Tags       SelectedUnits    `json:"tags"`
-}
-
 type VacanciesDTO struct {
 	*db.VacanciesFields
 	Platforms *db.PlatformsFields `json:"platforms"`
@@ -99,47 +89,6 @@ type ViewCandidates struct {
 
 const pageItem = 15
 
-func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	candidates, _ := db.NewCandidates(DB)
-	res := ResCandidates{
-		ResList:    NewResList(ctx, DB),
-		Candidates: make([]*CandidateView, pageItem),
-		Company:    getCompanies(ctx, DB),
-		Reasons:    getRejectReason(ctx, DB),
-		Recruiter:  getRecruters(ctx, DB),
-		Statuses:   getStatuses(ctx, DB),
-		Tags:       getTags(ctx, DB),
-	}
-
-	seniors := getSeniorities(ctx, DB)
-	i := 0
-	err := candidates.SelectSelfScanEach(ctx,
-		func(record *db.CandidatesFields) error {
-
-			cV := NewCandidateView(ctx, record, DB, res.Platforms, seniors)
-
-			res.Candidates[i] = cV
-			i++
-			if i == pageItem {
-				return errLimit
-			}
-
-			return nil
-		},
-		dbEngine.OrderBy("date desc"),
-	)
-	if err != nil && err != errLimit {
-		return nil, errors.Wrap(err, "	")
-	}
-
-	return res, nil
-}
-
 func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -152,7 +101,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(ctx.UserValue("id")),
 	)
-	if err != nil && err != errLimit {
+	if err != nil {
 		return nil, errors.Wrap(err, "	")
 	}
 

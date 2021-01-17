@@ -96,6 +96,15 @@ var (
 			NeedAuth: true,
 			// Resp:   search.RespGroups(),
 		},
+		"/api/main/allCandidates/": {
+			Fnc:      HandleAllCandidate,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			DTO:      &SearchCandidates{},
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 	}
 	GetRoutes = apis.ApiRoutes{
 		"/api/main/returnOptionsForSelects": {
@@ -107,6 +116,9 @@ var (
 			Fnc:      HandleAllCandidate,
 			Desc:     "show all candidates",
 			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
 		},
 		"/api/main/viewOneCandidate/": {
 			Fnc:      HandleViewCandidate,

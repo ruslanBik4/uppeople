@@ -14,13 +14,19 @@ Content-Type: application/json
 
 
 ###
-GET https://{{host}}/api/main/allCandidates/1
+GET https://{{host}}/api/main/allCandidates/2000
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+POST https://{{host}}/api/main/allCandidates/1
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
 {
   "search": "Ruslan Bikchentaev",
-  "selectPlatform":[],"selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},"date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
+  "selectPlatform":[],"selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},
+  "date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
 }
 ###
 POST https://{{host}}/api/main/addNewCandidate

@@ -9,7 +9,7 @@ require (
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/json-iterator/go v1.1.10
 	github.com/pkg/errors v0.9.1
-	github.com/ruslanBik4/dbEngine v1.0.1103
+	github.com/ruslanBik4/dbEngine v1.0.1107
 	github.com/ruslanBik4/httpgo v1.1.10053
 	github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27
 	github.com/valyala/fasthttp v1.18.0
