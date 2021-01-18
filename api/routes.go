@@ -118,13 +118,10 @@ var (
 			},
 		},
 		"/api/main/getCandidatesAmountByTags": {
-			Fnc:      HandleAllCandidate,
+			Fnc:      HandleGetCandidatesAmountByTags,
 			Desc:     "show all candidates",
 			NeedAuth: true,
 			DTO:      &DTOAmounts{},
-			Params: []apis.InParam{
-				ParamID,
-			},
 		},
 	}
 	GetRoutes = apis.ApiRoutes{

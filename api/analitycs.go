@@ -5,8 +5,11 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
 )
 
@@ -61,17 +64,45 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 			LEFT JOIN candidates c ON t.id=c.tag_id
 			LEFT JOIN  vacancies_to_candidates vtc ON c.id=vtc.candidate_id
 			LEFT JOIN vacancies v ON v.id = vtc.vacancy_id
-			WHERE v.status IN (0,1)
-       GROUP BY 1, 2, 3, 5`
+			WHERE v.status IN (0,1) AND parent_id=
+`
+	gr := `      GROUP BY 1, 2, 3, 5`
+
+	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	where := ""
+	if p := params.Company_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.company_id = %d", p)
+	}
+
+	if p := params.Vacancy_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.vacancy_id = %d", p)
+	}
+
+	if p := params.Recruiter_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.user_id = %d", p)
+	}
+
+	if p := params.Start_date; p > "" {
+		where += fmt.Sprintf(" AND c.date >= '%s'", p)
+	}
+
+	if p := params.End_date; p > "" {
+		where += fmt.Sprintf(" AND c.date <= '%s'", p)
+	}
+
 	m, err := DB.Conn.SelectToMaps(ctx,
-		sql,
+		sql+"0"+where+gr,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
 	}
 
 	r, err := DB.Conn.SelectToMaps(ctx,
-		sql,
+		sql+"3"+where+gr,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
