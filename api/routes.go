@@ -96,6 +96,18 @@ var (
 			NeedAuth: true,
 			// Resp:   search.RespGroups(),
 		},
+		"api/main/getTags": {
+			Fnc:      HandleGetTags,
+			Desc:     "return select of tags",
+			Method:   apis.POST,
+			NeedAuth: true,
+		},
+		"api/main/getStatuses": {
+			Fnc:      HandleGetStatuses,
+			Desc:     "return select of tags",
+			Method:   apis.POST,
+			NeedAuth: true,
+		},
 		"/api/main/allCandidates/": {
 			Fnc:      HandleAllCandidate,
 			Desc:     "show all candidates",
@@ -105,8 +117,22 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/getCandidatesAmountByTags": {
+			Fnc:      HandleAllCandidate,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			DTO:      &DTOAmounts{},
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 	}
 	GetRoutes = apis.ApiRoutes{
+		"/api/admin/all-staff": {
+			Fnc:      HandleAllStaff,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+		},
 		"/api/main/returnOptionsForSelects": {
 			Fnc:      HandleReturnOptionsForSelects,
 			Desc:     "show all candidates",
