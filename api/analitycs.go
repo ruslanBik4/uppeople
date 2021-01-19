@@ -59,7 +59,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	sql := `SELECT id, name, color, count(c.id), parent_id
+	sql := `SELECT t.id, t.name, t.color, count(c.id), t.parent_id
 	FROM tags t
 			LEFT JOIN candidates c ON t.id=c.tag_id
 			LEFT JOIN  vacancies_to_candidates vtc ON c.id=vtc.candidate_id
