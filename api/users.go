@@ -5,15 +5,18 @@
 package api
 
 import (
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/valyala/fasthttp"
+
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 type UserResponse struct {
-	Users       SelectedUnits `json:"users"`
-	Partners    SelectedUnits `json:"partners"`
-	Freelancers SelectedUnits `json:"freelancers"`
-	Recruiters  SelectedUnits `json:"recruiters"`
+	Users       []*db.UsersFields `json:"users"`
+	Partners    SelectedUnits     `json:"partners"`
+	Freelancers SelectedUnits     `json:"freelancers"`
+	Recruiters  SelectedUnits     `json:"recruiters"`
 }
 
 func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -22,7 +25,17 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
+	r := make([]*db.UsersFields, 0)
+	users, _ := db.NewUsers(DB)
+	err := users.SelectSelfScanEach(ctx,
+		func(record *db.UsersFields) error {
+			r = append(r, record)
+			return nil
+		})
+	if err != nil {
+		return nil, errors.Wrap(err, "users.SelectSelfScanEach")
+	}
 	return UserResponse{
-		Users: getRecruters(ctx, DB),
+		Users: r,
 	}, nil
 }
