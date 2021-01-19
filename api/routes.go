@@ -117,7 +117,22 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/returnAllCandidates/": {
+			Fnc:      HandleReturnAllCandidate,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			DTO:      &SearchCandidates{},
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/getCandidatesAmountByTags": {
+			Fnc:      HandleGetCandidatesAmountByTags,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			DTO:      &DTOAmounts{},
+		},
+		"/api/main/getCandidatesAmountByStatuses": {
 			Fnc:      HandleGetCandidatesAmountByTags,
 			Desc:     "show all candidates",
 			NeedAuth: true,
