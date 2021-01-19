@@ -140,6 +140,15 @@ var (
 		},
 	}
 	GetRoutes = apis.ApiRoutes{
+		"/api/main/returnAllCandidates/": {
+			Fnc:      HandleReturnAllCandidate,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			DTO:      &SearchCandidates{},
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/admin/all-staff": {
 			Fnc:      HandleAllStaff,
 			Desc:     "show all candidates",

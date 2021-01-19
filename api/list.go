@@ -21,6 +21,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref := &CandidateView{
 		ViewCandidate: &ViewCandidate{
 			CandidatesFields: record,
+			Companies:        getCompanies(ctx, DB)[0],
 			Tags:             &db.TagsFields{},
 		},
 		Status: statusCandidate{

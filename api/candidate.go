@@ -47,6 +47,7 @@ type statusCandidate struct {
 type ViewCandidate struct {
 	*db.CandidatesFields
 	Platform  *SelectedUnit            `json:"platforms,omitempty"`
+	Companies *SelectedUnit            `json:"companies,omitempty"`
 	Seniority string                   `json:"seniority"`
 	Tags      *db.TagsFields           `json:"tags,omitempty"`
 	Recruiter string                   `json:"recruiter"`

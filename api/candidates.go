@@ -128,5 +128,5 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleReturnAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	return HandleReturnAllCandidate(ctx)
+	return HandleAllCandidate(ctx)
 }
