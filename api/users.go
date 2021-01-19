@@ -9,11 +9,20 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+type UserResponse struct {
+	Users       SelectedUnits `json:"users"`
+	Partners    SelectedUnits `json:"partners"`
+	Freelancers SelectedUnits `json:"freelancers"`
+	Recruiters  SelectedUnits `json:"recruiters"`
+}
+
 func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	return getRecruters(ctx, DB), nil
+	return UserResponse{
+		Users: getRecruters(ctx, DB),
+	}, nil
 }

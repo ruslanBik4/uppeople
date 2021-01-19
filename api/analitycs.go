@@ -50,7 +50,9 @@ func (d *DTOAmounts) NewValue() interface{} {
 type Amoint struct {
 }
 type AmountsByTags struct {
-	Main, Reject []map[string]interface{}
+	Message string                   `json:"message"`
+	Main    []map[string]interface{} `json:"main"`
+	Reject  []map[string]interface{} `json:"reject"`
 }
 
 func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -109,7 +111,8 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	}
 
 	return AmountsByTags{
-		Main:   m,
-		Reject: r,
+		Message: "Successfully",
+		Main:    m,
+		Reject:  r,
 	}, nil
 }
