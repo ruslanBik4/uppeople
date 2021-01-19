@@ -24,10 +24,10 @@ type ResCandidates struct {
 
 type SearchCandidates struct {
 	Name            string        `json:"search"`
-	DateFrom        string        `json:"date_from"`
-	DateTo          string        `json:"date_to"`
-	SelectRecruiter *SelectedUnit `json:"select_recruiter"`
-	SelectCompanies SelectedUnits `json:"select_companies"`
+	DateFrom        string        `json:"dateFrom"`
+	DateTo          string        `json:"dateTo"`
+	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
+	SelectCompanies SelectedUnits `json:"selectCompanies"`
 }
 
 func (s *SearchCandidates) GetValue() interface{} {
