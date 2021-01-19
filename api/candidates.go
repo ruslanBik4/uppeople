@@ -72,7 +72,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			args = append(args, dto.Name)
 		}
 		if dto.SelectRecruiter != nil {
-			where = append(where, "user_id")
+			where = append(where, "recruter_id")
 			args = append(args, dto.SelectRecruiter.Id)
 		}
 		if dto.DateFrom > "" {
