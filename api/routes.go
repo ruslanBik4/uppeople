@@ -144,7 +144,6 @@ var (
 			Fnc:      HandleReturnAllCandidate,
 			Desc:     "show all candidates",
 			NeedAuth: true,
-			DTO:      &SearchCandidates{},
 			Params: []apis.InParam{
 				ParamID,
 			},
