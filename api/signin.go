@@ -18,6 +18,11 @@ type DTOAuth struct {
 	Email, Password string
 }
 
+func (a *DTOAuth) ReadParams(ctx *fasthttp.RequestCtx) {
+	a.Email = ctx.UserValue("email").(string)
+	a.Password = ctx.UserValue("password").(string)
+}
+
 func (a *DTOAuth) GetValue() interface{} {
 	return a
 }
