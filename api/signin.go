@@ -15,7 +15,8 @@ import (
 )
 
 type DTOAuth struct {
-	Email, Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (a *DTOAuth) ReadParams(ctx *fasthttp.RequestCtx) {
@@ -974,10 +975,17 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		if resp.StatusCode() == fasthttp.StatusOK {
 			var v map[string]interface{}
 			err := jsoniter.Unmarshal(resp.Body(), &v)
+			aToken, ok := v["access_token"].(string)
+			if !ok {
+				// logs.DebugLog(v)
+				// ctx.SetStatusCode(fasthttp.StatusNonAuthoritativeInfo)
+				return v, nil
+			}
+
 			u := &auth.User{
 				Companies:   make(map[int32]map[string]string),
 				Host:        host,
-				TokenOld:    v["access_token"].(string),
+				TokenOld:    aToken,
 				UsersFields: &db.UsersFields{Id: int32(v["user"].(map[string]interface{})["id"].(float64))},
 			}
 

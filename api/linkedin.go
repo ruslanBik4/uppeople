@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v4"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -74,17 +75,27 @@ var (
 )
 
 func HandleAuthLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	v, err := HandleAuthLogin(ctx)
+
+	str, err := jsoniter.Marshal(ctx.UserValue(apis.JSONParams))
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return createErrResult(errors.New("wrong DTO"))
 	}
 
-	m := map[string]interface{}{
-		"status":  "success",
-		"user_id": v.(map[string]interface{})["user"].(map[string]interface{})["id"],
-	}
-
-	return m, nil
+	ctx.Request.ResetBody()
+	ctx.Request.Header.SetContentType("application/json; charset=utf-8")
+	ctx.Request.SetBody(str)
+	return HandleAuthLogin(ctx)
+	// if err != nil {
+	// 	return nil, errors.Wrap(err, "")
+	// }
+	//
+	//
+	// m := map[string]interface{}{
+	// 	"status":  "success",
+	// 	"user_id": v.(map[string]interface{})["user"].(map[string]interface{})["id"],
+	// }
+	//
+	// return m, nil
 }
 
 func HandleGetPlatformsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -120,7 +131,7 @@ func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, err
 
 	m := map[string]interface{}{
 		"status": "ok",
-		"data":   nil,
+		"data":   []string{},
 	}
 
 	if err == nil {
