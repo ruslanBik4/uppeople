@@ -35,7 +35,7 @@ var (
 			DTO: &DTOAuth{},
 		},
 		"/api/get_platforms": {
-			Fnc:  HandleGetPlatformslinkEdin,
+			Fnc:  HandleGetPlatformsLinkedin,
 			Desc: "get_platforms linkEdin",
 		},
 		"/api/get_selectors": {
@@ -43,7 +43,7 @@ var (
 			Desc: "get_selectors linkEdin",
 		},
 		"/api/get_seniorities": {
-			Fnc:  HandleGetSenioritieslinkEdin,
+			Fnc:  HandleGetSenioritiesLinkedin,
 			Desc: "get_seniorities linkEdin",
 		},
 		"/api/get_tags": {
@@ -51,7 +51,7 @@ var (
 			Desc: "get_tags linkEdin",
 		},
 		"/api/get_reasons": {
-			Fnc:  HandleGetReasonslinkEdin,
+			Fnc:  HandleGetReasonsLinkedin,
 			Desc: "get_reasons linkEdin",
 		},
 		"/api/get_recruiter_vacancies": {
@@ -61,7 +61,6 @@ var (
 		"/api/get_candidate_info": {
 			Fnc:      HandleGetCandidate_infolinkEdin,
 			Desc:     "get_candidate_info linkEdin",
-			Method:   apis.GET,
 			WithCors: true,
 			Params: []apis.InParam{
 				{
@@ -87,10 +86,14 @@ func HandleAuthLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return m, nil
 }
 
-func HandleGetPlatformslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	// getPlatforms(ctx, )
+func HandleGetPlatformsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
 	m := map[string]interface{}{
-		"status": "get_platforms",
+		"status": getPlatforms(ctx, DB),
 	}
 
 	return m, nil
@@ -120,18 +123,23 @@ func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, err
 
 	if id := table.Record.Id; id > 0 {
 		m["status"] = map[string]interface{}{
-			"id":  id,
-			"url": fmt.Sprintf("%s://%s/#/candidates/%d", ctx.URI().Scheme(), ctx.Host(), id),
+			"id":      id,
+			"crm_url": fmt.Sprintf("%s://%s/#/candidates/%d", ctx.URI().Scheme(), ctx.Host(), id),
+			"data":    table.Record,
 		}
 	}
 
 	return m, nil
 }
 
-func HandleGetReasonslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	// getPlatforms(ctx, )
+func HandleGetReasonsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
 	m := map[string]interface{}{
-		"status": "get_reasons",
+		"status": getRejectReason(ctx, DB),
 	}
 
 	return m, nil
@@ -147,26 +155,46 @@ func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{},
 }
 
 func HandleGetTagslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	// getPlatforms(ctx, )
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
 	m := map[string]interface{}{
-		"status": "get_tags",
+		"status": getTags(ctx, DB),
 	}
 
 	return m, nil
 }
 
-func HandleGetSenioritieslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	// getPlatforms(ctx, )
+func HandleGetSenioritiesLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
 	m := map[string]interface{}{
-		"status": "get_seniorities",
+		"status": getSeniorities(ctx, DB),
 	}
 
 	return m, nil
 }
 func HandleGetSelectorslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	// getPlatforms(ctx, )
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewChrome_extention_selectors(DB)
+	records := make([]*db.Chrome_extention_selectorsFields, 0)
+	table.SelectSelfScanEach(ctx,
+		func(record *db.Chrome_extention_selectorsFields) error {
+			records = append(records, record)
+			return nil
+		})
 	m := map[string]interface{}{
-		"status": "get_selectors",
+		"status": "ok",
+		"data":   records,
 	}
 
 	return m, nil
@@ -175,9 +203,8 @@ func HandleGetSelectorslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func init() {
 	for path, route := range LERoutes {
 		route.WithCors = true
-		if !strings.HasSuffix(path, "get_candidate_info") {
+		if !strings.HasSuffix(path, "get_recruiter_vacancies") {
 			route.Method = apis.POST
-
 		}
 	}
 	Routes.AddRoutes(LERoutes)
