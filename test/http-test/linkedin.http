@@ -1,0 +1,1 @@
+GET https://{{host}}/api/get_candidate_info?url=https://www.linkedin.com/in/nikita-taktashev/

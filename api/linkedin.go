@@ -5,17 +5,22 @@
 package api
 
 import (
+	"fmt"
 	"go/types"
+	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
+
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 var (
 	LERoutes = apis.ApiRoutes{
 		"/api/authorize": {
-			Fnc:  HandleAuthlinkEdin,
+			Fnc:  HandleAuthLinkedin,
 			Desc: "auth for linkEdin",
 			Params: []apis.InParam{
 				{
@@ -54,13 +59,21 @@ var (
 			Desc: "get_recruiter_vacancies linkEdin",
 		},
 		"/api/get_candidate_info": {
-			Fnc:  HandleGetCandidate_infolinkEdin,
-			Desc: "get_candidate_info linkEdin",
+			Fnc:      HandleGetCandidate_infolinkEdin,
+			Desc:     "get_candidate_info linkEdin",
+			Method:   apis.GET,
+			WithCors: true,
+			Params: []apis.InParam{
+				{
+					Name: "url",
+					Type: apis.NewTypeInParam(types.String),
+				},
+			},
 		},
 	}
 )
 
-func HandleAuthlinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleAuthLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	v, err := HandleAuthLogin(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
@@ -84,9 +97,32 @@ func HandleGetPlatformslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	// getPlatforms(ctx, )
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	url, ok := ctx.UserValue("url").(string)
+	if !ok {
+		return map[string]interface{}{
+			"url": "wrong type",
+		}, apis.ErrWrongParamsList
+	}
+	table, _ := db.NewCandidates(DB)
+	err := table.SelectOneAndScan(ctx, table, dbEngine.WhereForSelect("linkedin"), dbEngine.ArgsForSelect(url))
+	if err != nil {
+		return createErrResult(err)
+	}
+
 	m := map[string]interface{}{
-		"status": "get_candidate_info",
+		"status": "ok",
+	}
+
+	if id := table.Record.Id; id > 0 {
+		m["status"] = map[string]interface{}{
+			"id":  id,
+			"url": fmt.Sprintf("%s://%s/#/candidates/%d", ctx.URI().Scheme(), ctx.Host(), id),
+		}
 	}
 
 	return m, nil
@@ -137,8 +173,12 @@ func HandleGetSelectorslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func init() {
-	for _, route := range LERoutes {
+	for path, route := range LERoutes {
 		route.WithCors = true
+		if !strings.HasSuffix(path, "get_candidate_info") {
+			route.Method = apis.POST
+
+		}
 	}
 	Routes.AddRoutes(LERoutes)
 }
