@@ -47,7 +47,7 @@ var (
 			Desc: "get_seniorities linkEdin",
 		},
 		"/api/get_tags": {
-			Fnc:  HandleGetTagslinkEdin,
+			Fnc:  HandleGetTagsLinkedin,
 			Desc: "get_tags linkEdin",
 		},
 		"/api/get_reasons": {
@@ -154,7 +154,7 @@ func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{},
 	return m, nil
 }
 
-func HandleGetTagslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetTagsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
@@ -203,7 +203,7 @@ func HandleGetSelectorslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func init() {
 	for path, route := range LERoutes {
 		route.WithCors = true
-		if !strings.HasSuffix(path, "get_recruiter_vacancies") {
+		if !strings.HasSuffix(path, "show_candidate_linkedin") {
 			route.Method = apis.POST
 		}
 	}
