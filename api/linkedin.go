@@ -84,6 +84,7 @@ func HandleAuthLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	ctx.Request.ResetBody()
 	ctx.Request.Header.SetContentType("application/json; charset=utf-8")
 	ctx.Request.SetBody(str)
+
 	return HandleAuthLogin(ctx)
 	// if err != nil {
 	// 	return nil, errors.Wrap(err, "")

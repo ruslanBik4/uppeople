@@ -62,6 +62,7 @@ var (
 			Fnc:      HandleAddCandidate,
 			Desc:     "show search results according range of characteristics",
 			DTO:      &CandidateDTO{},
+			WithCors: true,
 			NeedAuth: true,
 		},
 		"/api/main/editCandidate/": {
