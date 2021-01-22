@@ -120,15 +120,13 @@ func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, err
 
 	m := map[string]interface{}{
 		"status": "ok",
+		"data":   nil,
 	}
 
 	if err == nil {
 		id := table.Record.Id
-		m["status"] = map[string]interface{}{
-			"id":      id,
-			"crm_url": fmt.Sprintf("%s://%s/#/candidates/%d", ctx.URI().Scheme(), ctx.Host(), id),
-			"data":    table.Record,
-		}
+		m["crm_url"] = fmt.Sprintf("%s://%s/#/candidates/%d", ctx.URI().Scheme(), ctx.Host(), id)
+		m["data"] = table.Record
 	}
 
 	return m, nil
