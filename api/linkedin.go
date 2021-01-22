@@ -9,6 +9,7 @@ import (
 	"go/types"
 	"strings"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -113,7 +114,7 @@ func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, err
 	}
 	table, _ := db.NewCandidates(DB)
 	err := table.SelectOneAndScan(ctx, table, dbEngine.WhereForSelect("linkedin"), dbEngine.ArgsForSelect(url))
-	if err != nil {
+	if err != nil && err != pgx.ErrNoRows {
 		return createErrResult(err)
 	}
 
@@ -121,7 +122,8 @@ func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, err
 		"status": "ok",
 	}
 
-	if id := table.Record.Id; id > 0 {
+	if err == nil {
+		id := table.Record.Id
 		m["status"] = map[string]interface{}{
 			"id":      id,
 			"crm_url": fmt.Sprintf("%s://%s/#/candidates/%d", ctx.URI().Scheme(), ctx.Host(), id),
@@ -146,9 +148,14 @@ func HandleGetReasonsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	// getPlatforms(ctx, )
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
 	m := map[string]interface{}{
-		"status": "get_recruiter_vacancies",
+		"status":    "ok",
+		"vacancies": getVacToCand(ctx, DB),
 	}
 
 	return m, nil
