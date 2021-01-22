@@ -15,8 +15,8 @@ import (
 var (
 	LERoutes = apis.ApiRoutes{
 		"/api/authorize": {
-			Fnc:  HandleAuthLinkEdit,
-			Desc: "auth for linkEdit",
+			Fnc:  HandleAuthlinkEdin,
+			Desc: "auth for linkEdin",
 			Params: []apis.InParam{
 				{
 					Name: "email",
@@ -30,37 +30,37 @@ var (
 			DTO: &DTOAuth{},
 		},
 		"/api/get_platforms": {
-			Fnc:  HandleGetPlatformsLinkEdit,
-			Desc: "get_platforms LInkEdit",
+			Fnc:  HandleGetPlatformslinkEdin,
+			Desc: "get_platforms linkEdin",
 		},
 		"/api/get_selectors": {
-			Fnc:  HandleGetSelectorsLinkEdit,
-			Desc: "get_selectors LInkEdit",
+			Fnc:  HandleGetSelectorslinkEdin,
+			Desc: "get_selectors linkEdin",
 		},
 		"/api/get_seniorities": {
-			Fnc:  HandleGetSenioritiesLinkEdit,
-			Desc: "get_seniorities LInkEdit",
+			Fnc:  HandleGetSenioritieslinkEdin,
+			Desc: "get_seniorities linkEdin",
 		},
 		"/api/get_tags": {
-			Fnc:  HandleGetTagsLinkEdit,
-			Desc: "get_tags LInkEdit",
+			Fnc:  HandleGetTagslinkEdin,
+			Desc: "get_tags linkEdin",
 		},
 		"/api/get_reasons": {
-			Fnc:  HandleGetReasonsLinkEdit,
-			Desc: "get_reasons LInkEdit",
+			Fnc:  HandleGetReasonslinkEdin,
+			Desc: "get_reasons linkEdin",
 		},
 		"/api/get_recruiter_vacancies": {
-			Fnc:  HandleGetRecruiterVacanciesLinkEdit,
-			Desc: "get_recruiter_vacancies LInkEdit",
+			Fnc:  HandleGetRecruiterVacancieslinkEdin,
+			Desc: "get_recruiter_vacancies linkEdin",
 		},
 		"/api/get_candidate_info": {
-			Fnc:  HandleGetCandidate_infoLinkEdit,
-			Desc: "get_candidate_info LInkEdit",
+			Fnc:  HandleGetCandidate_infolinkEdin,
+			Desc: "get_candidate_info linkEdin",
 		},
 	}
 )
 
-func HandleAuthLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleAuthlinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	v, err := HandleAuthLogin(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
@@ -74,7 +74,7 @@ func HandleAuthLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return m, nil
 }
 
-func HandleGetPlatformsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetPlatformslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// getPlatforms(ctx, )
 	m := map[string]interface{}{
 		"status": "get_platforms",
@@ -83,7 +83,7 @@ func HandleGetPlatformsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return m, nil
 }
 
-func HandleGetCandidate_infoLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// getPlatforms(ctx, )
 	m := map[string]interface{}{
 		"status": "get_candidate_info",
@@ -92,7 +92,7 @@ func HandleGetCandidate_infoLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, err
 	return m, nil
 }
 
-func HandleGetReasonsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetReasonslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// getPlatforms(ctx, )
 	m := map[string]interface{}{
 		"status": "get_reasons",
@@ -101,7 +101,7 @@ func HandleGetReasonsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return m, nil
 }
 
-func HandleGetRecruiterVacanciesLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// getPlatforms(ctx, )
 	m := map[string]interface{}{
 		"status": "get_recruiter_vacancies",
@@ -110,7 +110,7 @@ func HandleGetRecruiterVacanciesLinkEdit(ctx *fasthttp.RequestCtx) (interface{},
 	return m, nil
 }
 
-func HandleGetTagsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetTagslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// getPlatforms(ctx, )
 	m := map[string]interface{}{
 		"status": "get_tags",
@@ -119,7 +119,7 @@ func HandleGetTagsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return m, nil
 }
 
-func HandleGetSenioritiesLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetSenioritieslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// getPlatforms(ctx, )
 	m := map[string]interface{}{
 		"status": "get_seniorities",
@@ -127,7 +127,7 @@ func HandleGetSenioritiesLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error)
 
 	return m, nil
 }
-func HandleGetSelectorsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetSelectorslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	// getPlatforms(ctx, )
 	m := map[string]interface{}{
 		"status": "get_selectors",
