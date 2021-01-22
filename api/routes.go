@@ -27,49 +27,6 @@ var (
 var (
 	Routes     = apis.NewMapRoutes()
 	PostRoutes = apis.ApiRoutes{
-		"/api/authorize": {
-			Fnc:  HandleAuthLinkEdit,
-			Desc: "auth for linkEdit",
-			Params: []apis.InParam{
-				{
-					Name: "email",
-					Type: apis.NewTypeInParam(types.String),
-				},
-				{
-					Name: "password",
-					Type: apis.NewTypeInParam(types.String),
-				},
-			},
-			DTO: &DTOAuth{},
-		},
-		"/api/get_platforms": {
-			Fnc:  HandleGetPlatformsLinkEdit,
-			Desc: "get_platforms LInkEdit",
-		},
-		"/api/get_selectors": {
-			Fnc:  HandleGetSelectorsLinkEdit,
-			Desc: "get_selectors LInkEdit",
-		},
-		"/api/get_seniorities": {
-			Fnc:  HandleGetSenioritiesLinkEdit,
-			Desc: "get_seniorities LInkEdit",
-		},
-		"/api/get_tags": {
-			Fnc:  HandleGetTagsLinkEdit,
-			Desc: "get_tags LInkEdit",
-		},
-		"/api/get_reasons": {
-			Fnc:  HandleGetReasonsLinkEdit,
-			Desc: "get_reasons LInkEdit",
-		},
-		"/api/get_recruiter_vacancies": {
-			Fnc:  HandleGetRecruiterVacanciesLinkEdit,
-			Desc: "get_recruiter_vacancies LInkEdit",
-		},
-		"/api/get_candidate_info": {
-			Fnc:  HandleGetCandidate_infoLinkEdit,
-			Desc: "get_candidate_info LInkEdit",
-		},
 		"/api/auth/login": {
 			Fnc:  HandleAuthLogin,
 			Desc: "show search results according range of characteristics",

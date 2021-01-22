@@ -5,8 +5,59 @@
 package api
 
 import (
+	"go/types"
+
 	"github.com/pkg/errors"
+	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
+)
+
+var (
+	LERoutes = apis.ApiRoutes{
+		"/api/authorize": {
+			Fnc:  HandleAuthLinkEdit,
+			Desc: "auth for linkEdit",
+			Params: []apis.InParam{
+				{
+					Name: "email",
+					Type: apis.NewTypeInParam(types.String),
+				},
+				{
+					Name: "password",
+					Type: apis.NewTypeInParam(types.String),
+				},
+			},
+			DTO: &DTOAuth{},
+		},
+		"/api/get_platforms": {
+			Fnc:  HandleGetPlatformsLinkEdit,
+			Desc: "get_platforms LInkEdit",
+		},
+		"/api/get_selectors": {
+			Fnc:  HandleGetSelectorsLinkEdit,
+			Desc: "get_selectors LInkEdit",
+		},
+		"/api/get_seniorities": {
+			Fnc:  HandleGetSenioritiesLinkEdit,
+			Desc: "get_seniorities LInkEdit",
+		},
+		"/api/get_tags": {
+			Fnc:  HandleGetTagsLinkEdit,
+			Desc: "get_tags LInkEdit",
+		},
+		"/api/get_reasons": {
+			Fnc:  HandleGetReasonsLinkEdit,
+			Desc: "get_reasons LInkEdit",
+		},
+		"/api/get_recruiter_vacancies": {
+			Fnc:  HandleGetRecruiterVacanciesLinkEdit,
+			Desc: "get_recruiter_vacancies LInkEdit",
+		},
+		"/api/get_candidate_info": {
+			Fnc:  HandleGetCandidate_infoLinkEdit,
+			Desc: "get_candidate_info LInkEdit",
+		},
+	}
 )
 
 func HandleAuthLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -83,4 +134,11 @@ func HandleGetSelectorsLinkEdit(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	return m, nil
+}
+
+func init() {
+	for _, route := range LERoutes {
+		route.WithCors = true
+	}
+	Routes.AddRoutes(LERoutes)
 }
