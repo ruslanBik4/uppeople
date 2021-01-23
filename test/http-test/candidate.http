@@ -33,6 +33,9 @@ POST https://{{host}}/api/main/addNewCandidate
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
+{"linkedin":"https://www.linkedin.com/in/dmitriy-druzhbin-73ba003/","name":"Dmitriy Druzhbin","link":"","tag_id":1,"location":"","date":"2020-01-01","salary":"","language":"Beginner","email":"mangoose@the-clu.com","phone":"","skype":"","comments":"","avatar":"https://media-exp1.licdn.com/dms/image/C4D03AQEfsZB2qusqPA/profile-displayphoto-shrink_400_400/0/1516304960310?e=1616630400&v=beta&t=xjDBu2CR2T_iQ-shTdFBJSRVj41G71AO-t_WzEUyyts","platform_id":{"value":"2","valid":true},"vacancies_ids":"[]","seniority_id":{"value":"4","valid":true},"url":""}
+
+###
 {"name":"Ruslan http-test 1",
   "selectPlatform":{"id":36,"label":"Backend","value":"backend"},
   "selectSeniority":{"id":5,"label":"Architect","value":"architect"},
