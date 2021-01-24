@@ -2,7 +2,7 @@
 POST https://{{host}}/api/auth/login
 Content-Type: application/json
 
-{"email":"ed.nazarenkoff@gmail.com","password":"g%S3LmYxz*&RYIn@iQ7B"}
+{"email":"{{username}}","password":"{{password}}"}
 
 > {%
     client.global.set("auth_token", response.body.access_token);
