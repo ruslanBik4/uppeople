@@ -173,7 +173,6 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"language",
 		"zapoln_profile",
 		"file",
-		"avatar",
 		"seniority_id",
 		"date_follow_up",
 	}
@@ -199,7 +198,6 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Language,
 		u.Zapoln_profile,
 		u.File,
-		u.Avatar,
 		u.SelectSeniority.Id,
 		u.Date_follow_up,
 	}
