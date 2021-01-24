@@ -40,7 +40,8 @@ var (
 					Type: apis.NewTypeInParam(types.String),
 				},
 			},
-			DTO: &DTOAuth{},
+			DTO:      &DTOAuth{},
+			WithCors: true,
 			// Resp:   search.RespGroups(),
 		},
 		"/api/main/addNewVacancy": {
