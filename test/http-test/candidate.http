@@ -29,7 +29,7 @@ Content-Type: application/json
   "date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
 }
 ###
-POST https://{{host}}/api/main/addNewCandidate
+OPTIONS https://{{host}}/api/main/addNewCandidate
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
