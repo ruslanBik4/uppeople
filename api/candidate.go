@@ -280,6 +280,28 @@ func createResult(i int64) (interface{}, error) {
 	}, nil
 }
 
+func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	err := DB.Conn.ExecDDL(ctx, "delete from candidates where id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.SetStatusCode(fasthttp.StatusAccepted)
+	return nil, nil
+}
+
 func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

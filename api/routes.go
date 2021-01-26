@@ -75,6 +75,14 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/deleteCandidate/": {
+			Fnc:      HandleDeleteCandidate,
+			Desc:     "delete candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/saveFollowUp": {
 			Fnc:      HandleFollowUpCandidate,
 			Desc:     "show search results according range of characteristics",
