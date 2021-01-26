@@ -184,6 +184,22 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/commentsCandidate/": {
+			Fnc:      HandleCommentsCandidate,
+			Desc:     "show comments for candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/interview/viewInformationForSendCV": {
+			Fnc:      HandleViewInformationForSendCV,
+			Desc:     "show one candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/viewVacancy/": {
 			Fnc:      HandleViewVacancy,
 			Desc:     "show one candidate",

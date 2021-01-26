@@ -90,17 +90,82 @@ type ViewCandidates struct {
 
 const pageItem = 15
 
-func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleViewInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
 	}
 
 	table, _ := db.NewCandidates(DB)
 	err := table.SelectOneAndScan(ctx,
 		table,
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(ctx.UserValue("id")),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return nil, errors.Wrap(err, "	")
+	}
+
+	return map[string]interface{}{
+		"companies": nil,
+		"subject":   nil,
+		"candId":    id,
+		"emailTemplay": map[string]string{
+			"text": fmt.Sprintf(`<p><span style="font-size: 14px;">Please, review {platform} %s  CV</span></p>
+<p>%s</p>
+<p><br>Will be appreciate for quick feedback.</p>
+<p><br><br></p>
+<p>@"UPpeople" Recruiting agency</p>
+<p>&nbsp;<a href="http://www.rock-it.com.ua/" target="_self"><span style="color: blue;font-size: 16px;font-family: Journal, serif;">http://www.rock-it.com.ua/</span></a><span style="font-size: 16px;"> </span></p>`,
+				table.Record.Name, table.Record.Link),
+		},
+	}, nil
+}
+
+func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	return DB.Conn.SelectToMaps(ctx,
+		"select * from comments_for_candidates where id=$1 order by created_at DESC",
+		id,
+	)
+}
+
+func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	table, _ := db.NewCandidates(DB)
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "	")
@@ -298,7 +363,9 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, err
 	}
 
+	toLogCandidate(ctx, DB, id, "", 103)
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
+
 	return nil, nil
 }
 

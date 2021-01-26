@@ -26,6 +26,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		CASE WHEN kod_deystviya=102 THEN ' проработал ' 
 			 WHEN kod_deystviya=101  THEN ' добавил нового '
 			 WHEN kod_deystviya=100  THEN ' обновил у '
+			 WHEN kod_deystviya=103  THEN ' удалил '
 			ELSE '' END,
 		CASE WHEN candidate_id > 0 THEN CONCAT(' кандидата ', can.name)
 			 WHEN vacancy_id > 0 THEN CONCAT(' вакансию компании ', companies.name)
