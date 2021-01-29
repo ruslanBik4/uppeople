@@ -113,7 +113,11 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 		if len(dto.SelectCompanies) > 0 {
 			where = append(where, "companies.id")
-			args = append(args, dto.SelectRecruiter.Id)
+			p := make([]int32, len(dto.SelectCompanies))
+			for i, tag := range dto.SelectCompanies {
+				p[i] = tag.Id
+			}
+			args = append(args, p)
 			// DB.Conn.SelectToMaps(ctx,
 			// 	`select candidates.id',
 			//         GROUP_CONCAT(DISTINCT(JSON_OBJECT(compId, companies.id, compName, companies.nazva,  vacStat, status_for_vacs.status, date, IFNULL(vacancies_to_candidates.date_last_change, vacancies_to_candidates.date_create), commentVac, vacancies_to_candidates.rej_text)) SEPARATOR ;) as status'),
