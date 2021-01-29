@@ -241,12 +241,15 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"tag_id": "required value",
 		}, apis.ErrWrongParamsList
 	}
-	// if u.SelectPlatform.Id > 0 {
-	// 	u.Platform_id. = u.SelectPlatform.Id
-	// }
+	if u.SelectPlatform.Id > 0 {
+		u.Platform_id = u.SelectPlatform.Id
+	}
+	if u.SelectSeniority.Id > 0 {
+		u.Seniority_id = u.SelectSeniority.Id
+	}
 	args := []interface{}{
 		u.Name,
-		u.SelectPlatform.Id,
+		u.Platform_id,
 		u.Salary,
 		u.Email,
 		u.Phone,
@@ -266,7 +269,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Language,
 		u.Zapoln_profile,
 		u.File,
-		u.SelectSeniority.Id,
+		u.Seniority_id,
 		u.Date_follow_up,
 	}
 
@@ -392,11 +395,20 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	u.Platform_id.Int32 = u.SelectPlatform.Id
-	u.Platform_id.Valid = true
-	u.Seniority_id.Int32 = u.SelectSeniority.Id
-	u.Seniority_id.Valid = true
-	u.Tag_id = u.SelectedTag.Id
+	if u.SelectedTag.Id > 0 {
+		u.Tag_id = u.SelectedTag.Id
+	}
+	if u.Tag_id == 0 {
+		return map[string]interface{}{
+			"tag_id": "required value",
+		}, apis.ErrWrongParamsList
+	}
+	if u.SelectPlatform.Id > 0 {
+		u.Platform_id = u.SelectPlatform.Id
+	}
+	if u.SelectSeniority.Id > 0 {
+		u.Seniority_id = u.SelectSeniority.Id
+	}
 	u.Comments = u.Comment
 
 	oldData := auth.GetEditCandidate(ctx)

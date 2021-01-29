@@ -31,24 +31,22 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		},
 	}
 
-	if record.Recruter_id.Valid {
-		recTable, _ := db.NewUsers(DB)
+	recTable, _ := db.NewUsers(DB)
 
-		err := recTable.SelectOneAndScan(ctx,
-			&ref.Recruiter,
-			dbEngine.ColumnsForSelect("name"),
-			dbEngine.WhereForSelect("id"),
-			dbEngine.ArgsForSelect(record.Recruter_id.Int32),
-		)
-		if err != nil {
-			logs.ErrorLog(err, "recTable.SelectOneAndScan")
-		}
-		ref.Status.Recruiter = ref.Recruiter
+	err := recTable.SelectOneAndScan(ctx,
+		&ref.Recruiter,
+		dbEngine.ColumnsForSelect("name"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(record.Recruter_id),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "recTable.SelectOneAndScan")
 	}
+	ref.Status.Recruiter = ref.Recruiter
 
 	tagTable, _ := db.NewTags(DB)
 
-	err := tagTable.SelectOneAndScan(ctx,
+	err = tagTable.SelectOneAndScan(ctx,
 		ref.Tags,
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(record.Tag_id),
@@ -61,13 +59,13 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	}
 
 	for _, s := range seniors {
-		if s.Id == int32(ref.Seniority_id.Int32) {
+		if s.Id == ref.Seniority_id {
 			ref.Seniority = s.Label
 		}
 	}
 
 	for _, p := range platforms {
-		if p.Id == record.Platform_id.Int32 {
+		if p.Id == record.Platform_id {
 			ref.Platform = p.Label
 			ref.ViewCandidate.Platform = p
 		}
