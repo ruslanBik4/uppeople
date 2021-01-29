@@ -232,6 +232,18 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"seniority_id",
 		"date_follow_up",
 	}
+
+	if u.SelectedTag.Id > 0 {
+		u.Tag_id = u.SelectedTag.Id
+	}
+	if u.Tag_id == 0 {
+		return map[string]interface{}{
+			"tag_id": "required value",
+		}, apis.ErrWrongParamsList
+	}
+	// if u.SelectPlatform.Id > 0 {
+	// 	u.Platform_id. = u.SelectPlatform.Id
+	// }
 	args := []interface{}{
 		u.Name,
 		u.SelectPlatform.Id,
@@ -243,7 +255,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Linkedin,
 		u.Str_companies,
 		u.Status,
-		u.SelectedTag.Id,
+		u.Tag_id,
 		u.Comment,
 		time.Now(),
 		auth.GetUserData(ctx).Id,
