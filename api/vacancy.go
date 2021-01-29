@@ -263,6 +263,11 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
 	}
+	offset := 0
+	id, ok := ctx.UserValue(ParamPageNum.Name).(int)
+	if ok && id > 1 {
+		offset = id * pageItem
+	}
 
 	filter, ok := ctx.UserValue(apis.JSONParams).(*vacDTO)
 	if !ok {
@@ -309,7 +314,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 	vacancies, _ := db.NewVacancies(DB)
 	res := ResVacancies{
-		ResList:         NewResList(ctx, DB),
+		ResList:         NewResList(ctx, DB, id),
 		Vacancies:       make([]VacanciesView, 0),
 		CandidateStatus: getStatusVac(ctx, DB),
 		VacancyStatus:   getStatuses(ctx, DB),
@@ -317,6 +322,8 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 	options := []dbEngine.BuildSqlOptions{
 		dbEngine.OrderBy("date_create desc"),
+		dbEngine.FetchOnlyRows(pageItem),
+		dbEngine.Offset(offset),
 	}
 	if len(columns) > 0 {
 		options = append(options, dbEngine.WhereForSelect(columns...))

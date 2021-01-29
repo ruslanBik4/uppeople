@@ -43,6 +43,9 @@ type statusCandidate struct {
 	CompId       int32      `json:"comp_id"`
 	Recruiter    string     `json:"recruiter"`
 	DateFollowUp *time.Time `json:"date_follow_up"`
+	VacStat      string     `json:"vacStat"`
+	CompName     string     `json:"compName"`
+	CommentVac   string     `json:"commentVac"`
 }
 type ViewCandidate struct {
 	*db.CandidatesFields

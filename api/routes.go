@@ -22,6 +22,13 @@ var (
 		Req:      true,
 		Type:     apis.NewTypeInParam(types.Int32),
 	}
+	ParamPageNum = apis.InParam{
+		Name:     "page_num",
+		Desc:     "number of page",
+		DefValue: apis.ApisValues(apis.ChildRoutePath),
+		Req:      true,
+		Type:     apis.NewTypeInParam(types.Int),
+	}
 )
 
 var (
@@ -97,6 +104,9 @@ var (
 			Fnc:  HandleViewAllVacancyInCompany,
 			Desc: "get list of vacancies",
 			DTO:  &vacDTO{},
+			Params: []apis.InParam{
+				ParamPageNum,
+			},
 		},
 		"/api/": {
 			Fnc:  HandleApiRedirect,
@@ -124,7 +134,7 @@ var (
 			NeedAuth: true,
 			DTO:      &SearchCandidates{},
 			Params: []apis.InParam{
-				ParamID,
+				ParamPageNum,
 			},
 		},
 		"/api/main/returnAllCandidates/": {
@@ -133,7 +143,7 @@ var (
 			NeedAuth: true,
 			DTO:      &SearchCandidates{},
 			Params: []apis.InParam{
-				ParamID,
+				ParamPageNum,
 			},
 		},
 		"/api/main/getCandidatesAmountByTags": {

@@ -44,21 +44,21 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
+	offset := 0
+	id, ok := ctx.UserValue(ParamPageNum.Name).(int)
+	if ok && id > 1 {
+		offset = id * pageItem
+	}
+
 	candidates, _ := db.NewCandidates(DB)
 	res := ResCandidates{
-		ResList:    NewResList(ctx, DB),
+		ResList:    NewResList(ctx, DB, id),
 		Candidates: make([]*CandidateView, 0),
 		Company:    getCompanies(ctx, DB),
 		Reasons:    getRejectReason(ctx, DB),
 		Recruiter:  getRecruters(ctx, DB),
 		Statuses:   getStatuses(ctx, DB),
 		Tags:       getTags(ctx, DB),
-	}
-
-	offset := 0
-	id, ok := ctx.UserValue("id").(int32)
-	if ok && id > 1 {
-		offset = int(id * pageItem)
 	}
 
 	seniors := getSeniorities(ctx, DB)

@@ -27,8 +27,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		Status: statusCandidate{
 			Date:         record.Date,
 			Comments:     record.Comments,
-			CompId:       0,
-			Recruiter:    "",
 			DateFollowUp: record.Date_follow_up,
 		},
 	}
@@ -56,7 +54,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		dbEngine.ArgsForSelect(record.Tag_id),
 	)
 	if err != nil {
-		logs.ErrorLog(err, "recTable.SelectOneAndScan")
+		logs.ErrorLog(err, "tagTable id=%d %s", record.Tag_id, record.Name)
 	} else {
 		ref.TagName = ref.Tags.Name
 		ref.TagColor = ref.Tags.Color
@@ -87,6 +85,10 @@ FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 		logs.ErrorLog(err, "")
 	}
 
+	if len(ref.ViewCandidate.Vacancies) > 0 {
+		ref.Status.CompId, _ = ref.ViewCandidate.Vacancies[0]["company_id"].(int32)
+		ref.Status.CompName, _ = ref.ViewCandidate.Vacancies[0]["name"].(string)
+	}
 	return ref
 }
 
@@ -127,10 +129,12 @@ type ResList struct {
 	Seniority              SelectedUnits `json:"seniority"`
 }
 
-func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) *ResList {
+func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, pageNum int) *ResList {
 	return &ResList{
-		Page:        1,
-		CurrentPage: 1,
+		Page:        pageNum,
+		CurrentPage: pageNum,
+		Count:       10 * pageItem,
+		TotalPage:   10,
 		PerPage:     pageItem,
 		Platforms:   getPlatforms(ctx, DB),
 		Seniority:   getSeniorities(ctx, DB),
