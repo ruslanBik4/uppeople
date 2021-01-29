@@ -291,7 +291,9 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 	toLogCandidate(ctx, DB, int32(u.Id), u.Comment, 101)
 
-	return createResult(i)
+	ctx.SetStatusCode(fasthttp.StatusCreated)
+
+	return i, nil
 }
 
 type FollowUpDTO struct {
@@ -378,7 +380,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -494,5 +496,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		toLogCandidate(ctx, DB, int32(id), text, 100)
 	}
 
-	return createResult(i)
+	ctx.SetStatusCode(fasthttp.StatusAccepted)
+
+	return nil, nil
 }
