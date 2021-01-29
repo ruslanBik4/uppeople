@@ -21,7 +21,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref := &CandidateView{
 		ViewCandidate: &ViewCandidate{
 			CandidatesFields: record,
-			Companies:        getCompanies(ctx, DB)[0],
+			Companies:        getCompanies(ctx, DB),
 			Tags:             &db.TagsFields{},
 		},
 		Status: statusCandidate{
@@ -32,6 +32,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 			DateFollowUp: record.Date_follow_up,
 		},
 	}
+
 	if record.Recruter_id.Valid {
 		recTable, _ := db.NewUsers(DB)
 
@@ -72,6 +73,18 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 			ref.Platform = p.Label
 			ref.ViewCandidate.Platform = p
 		}
+	}
+
+	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
+		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
+LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
+		companies, vacancies.company_id, companies.id
+FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
+	JOIN vacancies_to_candidates on (vacancies.id = vacancies_to_candidates.vacancy_id)
+	JOIN platforms ON (vacancies.platform_id = platforms.id)
+	WHERE vacancies_to_candidates.candidate_id=$1`, ref.ViewCandidate.Id)
+	if err != nil {
+		logs.ErrorLog(err, "")
 	}
 
 	return ref

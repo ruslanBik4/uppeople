@@ -47,7 +47,7 @@ type statusCandidate struct {
 type ViewCandidate struct {
 	*db.CandidatesFields
 	Platform  *SelectedUnit            `json:"platforms,omitempty"`
-	Companies *SelectedUnit            `json:"companies,omitempty"`
+	Companies SelectedUnits            `json:"companies,omitempty"`
 	Seniority string                   `json:"seniority"`
 	Tags      *db.TagsFields           `json:"tags,omitempty"`
 	Recruiter string                   `json:"recruiter"`
@@ -83,9 +83,9 @@ type StatusesCandidate struct {
 	Vacancy_id       int32                     `json:"vacancy_id"`
 }
 type ViewCandidates struct {
-	Candidates *ViewCandidate      `json:"0"`
-	SelectOpt  selectOpt           `json:"select"`
-	Statuses   []StatusesCandidate `json:"statusesCandidate"`
+	Candidate *ViewCandidate      `json:"0"`
+	SelectOpt selectOpt           `json:"select"`
+	Statuses  []StatusesCandidate `json:"statusesCandidate"`
 }
 
 const pageItem = 15
@@ -187,19 +187,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		},
 	}
 
-	res.Candidates = NewCandidateView(ctx, table.Record, DB, res.SelectOpt.Platforms, res.SelectOpt.Seniorities).ViewCandidate
-	res.Candidates.Vacancies, err = DB.Conn.SelectToMaps(ctx,
-		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
-LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
-		companies, vacancies.company_id, companies.id
-FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
-	JOIN vacancies_to_candidates on (vacancies.id = vacancies_to_candidates.vacancy_id)
-	JOIN platforms ON (vacancies.platform_id = platforms.id)
-	WHERE vacancies_to_candidates.candidate_id=$1`, res.Candidates.Id)
-
-	if err != nil {
-		logs.ErrorLog(err, "")
-	}
+	res.Candidate = NewCandidateView(ctx, table.Record, DB, res.SelectOpt.Platforms, res.SelectOpt.Seniorities).ViewCandidate
 
 	return res, nil
 }
