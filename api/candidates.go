@@ -28,7 +28,7 @@ type SearchCandidates struct {
 	DateTo          string        `json:"dateTo"`
 	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
 	SelectCompanies SelectedUnits `json:"selectCompanies"`
-	SelectTag       SelectedUnits `json:"selectTag"`
+	SelectTag       *SelectedUnit `json:"selectTag"`
 	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
 }
 
@@ -85,11 +85,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		if dto.SelectTag != nil {
 			where = append(where, "tag_id")
-			tags := make([]int32, len(dto.SelectTag))
-			for i, tag := range dto.SelectTag {
-				tags[i] = tag.Id
-			}
-			args = append(args, tags)
+			args = append(args, dto.SelectTag.Id)
 		}
 
 		if dto.SelectPlatforms != nil {
@@ -112,7 +108,10 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		}
 		if len(dto.SelectCompanies) > 0 {
-			where = append(where, "companies.id")
+			where = append(where, `id in (SELECT vc.candidate_id 
+	FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
+	JOIN vacancies_to_candidates  vc on (vacancies.id = vc.vacancy_id)
+	WHERE companies.id=%s)`)
 			p := make([]int32, len(dto.SelectCompanies))
 			for i, tag := range dto.SelectCompanies {
 				p[i] = tag.Id
