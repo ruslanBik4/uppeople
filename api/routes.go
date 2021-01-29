@@ -165,7 +165,7 @@ var (
 			Desc:     "show all candidates",
 			NeedAuth: true,
 			Params: []apis.InParam{
-				ParamID,
+				ParamPageNum,
 			},
 		},
 		"/api/admin/all-staff": {
@@ -183,7 +183,7 @@ var (
 			Desc:     "show all candidates",
 			NeedAuth: true,
 			Params: []apis.InParam{
-				ParamID,
+				ParamPageNum,
 			},
 		},
 		"/api/main/viewOneCandidate/": {

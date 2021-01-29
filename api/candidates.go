@@ -62,11 +62,16 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	seniors := getSeniorities(ctx, DB)
-	args := make([]interface{}, 0)
-	where := make([]string, 0)
-
+	options := []dbEngine.BuildSqlOptions{
+		dbEngine.OrderBy("date desc"),
+		dbEngine.FetchOnlyRows(pageItem),
+		dbEngine.Offset(offset),
+	}
 	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCandidates)
 	if ok {
+		args := make([]interface{}, 0)
+		where := make([]string, 0)
+
 		if dto.Name > "" {
 			where = append(where, "~name")
 			args = append(args, dto.Name)
@@ -104,6 +109,11 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			//         users.name as recruiter`,
 			// 	args...)
 		}
+		options = append(options,
+			dbEngine.WhereForSelect(where...),
+			dbEngine.ArgsForSelect(args...),
+		)
+
 	}
 	err := candidates.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
@@ -113,12 +123,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 			return nil
 		},
-		dbEngine.WhereForSelect(where...),
-		dbEngine.ArgsForSelect(args...),
-		dbEngine.OrderBy("date desc"),
-		dbEngine.ArgsForSelect(args...),
-		dbEngine.FetchOnlyRows(pageItem),
-		dbEngine.Offset(offset),
+		options...,
 	)
 	if err != nil {
 		return createErrResult(err)
