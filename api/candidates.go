@@ -28,6 +28,8 @@ type SearchCandidates struct {
 	DateTo          string        `json:"dateTo"`
 	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
 	SelectCompanies SelectedUnits `json:"selectCompanies"`
+	SelectTag       SelectedUnits `json:"selectTag"`
+	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
 }
 
 func (s *SearchCandidates) GetValue() interface{} {
@@ -80,6 +82,25 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			where = append(where, "recruter_id")
 			args = append(args, dto.SelectRecruiter.Id)
 		}
+
+		if dto.SelectTag != nil {
+			where = append(where, "tag_id")
+			tags := make([]int32, len(dto.SelectTag))
+			for i, tag := range dto.SelectTag {
+				tags[i] = tag.Id
+			}
+			args = append(args, tags)
+		}
+
+		if dto.SelectPlatforms != nil {
+			where = append(where, "platform_id")
+			p := make([]int32, len(dto.SelectPlatforms))
+			for i, tag := range dto.SelectPlatforms {
+				p[i] = tag.Id
+			}
+			args = append(args, p)
+		}
+
 		if dto.DateFrom > "" {
 			where = append(where, ">=date")
 			args = append(args, dto.DateFrom)
