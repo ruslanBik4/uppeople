@@ -100,7 +100,7 @@ var (
 		// 	Fnc:  HandleAuthLogin,
 		// 	Desc: "show search results according range of characteristics",
 		// },
-		"/api/main/viewAllVacancyInCompany/": {
+		"/api/main/viewAllVacancyInCompany/null/": {
 			Fnc:  HandleViewAllVacancyInCompany,
 			Desc: "get list of vacancies",
 			DTO:  &vacDTO{},
