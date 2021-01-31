@@ -165,6 +165,11 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
+	if len(res.Candidates) < pageItem {
+		res.ResList.TotalPage = 1
+		res.ResList.Count = len(res.Candidates)
+	}
+
 	return res, nil
 }
 
