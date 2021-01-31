@@ -21,7 +21,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref := &CandidateView{
 		ViewCandidate: &ViewCandidate{
 			CandidatesFields: record,
-			Companies:        getCompanies(ctx, DB),
 			Tags:             &db.TagsFields{},
 		},
 		Status: statusCandidate{
@@ -86,7 +85,17 @@ FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	if len(ref.ViewCandidate.Vacancies) > 0 {
 		ref.Status.CompId, _ = ref.ViewCandidate.Vacancies[0]["company_id"].(int32)
 		ref.Status.CompName, _ = ref.ViewCandidate.Vacancies[0]["name"].(string)
+		args := make([]int32, len(ref.ViewCandidate.Vacancies))
+		for i, vac := range ref.ViewCandidate.Vacancies {
+			args[i] = vac["company_id"].(int32)
+		}
+		ref.Companies = getCompanies(ctx,
+			DB,
+			dbEngine.WhereForSelect("id"),
+			dbEngine.ArgsForSelect(args),
+		)
 	}
+
 	return ref
 }
 
@@ -276,13 +285,14 @@ func getRecruters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 	return res
 }
 
-func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
+func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, opt ...dbEngine.BuildSqlOptions) (res SelectedUnits) {
 	company, _ := db.NewCompanies(DB)
 
+	opt = append(opt, dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"))
 	err := company.SelectAndScanEach(ctx,
 		nil,
 		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
+		opt...,
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	SelectSelfScanEach")
