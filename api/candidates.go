@@ -110,7 +110,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		if len(dto.SelectCompanies) > 0 {
 			where = append(where, `id in (SELECT vc.candidate_id 
 	FROM vacancies v JOIN companies on (v.company_id=companies.id)
-	JOIN vacancies_to_candidates  vc on (vacancies.id = vc.vacancy_id)
+	JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id)
 	WHERE companies.id=%s)`)
 			p := make([]int32, len(dto.SelectCompanies))
 			for i, tag := range dto.SelectCompanies {
