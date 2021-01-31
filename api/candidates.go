@@ -30,6 +30,7 @@ type SearchCandidates struct {
 	SelectCompanies SelectedUnits `json:"selectCompanies"`
 	SelectTag       *SelectedUnit `json:"selectTag"`
 	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
+	SelectStatuses  SelectedUnits `json:"selectStatuses"`
 }
 
 func (s *SearchCandidates) GetValue() interface{} {
@@ -59,7 +60,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Company:    getCompanies(ctx, DB),
 		Reasons:    getRejectReason(ctx, DB),
 		Recruiter:  getRecruters(ctx, DB),
-		Statuses:   getStatuses(ctx, DB),
+		Statuses:   getStatusVac(ctx, DB),
 		Tags:       getTags(ctx, DB),
 	}
 
@@ -107,6 +108,17 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			args = append(args, dto.DateTo)
 
 		}
+		if dto.SelectStatuses != nil {
+			where = append(where, `id in (SELECT candidate_id 
+	FROM vacancies_to_candidates
+	WHERE status=%s)`)
+			p := make([]int32, len(dto.SelectStatuses))
+			for i, tag := range dto.SelectStatuses {
+				p[i] = tag.Id
+			}
+			args = append(args, p)
+		}
+
 		if len(dto.SelectCompanies) > 0 {
 			where = append(where, `id in (SELECT vc.candidate_id 
 	FROM vacancies v JOIN companies on (v.company_id=companies.id)
