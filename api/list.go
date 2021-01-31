@@ -73,10 +73,11 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
-		companies, vacancies.company_id, companies.id
+		companies, vacancies.company_id, companies.id, sv.status
 FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
-	JOIN vacancies_to_candidates on (vacancies.id = vacancies_to_candidates.vacancy_id)
+	JOIN vacancies_to_candidates vc on (vacancies.id = vc.vacancy_id)
 	JOIN platforms ON (vacancies.platform_id = platforms.id)
+	JOIN status_for_vacs sv on vc.status = sv.id
 	WHERE vacancies_to_candidates.candidate_id=$1`, ref.ViewCandidate.Id)
 	if err != nil {
 		logs.ErrorLog(err, "")
@@ -85,6 +86,7 @@ FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	if len(ref.ViewCandidate.Vacancies) > 0 {
 		ref.Status.CompId, _ = ref.ViewCandidate.Vacancies[0]["company_id"].(int32)
 		ref.Status.CompName, _ = ref.ViewCandidate.Vacancies[0]["name"].(string)
+		ref.Status.VacStat, _ = ref.ViewCandidate.Vacancies[0]["status"].(string)
 		args := make([]int32, len(ref.ViewCandidate.Vacancies))
 		for i, vac := range ref.ViewCandidate.Vacancies {
 			args[i] = vac["company_id"].(int32)
