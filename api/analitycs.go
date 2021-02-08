@@ -66,7 +66,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 			LEFT JOIN candidates c ON t.id=c.tag_id
 			LEFT JOIN  vacancies_to_candidates vtc ON c.id=vtc.candidate_id
 			LEFT JOIN vacancies v ON v.id = vtc.vacancy_id
-			WHERE v.status IN (0,1) AND parent_id=
+			WHERE v.status IN (0,1) AND parent_id=$1
 `
 	gr := `      GROUP BY 1, 2, 3, 5`
 
@@ -97,14 +97,16 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	}
 
 	m, err := DB.Conn.SelectToMaps(ctx,
-		sql+"0"+where+gr,
+		sql+where+gr,
+		0,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
 	}
 
 	r, err := DB.Conn.SelectToMaps(ctx,
-		sql+"3"+where+gr,
+		sql+where+gr,
+		3,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "")

@@ -8,6 +8,7 @@ import (
 	"regexp"
 
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
@@ -20,6 +21,9 @@ var (
 )
 
 func createErrResult(err error) (interface{}, error) {
+	if err == pgx.ErrNoRows {
+		return nil, apis.ErrWrongParamsList
+	}
 	msg := err.Error()
 	e, ok := errors.Cause(err).(*pgconn.PgError)
 	if ok {

@@ -73,6 +73,15 @@ var (
 			WithCors: true,
 			NeedAuth: true,
 		},
+		"/api/main/addAvatarCandidate": {
+			Fnc:       HandleAddAvatar,
+			Desc:      "put avata img to photos",
+			Multipart: true,
+			NeedAuth:  true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/editCandidate/": {
 			Fnc:      HandleEditCandidate,
 			Desc:     "show search results according range of characteristics",
@@ -188,6 +197,14 @@ var (
 		},
 		"/api/main/viewOneCandidate/": {
 			Fnc:      HandleViewCandidate,
+			Desc:     "show one candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/interview/viewInformationForSendCV/": {
+			Fnc:      HandleInformationForSendCV,
 			Desc:     "show one candidate",
 			NeedAuth: true,
 			Params: []apis.InParam{

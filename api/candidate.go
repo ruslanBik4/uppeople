@@ -151,6 +151,58 @@ func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	)
 }
 
+func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+	table, _ := db.NewCandidates(DB)
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	name := table.Record.Name
+	platform, _ := db.NewPlatforms(DB)
+	err = platform.SelectOneAndScan(ctx,
+		platform,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(table.Record.Platform_id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	platformName := platform.Record.Nazva.String
+
+	maps := make(map[string]interface{}, 0)
+	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
+		`select id as compId, c.name, otpravka as send_details
+from companies c
+where c.id in (select v.company_id from vacancies v
+    where status <= 1 and platform_id=$1)`,
+		table.Record.Platform_id)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
+	maps["emailTemplay"] = fmt.Sprintf(emailText, platformName, name, table.Record.Link)
+
+	return maps, nil
+}
+
 func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

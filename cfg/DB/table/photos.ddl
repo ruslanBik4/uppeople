@@ -10,3 +10,4 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 create unique index if not exists photos_blob_uindex
     on photos (digest(blob, 'sha1'));
+

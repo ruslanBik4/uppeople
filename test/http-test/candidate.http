@@ -12,6 +12,11 @@ GET https://{{host}}/api/main/viewOneCandidate/9977
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
+###
+GET https://{{host}}/api/interview/viewInformationForSendCV/10547
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
 
 ###
 GET https://{{host}}/api/main/allCandidates/2000
