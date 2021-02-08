@@ -189,16 +189,16 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
 		`SELECT id as compId, c.name, otpravka as send_details,
-  array(select ROW(t.email, t.id, t.all_platforms, contacts_to_platforms.platform_id, t.name)
+  (select array_agg(ROW(t.email, t.id, t.all_platforms, contacts_to_platforms.platform_id, t.name))
              from contacts t join contacts_to_platforms on t.id=contacts_to_platforms.contact_id
            WHERE t.company_id = c.id AND (platform_id=$1 OR all_platforms=1)) as contacts,
-  array(select ROW(v.id,
+  (select array_agg(ROW(v.id,
        			(select p.nazva as platform from platforms p where p.id = v.platform_id)            ,
        			(select l.name as location from location_for_vacancies l where v.location_id = l.id),
-               (select s.nazva as seniority from seniorities s where s.id = v.seniority_id) ,
-               v.salary,v.name, v.user_ids) as vacancy
-from vacancies v
-where c.id = v.company_id and status <= 1 and platform_id=$1)
+               (select s.nazva as seniority from seniorities s where s.id = v.seniority_id),
+               v.salary,v.name, v.user_ids)) as vacancy
+	from vacancies v
+	where c.id = v.company_id and status <= 1 and platform_id=$1)
 FROM companies c
 WHERE c.id in (select v.company_id from vacancies v
     where status <= 1 and platform_id=$1)`,
