@@ -204,14 +204,12 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	where c.id = v.company_id and status <= 1 and platform_id=$1)
 FROM companies c
 WHERE c.id in (select v.company_id from vacancies v
-    where status <= 1 and platform_id=$1)`,
-		table.Record.Platform_id)
+    where status <= 1 and platform_id=$1 and user_ids ~ format('\m%s\M', $2::integer))`,
+		table.Record.Platform_id,
+		auth.GetUserData(ctx).Id,
+	)
 	if err != nil {
 		return createErrResult(err)
-	}
-
-	for _, val := range maps["companies"].([]map[string]interface{})[0] {
-		logs.DebugLog("%T %#[1]v", val)
 	}
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
