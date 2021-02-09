@@ -189,14 +189,16 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
 		`SELECT id as compId, c.name, otpravka as send_details,
-  (select array_agg(ROW(t.email, t.id, t.all_platforms, contacts_to_platforms.platform_id, t.name))
+  (select json_agg(json_build_object('email', t.email, 'id',t.id, t.all_platforms,
+           'p',contacts_to_platforms.platform_id, 'name',t.name))
              from contacts t join contacts_to_platforms on t.id=contacts_to_platforms.contact_id
            WHERE t.company_id = c.id AND (platform_id=$1 OR all_platforms=1)) as contacts,
-  (select array_agg(ROW(v.id,
-       			(select p.nazva as platform from platforms p where p.id = v.platform_id)            ,
-       			(select l.name as location from location_for_vacancies l where v.location_id = l.id),
-               (select s.nazva as seniority from seniorities s where s.id = v.seniority_id),
-               v.salary,v.name, v.user_ids)) as vacancy
+  (select json_agg(json_build_object('id', v.id,
+                                           'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
+                                           'location',
+           (select l.name   from location_for_vacancies l where v.location_id = l.id),
+                                           'seniority', (select s.nazva   from seniorities s where s.id = v.seniority_id),
+           'salary', v.salary, 'name', v.name, 'user_ids', v.user_ids)) as vacancy
 	from vacancies v
 	where c.id = v.company_id and status <= 1 and platform_id=$1)
 FROM companies c
@@ -205,6 +207,10 @@ WHERE c.id in (select v.company_id from vacancies v
 		table.Record.Platform_id)
 	if err != nil {
 		return createErrResult(err)
+	}
+
+	for _, val := range maps["companies"].([]map[string]interface{})[0] {
+		logs.DebugLog("%T %#[1]v", val)
 	}
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
