@@ -191,7 +191,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		`SELECT id as compId, c.name, otpravka as send_details,
   (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
            'platform_id',cp.platform_id, 'name',t.name))
-             from contacts t join cp on t.id=cp.contact_id
+             from contacts t join contacts_to_platforms cp on t.id=cp.contact_id
            WHERE t.company_id = c.id AND (platform_id=$1 OR all_platforms=1)) as contacts,
   (select json_agg(json_build_object('id', v.id,
 		   'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
