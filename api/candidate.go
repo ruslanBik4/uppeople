@@ -189,16 +189,17 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
 		`SELECT id as compId, c.name, otpravka as send_details,
-  (select json_agg(json_build_object('email', t.email, 'id',t.id, t.all_platforms,
-           'p',contacts_to_platforms.platform_id, 'name',t.name))
-             from contacts t join contacts_to_platforms on t.id=contacts_to_platforms.contact_id
+  (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
+           'platform_id',cp.platform_id, 'name',t.name))
+             from contacts t join cp on t.id=cp.contact_id
            WHERE t.company_id = c.id AND (platform_id=$1 OR all_platforms=1)) as contacts,
   (select json_agg(json_build_object('id', v.id,
-                                           'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
-                                           'location',
-           (select l.name   from location_for_vacancies l where v.location_id = l.id),
-                                           'seniority', (select s.nazva   from seniorities s where s.id = v.seniority_id),
-           'salary', v.salary, 'name', v.name, 'user_ids', v.user_ids)) as vacancy
+		   'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
+		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
+           'seniority', (select s.nazva from seniorities s where s.id = v.seniority_id),
+           'salary', v.salary, 
+			'name', v.name, 
+			'user_ids', v.user_ids)) as vacancy
 	from vacancies v
 	where c.id = v.company_id and status <= 1 and platform_id=$1)
 FROM companies c
