@@ -91,6 +91,34 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return table.Record, nil
 }
 
+func HandleEditStatusVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	u, ok := ctx.UserValue(apis.JSONParams).(*VacancyDTO)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	table, _ := db.NewVacancies(DB)
+	i, err := table.Update(ctx,
+		dbEngine.ColumnsForSelect("status"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(u.Status, u.Id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	if i > 0 {
+		toLogVacancy(ctx, DB, u.SelectCompany.Id, u.Id, "status", 100)
+	}
+
+	return createResult(i)
+}
+
 func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

@@ -66,6 +66,12 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/updateStatusVacancy": {
+			Fnc:      HandleEditStatusVacancy,
+			Desc:     "edit vacancy",
+			DTO:      &VacancyDTO{},
+			NeedAuth: true,
+		},
 		"/api/main/addNewCandidate": {
 			Fnc:      HandleAddCandidate,
 			Desc:     "show search results according range of characteristics",
