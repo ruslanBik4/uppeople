@@ -91,6 +91,14 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/deleteVacancy/": {
+			Fnc:      HandleDeleteVacancy,
+			Desc:     "delete Vacancy",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/deleteCandidate/": {
 			Fnc:      HandleDeleteCandidate,
 			Desc:     "delete candidate",
@@ -214,14 +222,6 @@ var (
 		"/api/main/commentsCandidate/": {
 			Fnc:      HandleCommentsCandidate,
 			Desc:     "show comments for candidate",
-			NeedAuth: true,
-			Params: []apis.InParam{
-				ParamID,
-			},
-		},
-		"/api/interview/viewInformationForSendCV": {
-			Fnc:      HandleViewInformationForSendCV,
-			Desc:     "show one candidate",
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,

@@ -258,6 +258,40 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return createResult(i)
 }
 
+func HandleDeleteVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	table, _ := db.NewVacancies(DB)
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	err = DB.Conn.ExecDDL(ctx, "delete from vacancies where id = $1", id)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	toLogVacancy(ctx, DB, table.Record.Company_id, id, table.Record.Name.String, 103)
+	ctx.SetStatusCode(fasthttp.StatusAccepted)
+
+	return nil, nil
+}
+
 func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
