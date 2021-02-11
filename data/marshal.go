@@ -5,7 +5,6 @@
 package data
 
 import (
-	"database/sql"
 	"math"
 	"math/big"
 	"unsafe"
@@ -76,29 +75,4 @@ func init() {
 
 		})
 
-	jsoniter.RegisterTypeEncoderFunc("sql.NullString",
-		func(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-			val := (*sql.NullString)(ptr)
-			if val.Valid {
-				stream.WriteString(val.String)
-			} else {
-				stream.WriteString("nil")
-			}
-		},
-		func(pointer unsafe.Pointer) bool {
-			return false
-		})
-
-	jsoniter.RegisterTypeEncoderFunc("sql.NullInt32",
-		func(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-			val := (*sql.NullInt32)(ptr)
-			if val.Valid {
-				stream.WriteInt32(val.Int32)
-			} else {
-				stream.WriteString("nil")
-			}
-		},
-		func(pointer unsafe.Pointer) bool {
-			return false
-		})
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -59,25 +60,28 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 		if dto.Email > "" {
 			where = append(where, "~email")
-			args = append(args, dto.Name)
+			args = append(args, dto.Email)
 		}
 		if dto.Skype > "" {
 			where = append(where, "~skype")
-			args = append(args, dto.Name)
+			args = append(args, dto.Skype)
 		}
 		if dto.Phone > "" {
 			where = append(where, "~phone")
-			args = append(args, dto.Name)
+			args = append(args, dto.Phone)
 		}
 		options = append(options,
 			dbEngine.WhereForSelect(where...),
 			dbEngine.ArgsForSelect(args...),
 		)
+	} else {
+		logs.DebugLog("not json")
 	}
 
 	rows := make([]*ViewCompany, 0)
 	err := companies.SelectSelfScanEach(ctx,
 		func(record *db.CompaniesFields) error {
+
 			elem := &ViewCompany{
 				CompaniesFields: record,
 			}
@@ -112,5 +116,6 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 type ViewCompany struct {
 	*db.CompaniesFields
-	Vacancies, Candidates int32
+	Vacancies  int32 `json:"vacancies"`
+	Candidates int32 `json:"candidates"`
 }

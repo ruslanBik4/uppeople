@@ -173,7 +173,7 @@ var (
 			Fnc:      HandleAllCompanies,
 			Desc:     "show all companies",
 			NeedAuth: true,
-			DTO:      &SearchCandidates{},
+			DTO:      &SearchCompany{},
 			Params: []apis.InParam{
 				ParamPageNum,
 			},
@@ -192,6 +192,11 @@ var (
 		},
 	}
 	GetRoutes = apis.ApiRoutes{
+		"/api/img/": {
+			Fnc:      HandleGetImg,
+			Desc:     "show img",
+			NeedAuth: true,
+		},
 		"/api/main/returnAllCandidates/": {
 			Fnc:      HandleReturnAllCandidate,
 			Desc:     "show all candidates",
