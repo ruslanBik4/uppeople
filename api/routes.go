@@ -193,9 +193,8 @@ var (
 	}
 	GetRoutes = apis.ApiRoutes{
 		"/api/img/": {
-			Fnc:      HandleGetImg,
-			Desc:     "show img",
-			NeedAuth: true,
+			Fnc:  HandleGetImg,
+			Desc: "show img",
 		},
 		"/api/main/returnAllCandidates/": {
 			Fnc:      HandleReturnAllCandidate,
