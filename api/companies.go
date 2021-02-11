@@ -13,10 +13,12 @@ import (
 )
 
 type SearchCompany struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Skype string `json:"skype"`
-	Phone string `json:"phone"`
+	Name           string `json:"name"`
+	Email          string `json:"email"`
+	IsActive       string `json:"IsActive"`
+	Skype          string `json:"skype"`
+	Phone          string `json:"phone"`
+	WithRecruiters string `json:"WithRecruiters"`
 }
 
 func (s *SearchCompany) GetValue() interface{} {

@@ -18,7 +18,7 @@ type Companies struct {
 
 type CompaniesFields struct {
 	Id               int64          `json:"id"`
-	Nazva            sql.NullString `json:"nazva"`
+	Name             sql.NullString `json:"name"`
 	Otpravka         sql.NullString `json:"otpravka"`
 	Interview_detail sql.NullString `json:"interview_detail"`
 	Uslovia          sql.NullString `json:"uslovia"`
@@ -39,8 +39,8 @@ func (r *CompaniesFields) RefColValue(name string) interface{} {
 	case "id":
 		return &r.Id
 
-	case "nazva":
-		return &r.Nazva
+	case "name":
+		return &r.Name
 
 	case "otpravka":
 		return &r.Otpravka
@@ -91,8 +91,8 @@ func (r *CompaniesFields) ColValue(name string) interface{} {
 	case "id":
 		return r.Id
 
-	case "nazva":
-		return r.Nazva
+	case "name":
+		return r.Name
 
 	case "otpravka":
 		return r.Otpravka
