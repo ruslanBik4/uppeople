@@ -5,6 +5,7 @@
 package api
 
 import (
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
@@ -15,10 +16,10 @@ import (
 type SearchCompany struct {
 	Name           string `json:"name"`
 	Email          string `json:"email"`
-	IsActive       string `json:"IsActive"`
+	IsActive       bool   `json:"IsActive"`
 	Skype          string `json:"skype"`
 	Phone          string `json:"phone"`
-	WithRecruiters string `json:"WithRecruiters"`
+	WithRecruiters bool   `json:"WithRecruiters"`
 }
 
 func (s *SearchCompany) GetValue() interface{} {
@@ -74,5 +75,42 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		)
 	}
 
-	return companies.SelectSelfScanAll(ctx, options...)
+	rows := make([]*ViewCompany, 0)
+	err := companies.SelectSelfScanEach(ctx,
+		func(record *db.CompaniesFields) error {
+			elem := &ViewCompany{
+				CompaniesFields: record,
+			}
+			err := DB.Conn.SelectOneAndScan(ctx,
+				&elem.Vacancies,
+				"select count(*) from vacancies where company_id=$1",
+				record.Id,
+			)
+			if err != nil {
+				return errors.Wrap(err, "")
+			}
+			err = DB.Conn.SelectOneAndScan(ctx,
+				&elem.Candidates,
+				"select count(distinct *) from vacancies_to_candidates where company_id=$1",
+				record.Id,
+			)
+			if err != nil {
+				return errors.Wrap(err, "")
+			}
+
+			rows = append(rows, elem)
+
+			return nil
+		},
+		options...)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return rows, nil
+}
+
+type ViewCompany struct {
+	*db.CompaniesFields
+	Vacancies, Candidates int32
 }

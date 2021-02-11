@@ -179,10 +179,14 @@ func (t *Companies) SelectSelfScanEach(ctx context.Context, each func(record *Co
 		}, t, Options...)
 }
 
-func (t *Companies) SelectSelfScanAll(ctx context.Context, Options ...dbEngine.BuildSqlOptions) ([]*CompaniesFields, error) {
+func (t *Companies) SelectSelfScanAll(ctx context.Context, each func(record *CompaniesFields) error,
+	Options ...dbEngine.BuildSqlOptions) ([]*CompaniesFields, error) {
 	rows := make([]*CompaniesFields, 0)
 	err := t.SelectAndScanEach(ctx,
 		func() error {
+			if each != nil {
+				return each(t.Record)
+			}
 			rows = append(rows, t.Record)
 
 			return nil
