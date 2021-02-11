@@ -37,6 +37,7 @@ type ViewCompany struct {
 	Candidates int32                `json:"candidates,omitempty"`
 	Calendar   []*db.MeetingsFields `json:"calendar,omitempty"`
 	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
+	Managers   []*db.UsersFields    `json:"managers,omitempty"`
 }
 
 func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -65,6 +66,7 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		CompaniesFields: companies.Record,
 		Calendar:        make([]*db.MeetingsFields, 0),
 		Contacts:        make([]*db.ContactsFields, 0),
+		Managers:        make([]*db.UsersFields, 0),
 	}
 
 	contacts, _ := db.NewContacts(DB)
@@ -90,7 +92,20 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		dbEngine.ArgsForSelect(companies.Record.Id),
 	)
 	if err != nil {
-		logs.ErrorLog(err, "contacts.SelectSelfScanEach")
+		logs.ErrorLog(err, "meeting.SelectSelfScanEach")
+	}
+
+	users, _ := db.NewUsers(DB)
+	err = users.SelectSelfScanEach(ctx,
+		func(record *db.UsersFields) error {
+			v.Managers = append(v.Managers, record)
+			return nil
+		},
+		dbEngine.WhereForSelect("<"),
+		dbEngine.ArgsForSelect(4),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "users.SelectSelfScanEach")
 	}
 
 	return v, nil
