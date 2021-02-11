@@ -91,7 +91,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			}
 			err = DB.Conn.SelectOneAndScan(ctx,
 				&elem.Candidates,
-				"select count(distinct *) from vacancies_to_candidates where company_id=$1",
+				"select count(candidate_id) from vacancies_to_candidates where company_id=$1",
 				record.Id,
 			)
 			if err != nil {
