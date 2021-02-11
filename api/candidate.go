@@ -106,10 +106,20 @@ func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	return DB.Conn.SelectToMaps(ctx,
+	maps, err := DB.Conn.SelectToMaps(ctx,
 		"select * from comments_for_candidates where id=$1 order by created_at DESC",
 		id,
 	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	if len(maps) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
+	}
+
+	return maps, nil
 }
 
 func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -171,6 +181,11 @@ WHERE c.id in (select v.company_id from vacancies v
 	)
 	if err != nil {
 		return createErrResult(err)
+	}
+
+	if len(maps) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
 	}
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)

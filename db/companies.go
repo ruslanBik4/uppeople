@@ -5,6 +5,7 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
 )
@@ -176,6 +177,21 @@ func (t *Companies) SelectSelfScanEach(ctx context.Context, each func(record *Co
 
 			return nil
 		}, t, Options...)
+}
+
+func (t *Companies) SelectSelfScanAll(ctx context.Context, Options ...dbEngine.BuildSqlOptions) ([]*CompaniesFields, error) {
+	rows := make([]*CompaniesFields, 0)
+	err := t.SelectAndScanEach(ctx,
+		func() error {
+			rows = append(rows, t.Record)
+
+			return nil
+		}, t, Options...)
+	if err != nil {
+		return nil, errors.Wrap(err, "SelectAndScanEach")
+	}
+
+	return rows, nil
 }
 
 func (t *Companies) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {

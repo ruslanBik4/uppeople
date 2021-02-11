@@ -169,6 +169,15 @@ var (
 				ParamPageNum,
 			},
 		},
+		"/api/main/returnAllCompanies/": {
+			Fnc:      HandleAllCompanies,
+			Desc:     "show all companies",
+			NeedAuth: true,
+			DTO:      &SearchCandidates{},
+			Params: []apis.InParam{
+				ParamPageNum,
+			},
+		},
 		"/api/main/getCandidatesAmountByTags": {
 			Fnc:      HandleGetCandidatesAmountByTags,
 			Desc:     "show all candidates",
