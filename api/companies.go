@@ -101,7 +101,7 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			v.Managers = append(v.Managers, record)
 			return nil
 		},
-		dbEngine.WhereForSelect("<"),
+		dbEngine.WhereForSelect("<id_roles"),
 		dbEngine.ArgsForSelect(4),
 	)
 	if err != nil {
