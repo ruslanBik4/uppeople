@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
@@ -214,7 +213,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		dbEngine.ArgsForSelect(id),
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "	")
+		return createErrResult(err)
 	}
 
 	auth.PutEditCandidate(ctx, table.Record)

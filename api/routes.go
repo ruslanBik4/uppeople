@@ -196,6 +196,14 @@ var (
 			Fnc:  HandleGetImg,
 			Desc: "show img",
 		},
+		"/api/main/viewInformationForCompany/": {
+			Fnc:      HandleInformationForCompany,
+			Desc:     "show company by $id",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/returnAllCandidates/": {
 			Fnc:      HandleReturnAllCandidate,
 			Desc:     "show all candidates",

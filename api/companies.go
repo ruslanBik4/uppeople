@@ -31,6 +31,71 @@ func (s *SearchCompany) NewValue() interface{} {
 	return &SearchCompany{}
 }
 
+type ViewCompany struct {
+	*db.CompaniesFields
+	Vacancies  int32                `json:"vacancies,omitempty"`
+	Candidates int32                `json:"candidates,omitempty"`
+	Calendar   []*db.MeetingsFields `json:"calendar,omitempty"`
+	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
+}
+
+func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	companies, _ := db.NewCompanies(DB)
+	err := companies.SelectOneAndScan(ctx,
+		companies,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+	v := &ViewCompany{
+		CompaniesFields: companies.Record,
+		Calendar:        make([]*db.MeetingsFields, 0),
+		Contacts:        make([]*db.ContactsFields, 0),
+	}
+
+	contacts, _ := db.NewContacts(DB)
+	err = contacts.SelectSelfScanEach(ctx,
+		func(record *db.ContactsFields) error {
+			v.Contacts = append(v.Contacts, record)
+			return nil
+		},
+		dbEngine.WhereForSelect("company_id"),
+		dbEngine.ArgsForSelect(companies.Record.Id),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "contacts.SelectSelfScanEach")
+	}
+
+	meeting, _ := db.NewMeetings(DB)
+	err = meeting.SelectSelfScanEach(ctx,
+		func(record *db.MeetingsFields) error {
+			v.Calendar = append(v.Calendar, record)
+			return nil
+		},
+		dbEngine.WhereForSelect("company_id"),
+		dbEngine.ArgsForSelect(companies.Record.Id),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "contacts.SelectSelfScanEach")
+	}
+
+	return v, nil
+}
+
 func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -112,10 +177,4 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	return rows, nil
-}
-
-type ViewCompany struct {
-	*db.CompaniesFields
-	Vacancies  int32 `json:"vacancies"`
-	Candidates int32 `json:"candidates"`
 }
