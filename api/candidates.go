@@ -112,7 +112,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		if dto.CompanyID > 0 {
 			where = append(where, `id in (SELECT candidate_id 
 					FROM candidates_to_companies
-					WHERE  company_id = %s`)
+					WHERE  company_id = %s)`)
 			args = append(args, dto.CompanyID)
 		}
 		if dto.SelectStatuses != nil {
