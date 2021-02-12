@@ -145,7 +145,7 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	table, _ := db.NewVacancies(DB)
-	oldData := auth.GetEditCandidate(ctx)
+	oldData := auth.GetEditVacancy(ctx)
 	columns := make([]string, 0)
 	args := make([]interface{}, 0)
 	stopColumns := map[string]bool{
@@ -215,7 +215,8 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 			text += fmt.Sprintf("%s=%v", col, args[i])
 		}
-		toLogVacancy(ctx, DB, u.SelectCompany.Id, id, text, 100)
+
+		toLogVacancy(ctx, DB, u.SelectCompany.Id, id, text, CODE_LOG_UPDATE)
 	}
 
 	return createResult(i)
@@ -271,17 +272,7 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	err = table.SelectOneAndScan(ctx,
-		&u.Id,
-		dbEngine.ColumnsForSelect("id"),
-		dbEngine.WhereForSelect("company_id", "platform_id", "seniority_id"),
-		dbEngine.ArgsForSelect(u.SelectCompany.Id, u.SelectPlatform.Id, u.SelectSeniority.Id),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "table.SelectOneAndScan")
-	}
-
-	toLogVacancy(ctx, DB, u.SelectCompany.Id, u.Id, u.Description, 101)
+	toLogVacancy(ctx, DB, u.SelectCompany.Id, int32(i), u.Description, CODE_LOG_INSERT)
 
 	return createResult(i)
 }

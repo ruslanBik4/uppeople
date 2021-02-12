@@ -188,7 +188,7 @@ WHERE c.id in (select v.company_id from vacancies v
 	}
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
-	maps["emailTemplay"] = fmt.Sprintf(emailText, platformName, name, table.Record.Link)
+	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, platformName, name, table.Record.Link)
 
 	return maps, nil
 }
@@ -391,7 +391,7 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func createResult(i int64) (interface{}, error) {
 	return map[string]interface{}{
 		"message": "Successfully",
-		"i":       i,
+		"id":      i,
 	}, nil
 }
 

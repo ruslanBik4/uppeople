@@ -12,7 +12,12 @@ const (
 )
 
 const (
-	emailText = `<p><span style="font-size: 14px;">Please, review %s %s  CV</span></p>
+	CODE_LOG_UPDATE = 100
+	CODE_LOG_INSERT = 101
+)
+
+const (
+	EMAIL_TEXT = `<p><span style="font-size: 14px;">Please, review %s %s  CV</span></p>
 <p>%s</p>
 <p><br>Will be appreciate for quick feedback.</p>
 <p><br><br></p>

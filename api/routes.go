@@ -12,6 +12,7 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 var (
@@ -57,14 +58,26 @@ var (
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,
 		},
+		"/api/main/addNewCompany": {
+			Fnc:      HandleAddCompany,
+			Desc:     "add new company",
+			DTO:      &db.CompaniesFields{},
+			NeedAuth: true,
+		},
+		"/api/main/editInformations": {
+			Fnc:      HandleEditCompany,
+			Desc:     "add new company",
+			DTO:      &db.CompaniesFields{},
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/editVacancy/": {
 			Fnc:      HandleEditVacancy,
 			Desc:     "edit vacancy",
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,
-			Params: []apis.InParam{
-				ParamID,
-			},
 		},
 		"/api/main/updateStatusVacancy": {
 			Fnc:      HandleEditStatusVacancy,
@@ -124,9 +137,10 @@ var (
 		// 	Desc: "show search results according range of characteristics",
 		// },
 		"/api/main/viewAllVacancyInCompany/null/": {
-			Fnc:  HandleViewAllVacancyInCompany,
-			Desc: "get list of vacancies",
-			DTO:  &vacDTO{},
+			Fnc:      HandleViewAllVacancyInCompany,
+			Desc:     "get list of vacancies",
+			DTO:      &vacDTO{},
+			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamPageNum,
 			},
@@ -310,6 +324,9 @@ func doRequest(req *fasthttp.Request, resp *fasthttp.Response, host string) erro
 }
 
 func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	ctx.SetStatusCode(fasthttp.StatusNotFound)
+	return nil, nil
+
 	user, err := prepareRequest(ctx)
 	if err != nil {
 		return nil, err
