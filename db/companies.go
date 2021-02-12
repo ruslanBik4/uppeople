@@ -21,7 +21,7 @@ type CompaniesFields struct {
 	Name             sql.NullString `json:"name"`
 	SendDetails      sql.NullString `json:"sendDetails"`
 	Interview_detail sql.NullString `json:"interview_detail"`
-	Uslovia          sql.NullString `json:"uslovia"`
+	Uslovia          sql.NullString `json:"cooperation"`
 	Contact          sql.NullString `json:"contact"`
 	About            sql.NullString `json:"about"`
 	Map              sql.NullString `json:"map"`
