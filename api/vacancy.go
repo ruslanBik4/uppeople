@@ -398,7 +398,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		func(record *db.VacanciesFields) error {
 			view := VacanciesView{
 				VacanciesFields: record,
-				Date:            record.Date_create.Format("2002-01-02"),
+				Date:            record.Date_create.Format("2006-01-02"),
 				Company:         "",
 				Location:        "",
 			}
