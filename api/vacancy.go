@@ -40,6 +40,7 @@ func (v *VacancyDTO) NewValue() interface{} {
 }
 
 type vacDTO struct {
+	CompanyID             int32          `json:"company_id"`
 	SelectPlatforms       []SelectedUnit `json:"selectPlatforms"`
 	SelectSeniorities     []SelectedUnit `json:"selectSeniorities"`
 	SelectCandidateStatus []SelectedUnit `json:"selectCandidate_status"`
@@ -329,6 +330,11 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 	columns := make([]string, 0)
 	args := make([]interface{}, 0)
+	if filter.CompanyID > 0 {
+		columns = append(columns, "company_id")
+		args = append(args, filter.CompanyID)
+	}
+
 	if l := len(filter.SelectStatuses); l > 0 {
 		arg := make([]int32, l)
 		for i, s := range filter.SelectStatuses {
