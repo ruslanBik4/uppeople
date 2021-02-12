@@ -64,7 +64,7 @@ var (
 			DTO:      &db.CompaniesFields{},
 			NeedAuth: true,
 		},
-		"/api/main/editInformations": {
+		"/api/main/editCompany/": {
 			Fnc:      HandleEditCompany,
 			Desc:     "add new company",
 			DTO:      &db.CompaniesFields{},
