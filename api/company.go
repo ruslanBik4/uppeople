@@ -115,3 +115,25 @@ func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, te
 			time.Now(),
 			code))
 }
+
+func HandleCommentsCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	return DB.Conn.SelectToMaps(ctx,
+		`select *, (select name from users u where u.id = user_id) as name
+			 from comments_for_companies
+			 where company_id = $1
+			 order By time_create DESC`,
+		id,
+	)
+}

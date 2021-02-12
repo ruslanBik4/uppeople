@@ -76,10 +76,6 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		args := make([]interface{}, 0)
 		where := make([]string, 0)
 
-		if dto.CompanyID > 0 {
-			where = append(where, "company_id")
-			args = append(args, dto.CompanyID)
-		}
 		if dto.Name > "" {
 			where = append(where, "~name")
 			args = append(args, dto.Name)
@@ -112,6 +108,12 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			where = append(where, "<=date")
 			args = append(args, dto.DateTo)
 
+		}
+		if dto.CompanyID > 0 {
+			where = append(where, `id in (SELECT candidate_id 
+					FROM candidates_to_companies
+					WHERE  company_id = %s`)
+			args = append(args, dto.CompanyID)
 		}
 		if dto.SelectStatuses != nil {
 			where = append(where, `id in (SELECT candidate_id 

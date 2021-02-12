@@ -47,7 +47,7 @@ func (r *ContactsFields) RefColValue(name string) interface{} {
 	case "skype":
 		return &r.Skype
 
-	case "default":
+	case "default_contact":
 		return &r.Default
 
 	case "all_platforms":
@@ -81,7 +81,7 @@ func (r *ContactsFields) ColValue(name string) interface{} {
 	case "skype":
 		return r.Skype
 
-	case "default":
+	case "default_contact":
 		return r.Default
 
 	case "all_platforms":
