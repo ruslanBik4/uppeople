@@ -183,6 +183,15 @@ var (
 				ParamPageNum,
 			},
 		},
+		"/api/main/viewAllCandidatesForCompany/": {
+			Fnc:      HandleAllCandidatesForCompany,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			DTO:      &SearchCandidates{},
+			Params: []apis.InParam{
+				ParamPageNum,
+			},
+		},
 		"/api/main/returnAllCompanies/": {
 			Fnc:      HandleAllCompanies,
 			Desc:     "show all companies",
@@ -212,6 +221,14 @@ var (
 		},
 		"/api/main/viewInformationForCompany/": {
 			Fnc:      HandleInformationForCompany,
+			Desc:     "show company by $id",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/main/commentsCompany/": {
+			Fnc:      HandleCommentsCompany,
 			Desc:     "show company by $id",
 			NeedAuth: true,
 			Params: []apis.InParam{

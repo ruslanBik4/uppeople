@@ -24,6 +24,7 @@ type ResCandidates struct {
 
 type SearchCandidates struct {
 	Name            string        `json:"search"`
+	CompanyID       int32         `json:"company_id"`
 	DateFrom        string        `json:"dateFrom"`
 	DateTo          string        `json:"dateTo"`
 	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
@@ -75,6 +76,10 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		args := make([]interface{}, 0)
 		where := make([]string, 0)
 
+		if dto.CompanyID > 0 {
+			where = append(where, "company_id")
+			args = append(args, dto.CompanyID)
+		}
 		if dto.Name > "" {
 			where = append(where, "~name")
 			args = append(args, dto.Name)
@@ -174,5 +179,9 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleReturnAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	return HandleAllCandidate(ctx)
+}
+
+func HandleAllCandidatesForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return HandleAllCandidate(ctx)
 }
