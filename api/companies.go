@@ -79,7 +79,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			args = append(args, []int32{0, 1})
 			fActive := " AND status=ANY(array[0,1])"
 			sqlVacancy += fActive
-			sqlCandidates += fActive
+			// sqlCandidates += fActive
 		}
 		options = append(options,
 			dbEngine.WhereForSelect(where...),
