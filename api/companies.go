@@ -31,86 +31,6 @@ func (s *SearchCompany) NewValue() interface{} {
 	return &SearchCompany{}
 }
 
-type ViewCompany struct {
-	*db.CompaniesFields
-	Vacancies  int32                `json:"vacancies,omitempty"`
-	Candidates int32                `json:"candidates,omitempty"`
-	Calendar   []*db.MeetingsFields `json:"calendar,omitempty"`
-	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
-	Managers   []*db.UsersFields    `json:"managers,omitempty"`
-}
-
-func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	id, ok := ctx.UserValue(ParamID.Name).(int32)
-	if !ok {
-		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
-		}, apis.ErrWrongParamsList
-	}
-
-	companies, _ := db.NewCompanies(DB)
-	err := companies.SelectOneAndScan(ctx,
-		companies,
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(id),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-	v := &ViewCompany{
-		CompaniesFields: companies.Record,
-		Calendar:        make([]*db.MeetingsFields, 0),
-		Contacts:        make([]*db.ContactsFields, 0),
-		Managers:        make([]*db.UsersFields, 0),
-	}
-
-	contacts, _ := db.NewContacts(DB)
-	err = contacts.SelectSelfScanEach(ctx,
-		func(record *db.ContactsFields) error {
-			v.Contacts = append(v.Contacts, record)
-			return nil
-		},
-		dbEngine.WhereForSelect("company_id"),
-		dbEngine.ArgsForSelect(companies.Record.Id),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "contacts.SelectSelfScanEach")
-	}
-
-	meeting, _ := db.NewMeetings(DB)
-	err = meeting.SelectSelfScanEach(ctx,
-		func(record *db.MeetingsFields) error {
-			v.Calendar = append(v.Calendar, record)
-			return nil
-		},
-		dbEngine.WhereForSelect("company_id"),
-		dbEngine.ArgsForSelect(companies.Record.Id),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "meeting.SelectSelfScanEach")
-	}
-
-	users, _ := db.NewUsers(DB)
-	err = users.SelectSelfScanEach(ctx,
-		func(record *db.UsersFields) error {
-			v.Managers = append(v.Managers, record)
-			return nil
-		},
-		dbEngine.WhereForSelect("<id_roles"),
-		dbEngine.ArgsForSelect(4),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "users.SelectSelfScanEach")
-	}
-
-	return v, nil
-}
-
 func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -126,10 +46,12 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	companies, _ := db.NewCompanies(DB)
 	options := []dbEngine.BuildSqlOptions{
 		dbEngine.OrderBy("name"),
-		dbEngine.FetchOnlyRows(pageItem),
+		// dbEngine.FetchOnlyRows(pageItem),
 		dbEngine.Offset(offset),
 	}
 
+	sqlVacancy := "select count(*) from vacancies where company_id=$1"
+	sqlCandidates := "select count(candidate_id) from vacancies_to_candidates where company_id=$1"
 	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCompany)
 	if ok {
 		args := make([]interface{}, 0)
@@ -150,6 +72,15 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			where = append(where, "~phone")
 			args = append(args, dto.Phone)
 		}
+		if dto.IsActive {
+			where = append(where, `id in (SELECT company_id
+			FROM vacancies
+			WHERE status=%s)`)
+			args = append(args, []int32{0, 1})
+			fActive := " AND status=ANY(array[0,1])"
+			sqlVacancy += fActive
+			sqlCandidates += fActive
+		}
 		options = append(options,
 			dbEngine.WhereForSelect(where...),
 			dbEngine.ArgsForSelect(args...),
@@ -167,7 +98,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			}
 			err := DB.Conn.SelectOneAndScan(ctx,
 				&elem.Vacancies,
-				"select count(*) from vacancies where company_id=$1",
+				sqlVacancy,
 				record.Id,
 			)
 			if err != nil {
@@ -175,7 +106,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			}
 			err = DB.Conn.SelectOneAndScan(ctx,
 				&elem.Candidates,
-				"select count(candidate_id) from vacancies_to_candidates where company_id=$1",
+				sqlCandidates,
 				record.Id,
 			)
 			if err != nil {

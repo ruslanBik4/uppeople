@@ -66,8 +66,16 @@ var (
 		},
 		"/api/main/editCompany/": {
 			Fnc:      HandleEditCompany,
-			Desc:     "add new company",
+			Desc:     "edit new company",
 			DTO:      &db.CompaniesFields{},
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/main/addCommentForCompany": {
+			Fnc:      HandleAddCommentForCompany,
+			Desc:     "add comment of company",
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,

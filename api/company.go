@@ -9,6 +9,7 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
@@ -47,6 +48,34 @@ func HandleAddCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	toLogCompany(ctx, DB, int32(i), "", CODE_LOG_INSERT)
+
+	return createResult(i)
+}
+
+func HandleAddCommentForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	text := string(ctx.Request.Body())
+	table, _ := db.NewComments_for_companies(DB)
+	i, err := table.Insert(ctx,
+		dbEngine.ColumnsForSelect("company_id", "comments"),
+		dbEngine.ArgsForSelect(id, text),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	toLogCompany(ctx, DB, id, "add comment "+text, CODE_LOG_UPDATE)
 
 	return createResult(i)
 }
@@ -136,4 +165,84 @@ func HandleCommentsCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			 order By time_create DESC`,
 		id,
 	)
+}
+
+type ViewCompany struct {
+	*db.CompaniesFields
+	Vacancies  int32                `json:"vacancies,omitempty"`
+	Candidates int32                `json:"candidates,omitempty"`
+	Calendar   []*db.MeetingsFields `json:"calendar,omitempty"`
+	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
+	Managers   []*db.UsersFields    `json:"managers,omitempty"`
+}
+
+func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	companies, _ := db.NewCompanies(DB)
+	err := companies.SelectOneAndScan(ctx,
+		companies,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+	v := &ViewCompany{
+		CompaniesFields: companies.Record,
+		Calendar:        make([]*db.MeetingsFields, 0),
+		Contacts:        make([]*db.ContactsFields, 0),
+		Managers:        make([]*db.UsersFields, 0),
+	}
+
+	contacts, _ := db.NewContacts(DB)
+	err = contacts.SelectSelfScanEach(ctx,
+		func(record *db.ContactsFields) error {
+			v.Contacts = append(v.Contacts, record)
+			return nil
+		},
+		dbEngine.WhereForSelect("company_id"),
+		dbEngine.ArgsForSelect(companies.Record.Id),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "contacts.SelectSelfScanEach")
+	}
+
+	meeting, _ := db.NewMeetings(DB)
+	err = meeting.SelectSelfScanEach(ctx,
+		func(record *db.MeetingsFields) error {
+			v.Calendar = append(v.Calendar, record)
+			return nil
+		},
+		dbEngine.WhereForSelect("company_id"),
+		dbEngine.ArgsForSelect(companies.Record.Id),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "meeting.SelectSelfScanEach")
+	}
+
+	users, _ := db.NewUsers(DB)
+	err = users.SelectSelfScanEach(ctx,
+		func(record *db.UsersFields) error {
+			v.Managers = append(v.Managers, record)
+			return nil
+		},
+		dbEngine.WhereForSelect("<id_roles"),
+		dbEngine.ArgsForSelect(4),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "users.SelectSelfScanEach")
+	}
+
+	return v, nil
 }
