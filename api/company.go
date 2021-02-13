@@ -32,6 +32,10 @@ func HandleAddCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	table, _ := db.NewCompanies(DB)
 	for _, col := range table.Columns() {
+		if col.AutoIncrement() {
+			continue
+		}
+
 		name := col.Name()
 		if v := u.ColValue(name); v != nil {
 			columns = append(columns, name)
