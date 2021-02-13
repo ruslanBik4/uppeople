@@ -73,7 +73,7 @@ var (
 				ParamID,
 			},
 		},
-		"/api/main/addCommentForCompany": {
+		"/api/main/addCommentForCompany/": {
 			Fnc:      HandleAddCommentForCompany,
 			Desc:     "add comment of company",
 			NeedAuth: true,
