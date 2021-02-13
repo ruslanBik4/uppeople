@@ -51,7 +51,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	sqlVacancy := "select count(*) from vacancies where company_id=$1"
-	sqlCandidates := "select count(candidate_id) from vacancies_to_candidates where company_id=$1"
+	sqlCandidates := "select count(distinct candidate_id) from vacancies_to_candidates where company_id=$1"
 	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCompany)
 	if ok {
 		args := make([]interface{}, 0)

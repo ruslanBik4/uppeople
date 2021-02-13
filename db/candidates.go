@@ -26,7 +26,7 @@ type CandidatesFields struct {
 	Skype          string         `json:"skype"`
 	Link           string         `json:"link"`
 	Linkedin       sql.NullString `json:"linkedin"`
-	Str_companies  string         `json:"str_companies"`
+	Str_companies  sql.NullString `json:"str_companies"`
 	Status         string         `json:"status"`
 	Tag_id         int32          `json:"tag_id"`
 	Comments       string         `json:"comments"`
