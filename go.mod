@@ -12,6 +12,7 @@ require (
 	github.com/ruslanBik4/dbEngine v1.0.1110
 	github.com/ruslanBik4/httpgo v1.1.10060
 	github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27
+	github.com/stretchr/testify v1.6.1
 	github.com/valyala/fasthttp v1.18.0
 	github.com/valyala/quicktemplate v1.6.3
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
