@@ -126,6 +126,14 @@ var (
 				ParamID,
 			},
 		},
+		"/api/admin/view-editUser": {
+			Fnc:      HandleGetUser,
+			Desc:     "get Users data",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/deleteCandidate/": {
 			Fnc:      HandleDeleteCandidate,
 			Desc:     "delete candidate",
@@ -140,10 +148,6 @@ var (
 			DTO:      &FollowUpDTO{},
 			NeedAuth: true,
 		},
-		// 'api/main/returnAllCandidates/':{
-		// 	Fnc:  HandleAuthLogin,
-		// 	Desc: "show search results according range of characteristics",
-		// },
 		"/api/main/viewAllVacancyInCompany/": {
 			Fnc:      HandleViewAllVacancyInCompany,
 			Desc:     "get list of vacancies",

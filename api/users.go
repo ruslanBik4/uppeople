@@ -5,8 +5,8 @@
 package api
 
 import (
-	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -17,6 +17,31 @@ type UserResponse struct {
 	Partners    SelectedUnits     `json:"partners"`
 	Freelancers SelectedUnits     `json:"freelancers"`
 	Recruiters  SelectedUnits     `json:"recruiters"`
+}
+
+func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+	users, _ := db.NewUsers(DB)
+	err := users.SelectOneAndScan(ctx,
+		users,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return users.Record, nil
 }
 
 func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -33,8 +58,9 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			return nil
 		})
 	if err != nil {
-		return nil, errors.Wrap(err, "users.SelectSelfScanEach")
+		return createErrResult(err)
 	}
+
 	return UserResponse{
 		Users: r,
 	}, nil
