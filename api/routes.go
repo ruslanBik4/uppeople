@@ -126,6 +126,13 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/globalSearch": {
+			Fnc:      HandleGlobalSearch,
+			Desc:     "GlobalSearch",
+			DTO:      &GlobalSearch{},
+			NeedAuth: true,
+		},
+		// todo profile vacancy
 		"/api/admin/view-editUser/": {
 			Fnc:      HandleGetUser,
 			Desc:     "get Users data",

@@ -25,6 +25,8 @@ type ResCandidates struct {
 type SearchCandidates struct {
 	Name            string        `json:"search"`
 	CompanyID       int32         `json:"company_id"`
+	Sort            int32         `json:"sort"`
+	CurrentColumn   string        `json:"currentColumn"`
 	DateFrom        string        `json:"dateFrom"`
 	DateTo          string        `json:"dateTo"`
 	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
@@ -156,6 +158,14 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			dbEngine.WhereForSelect(where...),
 			dbEngine.ArgsForSelect(args...),
 		)
+
+		if dto.CurrentColumn > "" {
+			orderBy := dto.CurrentColumn
+			if dto.Sort > 0 {
+				orderBy += " desc"
+			}
+			options = append(options, dbEngine.OrderBy(orderBy))
+		}
 
 	}
 	err := candidates.SelectSelfScanEach(ctx,
