@@ -106,7 +106,7 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			(select p.nazva from platforms p where v.platform_id=p.id) as platform,
 			(select s.nazva from seniority s where v.seniority_id=s.id) as seniority,
 			(select c.name from company c where v.company_id=c.id) as company,
-			(select s.name from location_for_vacancies s where v.location_id=s.id) as location,
+			(select s.name from location_for_vacancies s where v.location_id=s.id) as location
 			from vacancies v
 			where id = $1
 `,
