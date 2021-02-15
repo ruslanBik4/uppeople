@@ -64,6 +64,26 @@ type VacanciesView struct {
 	Seniority string `json:"seniority"`
 }
 
+func (v *VacanciesView) GetFields(columns []dbEngine.Column) []interface{} {
+	res := make([]interface{}, len(columns))
+	for i, col := range columns {
+		switch col.Name() {
+		case "platform":
+			res[i] = v.Platform
+		case "company":
+			res[i] = v.Company
+		case "location":
+			res[i] = v.Location
+		case "seniority":
+			res[i] = v.Seniority
+		default:
+			res[i] = v.RefColValue(col.Name())
+		}
+	}
+
+	return res
+}
+
 type ResVacancies struct {
 	*ResList
 	CandidateStatus SelectedUnits   `json:"candidateStatus"`
@@ -77,19 +97,30 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	table, _ := db.NewVacancies(DB)
-	err := table.SelectOneAndScan(ctx,
-		table,
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(ctx.UserValue("id")),
+	v := &VacanciesView{
+		VacanciesFields: &db.VacanciesFields{},
+	}
+	err := DB.Conn.SelectOneAndScan(ctx,
+		v,
+		`select *, 
+			(select p.nazva from platforms p where v.platform_id=p.id) as platform,
+			(select s.nazva from seniority s where v.seniority_id=s.id) as seniority,
+			(select c.name from company c where v.company_id=c.id) as company,
+			(select s.name from location_for_vacancies s where v.location_id=s.id) as location,
+			from vacancies v
+			where id = $1
+`,
+		ctx.UserValue("id"),
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "	")
 	}
 
-	auth.PutEditVacancy(ctx, table.Record)
+	v.Date = v.Date_create.Format("2006-01-02")
 
-	return table.Record, nil
+	auth.PutEditVacancy(ctx, v.VacanciesFields)
+
+	return v, nil
 }
 
 func HandleEditStatusVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
