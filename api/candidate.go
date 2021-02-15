@@ -106,7 +106,7 @@ func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	maps, err := DB.Conn.SelectToMaps(ctx,
-		"select * from comments_for_candidates where id=$1 order by created_at DESC",
+		"select * from comments_for_candidates where candidate_id=$1 order by created_at DESC",
 		id,
 	)
 	if err != nil {
