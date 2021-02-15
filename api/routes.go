@@ -126,7 +126,7 @@ var (
 				ParamID,
 			},
 		},
-		"/api/admin/view-editUser": {
+		"/api/admin/view-editUser/": {
 			Fnc:      HandleGetUser,
 			Desc:     "get Users data",
 			NeedAuth: true,
