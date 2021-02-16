@@ -69,13 +69,13 @@ func (v *VacanciesView) GetFields(columns []dbEngine.Column) []interface{} {
 	for i, col := range columns {
 		switch col.Name() {
 		case "platform":
-			res[i] = v.Platform
+			res[i] = &v.Platform
 		case "company":
-			res[i] = v.Company
+			res[i] = &v.Company
 		case "location":
-			res[i] = v.Location
+			res[i] = &v.Location
 		case "seniority":
-			res[i] = v.Seniority
+			res[i] = &v.Seniority
 		default:
 			res[i] = v.RefColValue(col.Name())
 		}

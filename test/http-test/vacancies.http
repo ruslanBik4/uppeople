@@ -8,7 +8,7 @@ Content-Type: application/json
     client.global.set("auth_token", response.body.access_token);
 %}
 ###
-GET https://{{host}}/api/main/viewVacancy/137
+GET https://{{host}}/api/main/viewVacancy/125
 Authorization:Bearer {{auth_token}}
 ###
 POST https://{{host}}/api/main/editVacancy/137
