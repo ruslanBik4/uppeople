@@ -81,11 +81,23 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/addNewContactForCompany/": {
+			Fnc:      HandleAddContactForCompany,
+			Desc:     "add contact of company",
+			DTO:      &DTOContact{},
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/editVacancy/": {
 			Fnc:      HandleEditVacancy,
 			Desc:     "edit vacancy",
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
 		},
 		"/api/main/updateStatusVacancy": {
 			Fnc:      HandleEditStatusVacancy,
