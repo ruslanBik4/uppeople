@@ -76,7 +76,7 @@ func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	i, err := users.Update(ctx,
 		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id"),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Id),
+		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Role, u.Id),
 	)
 	if err != nil {
 		return createErrResult(err)
