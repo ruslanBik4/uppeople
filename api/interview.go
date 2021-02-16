@@ -74,6 +74,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date_last_change"),
 				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, userId, timeNow),
+				dbEngine.InsertOnConflict("candidate_id, vacancy_id"),
 			)
 			if err != nil {
 				return createErrResult(err)
