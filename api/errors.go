@@ -20,6 +20,7 @@ var (
 	regDuplicated = regexp.MustCompile(`duplicate key value violates unique constraint "(\w*)"`)
 )
 
+// todo: add code NoContent
 func createErrResult(err error) (interface{}, error) {
 	if err == pgx.ErrNoRows {
 		return nil, apis.ErrWrongParamsList

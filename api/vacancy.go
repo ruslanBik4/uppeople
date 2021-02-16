@@ -113,7 +113,7 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		ctx.UserValue("id"),
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "	")
+		return createErrResult(err)
 	}
 
 	v.Date = v.Date_create.Format("2006-01-02")
