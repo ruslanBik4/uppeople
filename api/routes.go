@@ -87,6 +87,15 @@ var (
 				ParamID,
 			},
 		},
+		"/api/interview/sendCV/": {
+			Fnc:      HandleSendCV,
+			Desc:     "send candidate to company",
+			DTO:      &DTOSendCV{},
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/addNewContactForCompany/": {
 			Fnc:      HandleAddContactForCompany,
 			Desc:     "add contact of company",

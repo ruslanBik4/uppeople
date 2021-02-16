@@ -151,11 +151,12 @@ func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, pageNum int) *ResList
 }
 
 func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	vacCand, _ := db.NewVacancies_to_candidates(DB)
-	err := vacCand.SelectAndScanEach(ctx,
+	err := DB.Conn.SelectAndScanEach(ctx,
 		nil,
 		&res,
-		dbEngine.ColumnsForSelect("id", "status as label", "LOWER(status) as value"),
+		`select v.status as id, s.status  as label, lower(s.status) as value
+        from vacancies_to_candidates v join status_for_vacs s on s.id = status")
+`,
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")

@@ -47,18 +47,29 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	)
 }
 
-func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, CandidateId int32, text string, code int32) {
+func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string, code int32) {
 	user := auth.GetUserData(ctx)
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
 			"kod_deystviya"),
-		dbEngine.ArgsForSelect(user.Id, CandidateId,
+		dbEngine.ArgsForSelect(user.Id, candidateId,
 			text,
 			time.Now(),
 			time.Now(),
 			code))
 }
 
+func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, companyId, vacancyId int32, text string, code int32) {
+	user := auth.GetUserData(ctx)
+	toLog(ctx, DB,
+		dbEngine.ColumnsForSelect("user_id", "candidate_id", "company_id", "vacancy_id", "text", "date_create", "d_c",
+			"kod_deystviya"),
+		dbEngine.ArgsForSelect(user.Id, candidateId, companyId, vacancyId,
+			text,
+			time.Now(),
+			time.Now(),
+			code))
+}
 func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.BuildSqlOptions) {
 	log, _ := db.NewLogs(DB)
 	_, err := log.Insert(ctx, columns, args)
