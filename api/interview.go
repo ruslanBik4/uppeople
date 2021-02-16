@@ -51,7 +51,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	userId := auth.GetUserData(ctx).Id
+	user := auth.GetUserData(ctx)
 	timeNow := time.Now()
 	tableVTC, _ := db.NewVacancies_to_candidates(DB)
 	candidates, _ := db.NewCandidates(DB)
@@ -73,7 +73,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			_, err = tableVTC.Upsert(ctx,
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date_last_change"),
-				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, userId, timeNow),
+				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, user.Id, timeNow),
 				dbEngine.InsertOnConflict("candidate_id, vacancy_id"),
 			)
 			if err != nil {
@@ -83,16 +83,16 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			_, err = IntRevCandidate.Insert(ctx,
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date"),
-				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, userId, timeNow),
+				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, user.Id, timeNow),
 			)
 			if err != nil {
 				return createErrResult(err)
 			}
 
 			_, err = SendedEmail.Insert(ctx,
-				dbEngine.ColumnsForSelect("company_id", "user_id", "subject",
-					"emails", "text_emails", "meet_id"),
-				dbEngine.ArgsForSelect(u.CompId, userId, u.EmailSubject, u.EmailTemplate, 0),
+				dbEngine.ColumnsForSelect("company_id", "user_id",
+					"emails", "subject", "text_emails", "meet_id"),
+				dbEngine.ArgsForSelect(u.CompId, user.Id, user.Email, u.EmailSubject, u.EmailTemplate, 0),
 			)
 			if err != nil {
 				return createErrResult(err)
