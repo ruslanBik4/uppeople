@@ -44,6 +44,47 @@ func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return users.Record, nil
 }
 
+type DTOUser struct {
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Role     string `json:"role"`
+}
+
+func (d *DTOUser) GetValue() interface{} {
+	return d
+}
+
+func (d *DTOUser) NewValue() interface{} {
+	return &DTOUser{}
+}
+
+func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	u, ok := ctx.UserValue(apis.JSONParams).(*DTOUser)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	users, _ := db.NewUsers(DB)
+	i, err := users.Update(ctx,
+		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return createResult(i)
+}
+
 func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

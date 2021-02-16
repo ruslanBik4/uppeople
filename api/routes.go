@@ -73,6 +73,12 @@ var (
 				ParamID,
 			},
 		},
+		"/api/admin/editUser": {
+			Fnc:      HandleEditUser,
+			Desc:     "edit new users",
+			DTO:      &DTOUser{},
+			NeedAuth: true,
+		},
 		"/api/main/addCommentForCompany/": {
 			Fnc:      HandleAddCommentForCompany,
 			Desc:     "add comment of company",
@@ -253,6 +259,22 @@ var (
 		"/api/main/viewInformationForCompany/": {
 			Fnc:      HandleInformationForCompany,
 			Desc:     "show company by $id",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/main/viewEditContactCompany/": {
+			Fnc:      HandleViewContactForCompany,
+			Desc:     "show contacts of company  by $id_contacts",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/main/deleteContactForCompany/": {
+			Fnc:      HandleViewContactForCompany,
+			Desc:     "show contacts of company  by $id_contacts",
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,
