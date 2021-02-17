@@ -105,6 +105,15 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/editContactCompany/": {
+			Fnc:      HandleEditContactForCompany,
+			Desc:     "edit contact of company",
+			DTO:      &DTOContact{},
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/editVacancy/": {
 			Fnc:      HandleEditVacancy,
 			Desc:     "edit vacancy",

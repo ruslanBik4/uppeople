@@ -188,7 +188,8 @@ WHERE c.id in (select v.company_id from vacancies v
 	}
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
-	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, platformName, name, table.Record.Link)
+	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, platformName, name, table.Record.Link, table.Record.Seniority_id,
+		table.Record.Language, table.Record.Salary)
 
 	return maps, nil
 }

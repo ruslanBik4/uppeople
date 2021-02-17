@@ -19,23 +19,21 @@ const (
 
 const (
 	EMAIL_TEXT = `<p><span style="font-size: 14px;">Colleagues,
-please review the candidacy of %s for the position of %s  CV</span></p>
-<p>%s</p>
-<p>CV:</p>
-<p>Experience:</p>
-<p>English level:</p>
-<p>Salary expectations:</p>
+please review the candidacy of %s for the position of %s </span></p>
+<p>CV:%s</p>
+<p>Experience:%s</p>
+<p>English level:%s</p>
+<p>Salary expectations:%v</p>
 <p><br>Will be appreciate for quick feedback.</p>
 <p><br><br></p>
 <p>Best regards,
 UPPeople team.</p>
 <p><span style="font-size: 14px;">Добрый день,
-рассмотрите, пожалуйста, кандидата %s на позицию  %s  CV</span></p>
-<p>%s</p>
-<p>CV:</p>
-<p>Опыт:</p>
-<p>Уровень английского:</p>
-<p>Ожидания по заработной плате:</p>
+рассмотрите, пожалуйста, кандидата %[1]s на позицию  %s </span></p>
+<p>CV:%s</p>
+<p>Опыт:%s</p>
+<p>Уровень английского:%s</p>
+<p>Ожидания по заработной плате:%v</p>
 <p><br>Будем благодарны за фидбек.</p>
 <p><br><br></p>
 <p>С наилучшим пожеланиями,
