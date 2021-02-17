@@ -88,7 +88,7 @@ type StatusesCandidate struct {
 type ViewCandidates struct {
 	Candidate *ViewCandidate      `json:"0"`
 	SelectOpt selectOpt           `json:"select"`
-	Statuses  []StatusesCandidate `json:"candidateStatuses"`
+	Statuses  []StatusesCandidate `json:"statuses"`
 }
 
 const pageItem = 15
