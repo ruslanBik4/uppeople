@@ -73,7 +73,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
-		companies, vacancies.status as status_id, companies.id as company_id, sv.status, salary
+		companies, vacancies.status as status_id, vacancies.company_id, sv.status, salary
 FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	JOIN vacancies_to_candidates vc on (vacancies.id = vc.vacancy_id)
 	JOIN platforms ON (vacancies.platform_id = platforms.id)
