@@ -70,20 +70,20 @@ type VacanciesDTO struct {
 	Platforms *db.PlatformsFields `json:"platforms"`
 }
 type StatusesCandidate struct {
-	Candidate_id     int32               `json:"candidate_id"`
-	Company          *db.CompaniesFields `json:"company"`
-	Company_id       int32               `json:"company_id"`
-	Date_create      time.Time           `json:"date_create"`
-	Date_last_change time.Time           `json:"date_last_change"`
-	Id               int32               `json:"id"`
-	Notice           string              `json:"notice"`
-	Rating           string              `json:"rating"`
-	Rej_text         string              `json:"rej_text"`
-	Status           int32               `json:"status"`
-	Status_vac       string              `json:"vacancyStatus"`
-	User_id          int32               `json:"user_id"`
-	Vacancy          VacanciesDTO        `json:"vacancy"`
-	Vacancy_id       int32               `json:"vacancy_id"`
+	Candidate_id     int32                     `json:"candidate_id"`
+	Company          *db.CompaniesFields       `json:"company"`
+	Company_id       int32                     `json:"company_id"`
+	Date_create      time.Time                 `json:"date_create"`
+	Date_last_change time.Time                 `json:"date_last_change"`
+	Id               int32                     `json:"id"`
+	Notice           string                    `json:"notice"`
+	Rating           string                    `json:"rating"`
+	Rej_text         string                    `json:"rej_text"`
+	Status           int32                     `json:"status"`
+	Status_vac       *db.Status_for_vacsFields `json:"vacancyStatus"`
+	User_id          int32                     `json:"user_id"`
+	Vacancy          VacanciesDTO              `json:"vacancy"`
+	Vacancy_id       int32                     `json:"vacancy_id"`
 }
 type ViewCandidates struct {
 	Candidate *ViewCandidate      `json:"0"`
@@ -231,12 +231,22 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		res.Statuses = append(res.Statuses, StatusesCandidate{
 			Candidate_id: table.Record.Id,
 			Company_id:   vacancy["company_id"].(int32),
-			Company:      &db.CompaniesFields{Name: sql.NullString{String: vacancy["name"].(string)}},
-			Status_vac:   vacancy["status"].(string),
+			Company: &db.CompaniesFields{Name: sql.NullString{
+				String: vacancy["name"].(string),
+				Valid:  true,
+			}},
+			Status_vac: &db.Status_for_vacsFields{
+				Id: vacancy["status_id"].(int64),
+				Status: sql.NullString{
+					String: vacancy["status"].(string),
+					Valid:  true,
+				},
+			},
 			Vacancy: VacanciesDTO{
 				&db.VacanciesFields{Salary: vacancy["company_id"].(int32)},
 				&db.PlatformsFields{Nazva: sql.NullString{
 					String: vacancy["label"].(string),
+					Valid:  true,
 				}},
 			},
 		})
