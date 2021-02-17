@@ -94,6 +94,56 @@ type ViewCandidates struct {
 
 const pageItem = 15
 
+func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	u, ok := ctx.UserValue(apis.JSONParams).(*db.Vacancies_to_candidatesFields)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	table, _ := db.NewVacancies_to_candidates(DB)
+	i, err := table.Update(ctx,
+		dbEngine.ColumnsForSelect("status"),
+		dbEngine.WhereForSelect("candidate_id", "company_id"),
+		dbEngine.ArgsForSelect(u.Status, u.Candidate_id, u.Company_id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	toLogCandidateVacancy(ctx, DB, u.Candidate_id, u.Company_id, u.Vacancy_id, " изменил статус  кандидата ", CODE_LOG_UPDATE)
+
+	switch u.Status {
+	case 2:
+		// Meeting::insert(array(
+		// 	'candidate_id' => $canridateId,
+		// 	'company_id' => $companyId,
+		// 	'vacancy_id' => $item->vacancy_id,
+		// 	'title' => $title,
+		// 	'date' => date('Y-m-d H:i:s'),
+		// 	'd_t' => date('Y-m-d'),
+		// 	'user_id' => $user->id,
+		// 	'color' => null,
+		// 	'type' => null
+		// 	));
+	case 3:
+		// IntRevCandidate::insert(array(
+		// 	'candidate_id' => $canridateId,
+		// 	'company_id' => $companyId,
+		// 	'vacancy_id' => $item->vacancy_id,
+		// 	'status' => $request->value['id'],
+		// 	'user_id' => $user->id,
+		// 	'date' => date('Y-m-j')
+		// 	));
+
+	}
+	return createResult(i)
+}
+
 func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

@@ -18,16 +18,24 @@ type Vacancies_to_candidates struct {
 
 type Vacancies_to_candidatesFields struct {
 	Id               int64          `json:"id"`
-	Candidate_id     sql.NullInt64  `json:"candidate_id"`
-	Company_id       sql.NullInt64  `json:"company_id"`
-	Vacancy_id       sql.NullInt64  `json:"vacancy_id"`
-	Status           sql.NullInt64  `json:"status"`
-	User_id          sql.NullInt64  `json:"user_id"`
+	Candidate_id     int32          `json:"candidate_id"`
+	Company_id       int32          `json:"company_id"`
+	Vacancy_id       int32          `json:"vacancy_id"`
+	Status           int32          `json:"status"`
+	User_id          int32          `json:"user_id"`
 	Date_create      time.Time      `json:"date_create"`
 	Date_last_change time.Time      `json:"date_last_change"`
 	Rej_text         sql.NullString `json:"rej_text"`
 	Rating           sql.NullInt64  `json:"rating"`
 	Notice           sql.NullString `json:"notice"`
+}
+
+func (r *Vacancies_to_candidatesFields) GetValue() interface{} {
+	return r
+}
+
+func (r *Vacancies_to_candidatesFields) NewValue() interface{} {
+	return &Vacancies_to_candidatesFields{}
 }
 
 func (r *Vacancies_to_candidatesFields) RefColValue(name string) interface{} {

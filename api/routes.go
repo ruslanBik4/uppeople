@@ -58,6 +58,12 @@ var (
 			DTO:      &VacancyDTO{},
 			NeedAuth: true,
 		},
+		"/api/main/updateStatusCandidates": {
+			Fnc:      HandleAddVacancy,
+			Desc:     "add new vacancy",
+			DTO:      &db.Vacancies_to_candidatesFields{},
+			NeedAuth: true,
+		},
 		"/api/main/addNewCompany": {
 			Fnc:      HandleAddCompany,
 			Desc:     "add new company",
