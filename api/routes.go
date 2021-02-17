@@ -282,8 +282,8 @@ var (
 			},
 		},
 		"/api/main/deleteContactForCompany/": {
-			Fnc:      HandleViewContactForCompany,
-			Desc:     "show contacts of company  by $id_contacts",
+			Fnc:      HandleDeleteContactForCompany,
+			Desc:     "remove contacts of company  by $id_contacts",
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,

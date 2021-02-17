@@ -83,6 +83,31 @@ func HandleAddContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return u, nil
 }
 
+func HandleDeleteContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	err := DB.Conn.ExecDDL(ctx, "delete from contacts where id=$1", id)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	toLogCompany(ctx, DB, id, " удалил контакт  ", CODE_LOG_DELETE)
+
+	ctx.SetStatusCode(fasthttp.StatusAccepted)
+
+	return nil, nil
+}
+
 func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

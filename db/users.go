@@ -21,7 +21,7 @@ type UsersFields struct {
 	Name         string         `json:"name"`
 	Email        string         `json:"email"`
 	Isdel        bool           `json:"isdel"`
-	Id_roles     int32          `json:"id_roles"`
+	Roles_id     int32          `json:"roles_id"`
 	Last_login   time.Time      `json:"last_login"`
 	Hash         int64          `json:"hash"`
 	Last_page    sql.NullString `json:"last_page"`
@@ -47,8 +47,8 @@ func (r *UsersFields) RefColValue(name string) interface{} {
 	case "isdel":
 		return &r.Isdel
 
-	case "id_roles":
-		return &r.Id_roles
+	case "roles_id":
+		return &r.Roles_id
 
 	case "last_login":
 		return &r.Last_login
@@ -96,8 +96,8 @@ func (r *UsersFields) ColValue(name string) interface{} {
 	case "isdel":
 		return r.Isdel
 
-	case "id_roles":
-		return r.Id_roles
+	case "roles_id":
+		return r.Roles_id
 
 	case "last_login":
 		return r.Last_login

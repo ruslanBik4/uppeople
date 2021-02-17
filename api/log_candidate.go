@@ -70,6 +70,7 @@ func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateI
 			time.Now(),
 			code))
 }
+
 func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.BuildSqlOptions) {
 	log, _ := db.NewLogs(DB)
 	_, err := log.Insert(ctx, columns, args)

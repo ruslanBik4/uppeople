@@ -33,6 +33,7 @@ func (d *DTOSendCV) GetValue() interface{} {
 func (d *DTOSendCV) NewValue() interface{} {
 	return &DTOSendCV{}
 }
+
 func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -74,7 +75,6 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date_last_change"),
 				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, user.Id, timeNow),
-				dbEngine.InsertOnConflict("candidate_id, vacancy_id"),
 			)
 			if err != nil {
 				return createErrResult(err)
@@ -109,6 +109,15 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 			toLogCandidateVacancy(ctx, DB, id, int32(u.CompId), int32(vacID), " отправил CV кандидата  ", CODE_LOG_UPDATE)
 		}
+	}
+
+	table, _ := db.NewCandidates_to_companies(DB)
+	_, err := table.Upsert(ctx,
+		dbEngine.ColumnsForSelect("company_id", "candidate_id", "visible"),
+		dbEngine.ArgsForSelect(u.CompId, id, 0),
+	)
+	if err != nil {
+		return createErrResult(err)
 	}
 
 	for _, val := range u.CheckedEmailsEntries {

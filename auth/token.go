@@ -27,7 +27,7 @@ type User struct {
 }
 
 func (u *User) IsAdmin() bool {
-	return u.Id_roles == 1
+	return u.Roles_id == 1
 }
 
 func (u *User) GetUserID() int {
