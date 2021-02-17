@@ -67,7 +67,8 @@ type CandidateView struct {
 
 type VacanciesDTO struct {
 	*db.VacanciesFields
-	Platforms *db.PlatformsFields `json:"platforms"`
+	Platforms      *db.PlatformsFields `json:"platforms"`
+	DateLastChange *time.Time          `json:"date_last_change"`
 }
 type StatusesCandidate struct {
 	Candidate_id     int32                     `json:"candidate_id"`
@@ -231,10 +232,13 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		res.Statuses = append(res.Statuses, StatusesCandidate{
 			Candidate_id: table.Record.Id,
 			Company_id:   vacancy["company_id"].(int32),
-			Company: &db.CompaniesFields{Name: sql.NullString{
-				String: vacancy["name"].(string),
-				Valid:  true,
-			}},
+			Company: &db.CompaniesFields{
+				Id: int64(vacancy["company_id"].(int32)),
+				Name: sql.NullString{
+					String: vacancy["name"].(string),
+					Valid:  true,
+				},
+			},
 			Status_vac: &db.Status_for_vacsFields{
 				Id: vacancy["status_id"].(int64),
 				Status: sql.NullString{
@@ -251,6 +255,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					String: vacancy["label"].(string),
 					Valid:  true,
 				}},
+				vacancy["date_last_change"].(*time.Time),
 			},
 		})
 	}

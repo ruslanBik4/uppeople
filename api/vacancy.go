@@ -6,6 +6,7 @@ package api
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/pkg/errors"
@@ -190,7 +191,12 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				continue
 			}
 
-			if oldData.ColValue(name) != u.ColValue(name) {
+			if name == "user_ids" {
+				if !reflect.DeepEqual(oldData.ColValue(name), u.ColValue(name)) {
+					columns = append(columns, name)
+					args = append(args, u.ColValue(name))
+				}
+			} else if oldData.ColValue(name) != u.ColValue(name) {
 				columns = append(columns, name)
 				args = append(args, u.ColValue(name))
 			}
@@ -209,14 +215,14 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"user_ids",
 		}
 		args = []interface{}{
-			u.SelectPlatform.Id,
-			u.SelectSeniority.Id,
-			u.SelectCompany.Id,
-			u.SelectLocation.Id,
+			u.Platform_id,
+			u.Seniority_id,
+			u.Company_id,
+			u.Location_id,
 			u.Description,
 			u.Details,
 			u.Link,
-			u.SelectedVacancyStatus,
+			u.Status,
 			u.Salary,
 			u.User_ids,
 		}
@@ -257,11 +263,6 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	userIDs, comma := "", ""
-	for _, unit := range u.SelectRecruiter {
-		userIDs += fmt.Sprintf("%s%d", comma, unit.Id)
-		comma = "-"
-	}
 	columns := []string{
 		"platform_id",
 		"seniority_id",
@@ -275,16 +276,16 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"user_ids",
 	}
 	args := []interface{}{
-		u.SelectPlatform.Id,
-		u.SelectSeniority.Id,
-		u.SelectCompany.Id,
-		u.SelectLocation.Id,
+		u.Platform_id,
+		u.Seniority_id,
+		u.Company_id,
+		u.Location_id,
 		u.Description,
 		u.Details,
 		u.Link,
 		u.SelectedVacancyStatus,
 		u.Salary,
-		userIDs,
+		u.User_ids,
 	}
 
 	table, _ := db.NewVacancies(DB)
