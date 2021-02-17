@@ -59,7 +59,7 @@ var (
 			NeedAuth: true,
 		},
 		"/api/main/updateStatusCandidates": {
-			Fnc:      HandleAddVacancy,
+			Fnc:      HandleUpdateStatusCandidates,
 			Desc:     "add new vacancy",
 			DTO:      &db.Vacancies_to_candidatesFields{},
 			NeedAuth: true,
