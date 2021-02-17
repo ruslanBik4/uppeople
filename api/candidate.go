@@ -243,7 +243,10 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				},
 			},
 			Vacancy: VacanciesDTO{
-				&db.VacanciesFields{Salary: vacancy["company_id"].(int32)},
+				&db.VacanciesFields{
+					Id:     vacancy["id"].(int32),
+					Salary: vacancy["salary"].(int32),
+				},
 				&db.PlatformsFields{Nazva: sql.NullString{
 					String: vacancy["label"].(string),
 					Valid:  true,
