@@ -160,7 +160,7 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	text := string(ctx.Request.Body())
 	table, _ := db.NewComments_for_candidates(DB)
 	i, err := table.Insert(ctx,
-		dbEngine.ColumnsForSelect("company_id", "comments"),
+		dbEngine.ColumnsForSelect("candidate_id", "comments"),
 		dbEngine.ArgsForSelect(id, text),
 	)
 	if err != nil {
