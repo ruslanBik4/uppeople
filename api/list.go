@@ -30,16 +30,16 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		},
 	}
 
-	recTable, _ := db.NewUsers(DB)
+	users, _ := db.NewUsers(DB)
 
-	err := recTable.SelectOneAndScan(ctx,
+	err := users.SelectOneAndScan(ctx,
 		&ref.Recruiter,
 		dbEngine.ColumnsForSelect("name"),
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(record.Recruter_id),
 	)
 	if err != nil {
-		logs.ErrorLog(err, "recTable.SelectOneAndScan")
+		logs.ErrorLog(err, "users.SelectOneAndScan")
 	}
 	ref.Status.Recruiter = ref.Recruiter
 
@@ -73,7 +73,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
-		companies, vacancies.company_id, companies.id, sv.status
+		companies, vacancies.company_id, companies.id, sv.status, salary
 FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	JOIN vacancies_to_candidates vc on (vacancies.id = vc.vacancy_id)
 	JOIN platforms ON (vacancies.platform_id = platforms.id)

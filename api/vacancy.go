@@ -168,14 +168,6 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	u.User_ids = ""
-	for i, unit := range u.SelectRecruiter {
-		if i > 0 {
-			u.User_ids += ", "
-		}
-		u.User_ids += fmt.Sprintf("%d", unit.Id)
-	}
-
 	table, _ := db.NewVacancies(DB)
 	oldData := auth.GetEditVacancy(ctx)
 	columns := make([]string, 0)
