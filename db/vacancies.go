@@ -20,7 +20,7 @@ type VacanciesFields struct {
 	Id           int32          `json:"id"`
 	Company_id   int32          `json:"company_id"`
 	Platform_id  int32          `json:"platform_id"`
-	User_ids     []int32        `json:"users_ids"`
+	User_ids     []int32        `json:"user_ids"`
 	Name         sql.NullString `json:"name"`
 	Description  string         `json:"description"`
 	Details      string         `json:"details"`

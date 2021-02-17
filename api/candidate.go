@@ -608,6 +608,8 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		columns = append(columns, "recruter_id")
 		args = append(args, auth.GetUserData(ctx).Id)
 	}
+
+	logs.DebugLog(columns, args)
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),

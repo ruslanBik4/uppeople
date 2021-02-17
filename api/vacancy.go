@@ -414,7 +414,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		options = append(options, dbEngine.WhereForSelect(columns...))
 		options = append(options, dbEngine.ArgsForSelect(args...))
 	}
-	i := 0
+
 	companies, _ := db.NewCompanies(DB)
 	locs, _ := db.NewLocation_for_vacancies(DB)
 	err := vacancies.SelectSelfScanEach(ctx,
@@ -466,17 +466,12 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 			res.Vacancies = append(res.Vacancies, view)
 
-			i++
-			if i == pageItem {
-				return errLimit
-			}
-
 			return nil
 		},
 		options...,
 	)
 
-	if err != nil && err != errLimit {
+	if err != nil {
 		return nil, errors.Wrap(err, "	")
 	}
 
