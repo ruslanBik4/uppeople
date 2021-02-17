@@ -175,7 +175,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	where c.id = v.company_id and status <= 1 and platform_id=$1)
 FROM companies c
 WHERE c.id in (select v.company_id from vacancies v
-    where status <= 1 and platform_id=$1 and user_ids ~ format('\m%s\M', $2::integer))`,
+    where status <= 1 and platform_id=$1 and $2 = ANY(user_ids))`,
 		table.Record.Platform_id,
 		auth.GetUserData(ctx).Id,
 	)

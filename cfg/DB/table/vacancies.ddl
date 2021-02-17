@@ -3,7 +3,7 @@ create table vacancies
     id serial not null,
     company_id bigint,
     platform_id bigint,
-    user_ids varchar(20) not null,
+    user_ids integer[] not null,
     name varchar(255) default NULL::character varying,
     description text,
     details text,
