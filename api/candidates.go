@@ -138,21 +138,14 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				p[i] = tag.Id
 			}
 			args = append(args, p)
-			// DB.Conn.SelectToMaps(ctx,
-			// 	`select candidates.id',
-			//         GROUP_CONCAT(DISTINCT(JSON_OBJECT(compId, companies.id, compName, companies.nazva,  vacStat, status_for_vacs.status, date, IFNULL(vacancies_to_candidates.date_last_change, vacancies_to_candidates.date_create), commentVac, vacancies_to_candidates.rej_text)) SEPARATOR ;) as status'),
-			//         candidates.date,
-			//         platforms.nazva as platform,
-			//         candidates.name,
-			//         candidates.email,
-			//         candidates.mobile,
-			//         candidates.skype,
-			//         candidates.linkedin,
-			//         salary,
-			//         status_for_vacs.color,
-			//         GROUP_CONCAT(DISTINCT(JSON_OBJECT(id, companies.id, name, companies.nazva, vacStat, status_for_vacs.status)) SEPARATOR ;) as companies'),
-			//         users.name as recruiter`,
-			// 	args...)
+		}
+
+		if ctx.UserValue("sendCandidate") == true {
+			where = append(where, `id in (SELECT candidate_id 
+	FROM vacancies_to_candidates
+	WHERE status!=%s)`)
+			args = append(args, 1)
+
 		}
 		options = append(options,
 			dbEngine.WhereForSelect(where...),
@@ -191,6 +184,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleReturnAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	ctx.SetUserValue("sendCandidate", true)
 	return HandleAllCandidate(ctx)
 }
 

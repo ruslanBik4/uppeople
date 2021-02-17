@@ -93,6 +93,14 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/addCommentForCandidate/": {
+			Fnc:      HandleAddCommentsCandidate,
+			Desc:     "add comment of candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/interview/sendCV/": {
 			Fnc:      HandleSendCV,
 			Desc:     "send candidate to company",

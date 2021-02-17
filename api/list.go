@@ -5,6 +5,8 @@
 package api
 
 import (
+	"time"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
@@ -74,7 +76,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 LOWER(CONCAT(companies.name, ' ("', platforms.nazva , ')"')) as label, user_ids, platform_id,
 		companies, sv.id as status_id, vacancies.company_id, sv.status, salary, 
-		vc.date_last_change
+		vc.date_last_change, vc.rej_text
 FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	JOIN vacancies_to_candidates vc on (vacancies.id = vc.vacancy_id)
 	JOIN platforms ON (vacancies.platform_id = platforms.id)
@@ -87,7 +89,9 @@ FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	if len(ref.ViewCandidate.Vacancies) > 0 {
 		ref.Status.CompId, _ = ref.ViewCandidate.Vacancies[0]["company_id"].(int32)
 		ref.Status.CompName, _ = ref.ViewCandidate.Vacancies[0]["name"].(string)
+		ref.Status.Comments, _ = ref.ViewCandidate.Vacancies[0]["rej_text"].(string)
 		ref.Status.VacStat, _ = ref.ViewCandidate.Vacancies[0]["status"].(string)
+		ref.Status.Date, _ = ref.ViewCandidate.Vacancies[0]["date_last_change"].(time.Time)
 		args := make([]int32, len(ref.ViewCandidate.Vacancies))
 		for i, vac := range ref.ViewCandidate.Vacancies {
 			args[i] = vac["company_id"].(int32)

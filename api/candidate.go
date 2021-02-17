@@ -144,6 +144,35 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 	return createResult(i)
 }
 
+func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+
+	text := string(ctx.Request.Body())
+	table, _ := db.NewComments_for_candidates(DB)
+	i, err := table.Insert(ctx,
+		dbEngine.ColumnsForSelect("company_id", "comments"),
+		dbEngine.ArgsForSelect(id, text),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	toLogCandidate(ctx, DB, id, " оставил комментарий в кандидате "+text, CODE_LOG_UPDATE)
+
+	return createResult(i)
+
+}
+
 func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
