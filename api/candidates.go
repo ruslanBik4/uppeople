@@ -140,7 +140,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			args = append(args, p)
 		}
 
-		if ctx.UserValue("sendCandidate") == true {
+		if _, ok := ctx.UserValue("sendCandidate").(bool); ok {
 			where = append(where, `id in (SELECT candidate_id 
 	FROM vacancies_to_candidates
 	WHERE status!=%s)`)
