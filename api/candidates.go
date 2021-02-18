@@ -7,7 +7,6 @@ package api
 import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -141,14 +140,13 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			args = append(args, p)
 		}
 
-		if t, ok := ctx.UserValue("sendCandidate").(bool); ok {
+		if _, ok := ctx.UserValue("sendCandidate").(bool); ok {
 			where = append(where, `id in (SELECT candidate_id 
 	FROM vacancies_to_candidates
 	WHERE status != %s)`)
 			args = append(args, 1)
-			logs.DebugLog(t)
-
 		}
+
 		options = append(options,
 			dbEngine.WhereForSelect(where...),
 			dbEngine.ArgsForSelect(args...),
@@ -162,7 +160,16 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			options = append(options, dbEngine.OrderBy(orderBy))
 		}
 
+	} else if _, ok := ctx.UserValue("sendCandidate").(bool); ok {
+		options = append(options,
+			dbEngine.WhereForSelect(`id in (SELECT candidate_id 
+	FROM vacancies_to_candidates
+	WHERE status != %s)`),
+			dbEngine.ArgsForSelect(1),
+		)
+
 	}
+
 	err := candidates.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
 
@@ -175,6 +182,11 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	)
 	if err != nil {
 		return createErrResult(err)
+	}
+
+	if len(res.Candidates) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
 	}
 
 	if len(res.Candidates) < pageItem {

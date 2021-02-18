@@ -15,7 +15,6 @@ import (
 )
 
 var (
-	errLimit      = errors.New("limit")
 	regKeyWrong   = regexp.MustCompile(`Key\s+\((\w+)\)=\((.+)\)([^.]+)`)
 	regDuplicated = regexp.MustCompile(`duplicate key value violates unique constraint "(\w*)"`)
 )
