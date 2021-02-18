@@ -299,7 +299,7 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
 
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
-		`SELECT company_id as comp_id, c.name, otpravka as send_details,
+		`SELECT c.id as comp_id, c.name, otpravka as send_details,
   (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
            'platform_id', cp.platform_id, 'name', t.name))
              from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
@@ -313,8 +313,9 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			'user_ids', v.user_ids)) as vacancies
 	from vacancies v
 	where c.id = v.company_id and status <= 1 and platform_id=$1)
-FROM vacancies_to_candidates vtc join companies c on (c.id = vtc.company_id)
-WHERE status = 9 and
+FROM  companies c 
+WHERE c.id in (select v.company_id from vacancies_to_candidates where status = 9) 
+		and
       c.id in (select v.company_id from vacancies v
                where status <= 1 and platform_id=$1 and $2 = ANY(user_ids))`,
 		table.Record.Platform_id,

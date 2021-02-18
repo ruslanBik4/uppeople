@@ -179,11 +179,6 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"name":        true,
 		"ord":         true,
 	}
-	u.Platform_id = u.SelectPlatform.Id
-	u.Seniority_id = u.SelectSeniority.Id
-	u.Company_id = u.SelectCompany.Id
-	u.Location_id = u.SelectLocation.Id
-	u.Status = u.SelectedVacancyStatus
 	if oldData != nil {
 		for _, col := range table.Columns() {
 			name := col.Name()
