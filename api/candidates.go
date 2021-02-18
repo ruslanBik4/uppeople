@@ -7,6 +7,7 @@ package api
 import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -140,11 +141,12 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			args = append(args, p)
 		}
 
-		if _, ok := ctx.UserValue("sendCandidate").(bool); ok {
+		if t, ok := ctx.UserValue("sendCandidate").(bool); ok {
 			where = append(where, `id in (SELECT candidate_id 
 	FROM vacancies_to_candidates
-	WHERE status!=%s)`)
+	WHERE status != %s)`)
 			args = append(args, 1)
+			logs.DebugLog(t)
 
 		}
 		options = append(options,
