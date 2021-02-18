@@ -356,7 +356,15 @@ var (
 		},
 		"/api/interview/viewInformationForSendCV/": {
 			Fnc:      HandleInformationForSendCV,
-			Desc:     "show one candidate",
+			Desc:     "get data to sendCV candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/interview/inviteOnInterviewView/": {
+			Fnc:      HandleInviteOnInterviewView,
+			Desc:     "invite to interview candidate",
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,

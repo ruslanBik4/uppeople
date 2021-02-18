@@ -275,6 +275,62 @@ WHERE c.id in (select v.company_id from vacancies v
 	return maps, nil
 }
 
+func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+	table, _ := db.NewCandidates(DB)
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	maps := make(map[string]interface{}, 0)
+	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
+		`SELECT id as comp_id, c.name, otpravka as send_details,
+  (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
+           'platform_id', cp.platform_id, 'name', t.name))
+             from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
+           WHERE t.company_id = c.id AND (all_platforms=1 OR platform_id=$1)) as contacts,
+  (select json_agg(json_build_object('id', v.id,
+		   'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
+		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
+           'seniority', (select s.nazva from seniorities s where s.id = v.seniority_id),
+           'salary', v.salary, 
+			'name', v.name, 
+			'user_ids', v.user_ids)) as vacancies
+	from vacancies v
+	where c.id = v.company_id and status = 9 and platform_id=$1)
+FROM companies c
+WHERE c.id in (select v.company_id from vacancies v
+    where status = 9 and platform_id=$1 and $2 = ANY(user_ids))`,
+		table.Record.Platform_id,
+		auth.GetUserData(ctx).Id,
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	if len(maps) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
+	}
+
+	return maps, nil
+}
+
 func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

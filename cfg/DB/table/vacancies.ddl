@@ -18,6 +18,8 @@ create table vacancies
     primary key (id)
 );
 
+-- todo: https://commitfest.postgresql.org/17/1252/
+
 
 create index idx_17194_vacancies_seniority_id_foreign
     on vacancies (seniority_id);
