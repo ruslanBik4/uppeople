@@ -5,6 +5,8 @@
 package api
 
 import (
+	"time"
+
 	"github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -37,7 +39,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if ok && a.Email == "test@test.com" && a.Password == "1111" {
 		v := map[string]interface{}{
 			"access_token": "EElR0VdJnJzianbkx5y4JQ==",
-			"expires_at":   "2022-01-01 19:43:20",
+			"expires_at":   time.Now().Add(time.Hour * 24),
 			"optionsForSelects": map[string]interface{}{
 				"candidateStatus": []map[string]interface{}{
 					map[string]interface{}{
@@ -937,7 +939,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				"name":             "Julia",
 				"password":         "$2y$10$zyDhqar3N./1dBrLg3VE6elvuN8xK2C0YAOcJ5.aXA.EWuDSM9m36",
 				"platform":         nil,
-				"role_id":          1,
+				"role_id":          2,
 				"tel":              nil,
 				"user_freelancers": nil,
 			},
@@ -946,7 +948,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			Companies:   make(map[int32]map[string]string),
 			Host:        hosts[1],
 			TokenOld:    v["access_token"].(string),
-			UsersFields: &db.UsersFields{Id: int32(v["user"].(map[string]interface{})["id"].(float64))},
+			UsersFields: &db.UsersFields{Id: 27},
 		}
 
 		var err error

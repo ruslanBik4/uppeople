@@ -25,9 +25,27 @@ Content-Type: application/json
   "link":"",
   "selectedVacancyStatus":2,
   "description":"<p>sen 1000</p>\n",
-  "details":"<p>test</p>\n"}
+  "details":"<p>test</p>\n"
+}
 ###
-POST https://{{host}}/api/main/viewAllVacancyInCompany/null/1
+POST https://{{host}}/api/main/addNewVacancy
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{"selectPlatform":{"id":1,"label":"Java","value":"java"},
+  "selectSeniority":{"id":3,"label":"Sen","value":"sen"},
+  "selectCompany":{"id":2,"label":"Voicespin","value":"voicespin"},
+  "selectRecruiter":[{"id":12,"label":"Helga Nizhnyk","value":"helga nizhnyk"},
+    {"id":18,"label":"Yana Bakun","value":"yana bakun"}],
+  "selectLocation":{"id":2,"label":"Kyiv","value":"kyiv"},
+  "salary":3000,
+  "link":"",
+  "selectedVacancyStatus":2,
+  "description":"<p>sen 1000</p>\n",
+  "details":"<p>test</p>\n"
+}
+###
+POST https://{{host}}/api/main/viewAllVacancyInCompany/1
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 

@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -113,6 +114,10 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 `,
 		ctx.UserValue("id"),
 	)
+	if err == pgx.ErrNoRows {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
+	}
 	if err != nil {
 		return createErrResult(err)
 	}
