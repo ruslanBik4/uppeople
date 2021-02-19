@@ -11,6 +11,7 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/httpgo/services"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
@@ -273,6 +274,127 @@ WHERE c.id in (select v.company_id from vacancies v
 		table.Record.Language, table.Record.Salary)
 
 	return maps, nil
+}
+
+type DTOSend struct {
+	SelectedCompany  SelectedUnit  `json:"selectedCompany"`
+	SelectedVacancy  SelectedUnit  `json:"selectedVacancy"`
+	SelectedContacts SelectedUnits `json:"selectedContacts"`
+	Date             string        `json:"date"`
+	Time             string        `json:"time"`
+	Comment          string        `json:"comment"`
+}
+
+func (d *DTOSend) GetValue() interface{} {
+	return d
+}
+
+func (d *DTOSend) NewValue() interface{} {
+	return DTOSend{}
+}
+
+func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: "wrong type, expect int32",
+		}, apis.ErrWrongParamsList
+	}
+	table, _ := db.NewCandidates(DB)
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	u, ok := ctx.UserValue(apis.JSONParams).(*DTOSend)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	vacID := u.SelectedVacancy.Id
+	user := auth.GetUserData(ctx)
+	timeNow := time.Now()
+	tableVTC, _ := db.NewVacancies_to_candidates(DB)
+	candidates, _ := db.NewCandidates(DB)
+	IntRevCandidate, _ := db.NewInt_rev_candidates(DB)
+	SendedEmail, _ := db.NewSended_emails(DB)
+
+	_, err = tableVTC.Upsert(ctx,
+		dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
+			"status", "user_id", "date_last_change"),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, 2, user.Id, timeNow),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	_, err = IntRevCandidate.Upsert(ctx,
+		dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
+			"status", "user_id", "date"),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, 2, user.Id, timeNow),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", candidates.Record.Name, candidates.Record.Name)
+
+	emailTemplate := fmt.Sprintf(EMAIL_TEXT, "platformName", candidates.Record.Name, table.Record.Link, table.Record.Seniority_id,
+		table.Record.Language, table.Record.Salary)
+	_, err = SendedEmail.Insert(ctx,
+		dbEngine.ColumnsForSelect("company_id", "user_id",
+			"emails", "subject", "text_emails", "meet_id"),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, user.Id, user.Email, emailSubject, emailTemplate, 0),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	_, err = candidates.Update(ctx,
+		dbEngine.ColumnsForSelect("date"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(timeNow, id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	toLogCandidateVacancy(ctx, DB, id, u.SelectedCompany.Id, int32(vacID), " назначил встречу кандидата ", CODE_LOG_UPDATE)
+
+	tableCTC, _ := db.NewCandidates_to_companies(DB)
+	_, err = tableCTC.Upsert(ctx,
+		dbEngine.ColumnsForSelect("company_id", "candidate_id", "visible"),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, 0),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	for _, val := range u.SelectedContacts {
+		err := services.Send(ctx, "mail", services.Mail{
+			From:        "cv@uppeople.co",
+			To:          val.Value,
+			Subject:     emailSubject,
+			ContentType: "text/html",
+			Body:        emailTemplate,
+			Attachments: nil,
+		})
+		if err != nil {
+			return createErrResult(err)
+		}
+
+	}
+
+	return nil, nil
 }
 
 func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) {
