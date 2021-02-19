@@ -191,6 +191,14 @@ var (
 				ParamID,
 			},
 		},
+		"/api/admin/newUser/": {
+			Fnc:      HandleNewUser,
+			Desc:     "get Users data",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/deleteCandidate/": {
 			Fnc:      HandleDeleteCandidate,
 			Desc:     "delete candidate",

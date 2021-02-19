@@ -19,6 +19,22 @@ type UserResponse struct {
 	Recruiters  SelectedUnits     `json:"recruiters"`
 }
 
+type DTOUser struct {
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Role     string `json:"role"`
+}
+
+func (d *DTOUser) GetValue() interface{} {
+	return d
+}
+
+func (d *DTOUser) NewValue() interface{} {
+	return &DTOUser{}
+}
 func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -44,23 +60,6 @@ func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return users.Record, nil
 }
 
-type DTOUser struct {
-	Id       int    `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Role     string `json:"role"`
-}
-
-func (d *DTOUser) GetValue() interface{} {
-	return d
-}
-
-func (d *DTOUser) NewValue() interface{} {
-	return &DTOUser{}
-}
-
 func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -83,6 +82,31 @@ func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	return createResult(i)
+}
+
+func HandleNewUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	u, ok := ctx.UserValue(apis.JSONParams).(*DTOUser)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	users, _ := db.NewUsers(DB)
+	id, err := users.Insert(ctx,
+		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id"),
+		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Role),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	ctx.SetStatusCode(fasthttp.StatusCreated)
+
+	return createResult(id)
 }
 
 func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
