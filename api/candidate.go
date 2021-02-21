@@ -305,9 +305,9 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			ParamID.Name: "wrong type, expect int32",
 		}, apis.ErrWrongParamsList
 	}
-	table, _ := db.NewCandidates(DB)
-	err := table.SelectOneAndScan(ctx,
-		table,
+	candidates, _ := db.NewCandidates(DB)
+	err := candidates.SelectOneAndScan(ctx,
+		candidates,
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id),
 	)
@@ -325,7 +325,6 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	user := auth.GetUserData(ctx)
 	timeNow := time.Now()
 	tableVTC, _ := db.NewVacancies_to_candidates(DB)
-	candidates, _ := db.NewCandidates(DB)
 	IntRevCandidate, _ := db.NewInt_rev_candidates(DB)
 	SendedEmail, _ := db.NewSended_emails(DB)
 
@@ -349,8 +348,8 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 
 	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", candidates.Record.Name, candidates.Record.Name)
 
-	emailTemplate := fmt.Sprintf(EMAIL_TEXT, "platformName", candidates.Record.Name, table.Record.Link, table.Record.Seniority_id,
-		table.Record.Language, table.Record.Salary)
+	emailTemplate := fmt.Sprintf(EMAIL_TEXT, "platformName", candidates.Record.Name, candidates.Record.Link, candidates.Record.Seniority_id,
+		candidates.Record.Language, candidates.Record.Salary)
 	_, err = SendedEmail.Insert(ctx,
 		dbEngine.ColumnsForSelect("company_id", "user_id",
 			"emails", "subject", "text_emails", "meet_id"),
