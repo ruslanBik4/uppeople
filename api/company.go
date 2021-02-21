@@ -116,6 +116,10 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	for _, col := range table.Columns() {
+		if col.AutoIncrement() {
+			continue
+		}
+
 		name := col.Name()
 		if v := u.ColValue(name); v != table.Record.ColValue(name) {
 			columns = append(columns, name)

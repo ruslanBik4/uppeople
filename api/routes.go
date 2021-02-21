@@ -288,6 +288,14 @@ var (
 			NeedAuth: true,
 			DTO:      &DTOAmounts{},
 		},
+		"/api/interview/inviteOnInterviewSend/": {
+			Fnc:      HandleInviteOnInterviewSend,
+			Desc:     "invite to interview candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 	}
 	GetRoutes = apis.ApiRoutes{
 		"/api/img/": {
@@ -370,14 +378,6 @@ var (
 		},
 		"/api/interview/inviteOnInterviewView/": {
 			Fnc:      HandleInviteOnInterviewView,
-			Desc:     "invite to interview candidate",
-			NeedAuth: true,
-			Params: []apis.InParam{
-				ParamID,
-			},
-		},
-		"/api/interview/inviteOnInterviewSend/": {
-			Fnc:      HandleInviteOnInterviewSend,
 			Desc:     "invite to interview candidate",
 			NeedAuth: true,
 			Params: []apis.InParam{
