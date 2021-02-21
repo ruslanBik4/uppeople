@@ -276,7 +276,7 @@ WHERE c.id in (select v.company_id from vacancies v
 	return maps, nil
 }
 
-type DTOSend struct {
+type DTOSendInterview struct {
 	SelectedCompany  SelectedUnit  `json:"selectedCompany"`
 	SelectedVacancy  SelectedUnit  `json:"selectedVacancy"`
 	SelectedContacts SelectedUnits `json:"selectedContacts"`
@@ -285,12 +285,12 @@ type DTOSend struct {
 	Comment          string        `json:"comment"`
 }
 
-func (d *DTOSend) GetValue() interface{} {
+func (d *DTOSendInterview) GetValue() interface{} {
 	return d
 }
 
-func (d *DTOSend) NewValue() interface{} {
-	return DTOSend{}
+func (d *DTOSendInterview) NewValue() interface{} {
+	return DTOSendInterview{}
 }
 
 func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -315,7 +315,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	u, ok := ctx.UserValue(apis.JSONParams).(*DTOSend)
+	u, ok := ctx.UserValue(apis.JSONParams).(*DTOSendInterview)
 	if !ok {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}

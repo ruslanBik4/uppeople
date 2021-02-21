@@ -104,7 +104,7 @@ var (
 		"/api/interview/sendCV/": {
 			Fnc:      HandleSendCV,
 			Desc:     "send candidate to company",
-			DTO:      &DTOSend{},
+			DTO:      &DTOSendInterview{},
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,
@@ -291,6 +291,7 @@ var (
 		"/api/interview/inviteOnInterviewSend/": {
 			Fnc:      HandleInviteOnInterviewSend,
 			Desc:     "invite to interview candidate",
+			DTO:      &DTOSendInterview{},
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,
