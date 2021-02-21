@@ -27,7 +27,7 @@ type UsersFields struct {
 	Last_page    sql.NullString `json:"last_page"`
 	Address      string         `json:"address"`
 	Emailpool    []string       `json:"emailpool"`
-	Phones       []string       `json:"phones"`
+	Phone        []string       `json:"phone"`
 	Languages    []string       `json:"languages"`
 	Id_homepages int32          `json:"id_homepages"`
 	Createat     time.Time      `json:"createat"`
@@ -65,8 +65,8 @@ func (r *UsersFields) RefColValue(name string) interface{} {
 	case "emailpool":
 		return &r.Emailpool
 
-	case "phones":
-		return &r.Phones
+	case "phone":
+		return &r.Phone
 
 	case "languages":
 		return &r.Languages
@@ -114,8 +114,8 @@ func (r *UsersFields) ColValue(name string) interface{} {
 	case "emailpool":
 		return r.Emailpool
 
-	case "phones":
-		return r.Phones
+	case "phone":
+		return r.Phone
 
 	case "languages":
 		return r.Languages

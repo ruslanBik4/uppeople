@@ -277,12 +277,14 @@ WHERE c.id in (select v.company_id from vacancies v
 }
 
 type DTOSendInterview struct {
-	SelectedCompany  SelectedUnit  `json:"selectedCompany"`
-	SelectedVacancy  SelectedUnit  `json:"selectedVacancy"`
-	SelectedContacts SelectedUnits `json:"selectedContacts"`
-	Date             string        `json:"date"`
-	Time             string        `json:"time"`
-	Comment          string        `json:"comment"`
+	SelectedCompany  SelectedUnit `json:"selectedCompany"`
+	SelectedVacancy  SelectedUnit `json:"selectedVacancy"`
+	SelectedContacts []struct {
+		Email string `json:"email"`
+	} `json:"selectedContacts"`
+	Date    string `json:"date"`
+	Time    string `json:"time"`
+	Comment string `json:"comment"`
 }
 
 func (d *DTOSendInterview) GetValue() interface{} {
@@ -346,10 +348,12 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", candidates.Record.Name, candidates.Record.Name)
+	record := candidates.Record
+	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", record.Name, record.Platform_id)
 
-	emailTemplate := fmt.Sprintf(EMAIL_TEXT, "platformName", candidates.Record.Name, candidates.Record.Link, candidates.Record.Seniority_id,
-		candidates.Record.Language, candidates.Record.Salary)
+	emailTemplate := fmt.Sprintf(EMAIL_TEXT, "platformName", record.Name, record.Link,
+		record.Seniority_id,
+		record.Language, record.Salary)
 	_, err = SendedEmail.Insert(ctx,
 		dbEngine.ColumnsForSelect("company_id", "user_id",
 			"emails", "subject", "text_emails", "meet_id"),
@@ -368,7 +372,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	toLogCandidateVacancy(ctx, DB, id, u.SelectedCompany.Id, int32(vacID), " назначил встречу кандидата ", CODE_LOG_UPDATE)
+	toLogCandidateVacancy(ctx, DB, id, u.SelectedCompany.Id, vacID, " назначил встречу кандидата ", CODE_LOG_UPDATE)
 
 	tableCTC, _ := db.NewCandidates_to_companies(DB)
 	_, err = tableCTC.Upsert(ctx,
@@ -382,7 +386,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	for _, val := range u.SelectedContacts {
 		err := services.Send(ctx, "mail", services.Mail{
 			From:        "cv@uppeople.co",
-			To:          val.Value,
+			To:          val.Email,
 			Subject:     emailSubject,
 			ContentType: "text/html",
 			Body:        emailTemplate,
