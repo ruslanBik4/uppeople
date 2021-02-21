@@ -317,7 +317,8 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 
 	u, ok := ctx.UserValue(apis.JSONParams).(*DTOSendInterview)
 	if !ok {
-		return "wrong DTO", apis.ErrWrongParamsList
+		return fmt.Sprintf("wrong DTO - %T", ctx.UserValue(apis.JSONParams)),
+			apis.ErrWrongParamsList
 	}
 
 	vacID := u.SelectedVacancy.Id
