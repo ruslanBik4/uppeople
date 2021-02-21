@@ -290,7 +290,7 @@ func (d *DTOSendInterview) GetValue() interface{} {
 }
 
 func (d *DTOSendInterview) NewValue() interface{} {
-	return DTOSendInterview{}
+	return &DTOSendInterview{}
 }
 
 func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) {
