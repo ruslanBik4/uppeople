@@ -7,6 +7,7 @@ package api
 import (
 	"time"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
@@ -40,7 +41,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(record.Recruter_id),
 	)
-	if err != nil {
+	if err != nil && err != pgx.ErrNoRows {
 		logs.ErrorLog(err, "users.SelectOneAndScan")
 	}
 	ref.Status.Recruiter = ref.Recruiter

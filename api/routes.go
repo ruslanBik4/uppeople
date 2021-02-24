@@ -104,7 +104,7 @@ var (
 		"/api/interview/sendCV/": {
 			Fnc:      HandleSendCV,
 			Desc:     "send candidate to company",
-			DTO:      &DTOSendInterview{},
+			DTO:      &DTOSendCV{},
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,
@@ -302,6 +302,22 @@ var (
 		"/api/img/": {
 			Fnc:  HandleGetImg,
 			Desc: "show img",
+		},
+		"/api/main/dashBoardAdmin": {
+			Fnc:      HandleDashBoard,
+			Desc:     "show HandleDashBoard for admin",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/main/dashBoardRecruiter": {
+			Fnc:      HandleDashBoard,
+			Desc:     "show HandleDashBoard for recruiter",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
 		},
 		"/api/main/viewInformationForCompany/": {
 			Fnc:      HandleInformationForCompany,
