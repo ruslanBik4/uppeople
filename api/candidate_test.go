@@ -36,7 +36,6 @@ func TestCandidateDTO_GetValue(t *testing.T) {
 			c := &CandidateDTO{
 				CandidatesFields:  tt.fields.CandidatesFields,
 				Comment:           tt.fields.Comment,
-				Phone:             tt.fields.Phone,
 				Resume:            tt.fields.Resume,
 				SelectPlatform:    tt.fields.SelectPlatform,
 				SelectSeniority:   tt.fields.SelectSeniority,
@@ -73,7 +72,6 @@ func TestCandidateDTO_NewValue(t *testing.T) {
 			c := &CandidateDTO{
 				CandidatesFields:  tt.fields.CandidatesFields,
 				Comment:           tt.fields.Comment,
-				Phone:             tt.fields.Phone,
 				Resume:            tt.fields.Resume,
 				SelectPlatform:    tt.fields.SelectPlatform,
 				SelectSeniority:   tt.fields.SelectSeniority,

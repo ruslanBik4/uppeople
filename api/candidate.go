@@ -238,6 +238,18 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	platformName := platform.Record.Nazva.String
 
+	seniTable, _ := db.NewPlatforms(DB)
+	err = seniTable.SelectOneAndScan(ctx,
+		platform,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(table.Record.Seniority_id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	seniority := seniTable.Record.Nazva.String
+
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
 		`SELECT id as comp_id, c.name, otpravka as send_details,
@@ -270,7 +282,7 @@ WHERE c.id in (select v.company_id from vacancies v
 	}
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
-	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, platformName, name, table.Record.Link, table.Record.Seniority_id,
+	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, platformName, name, table.Record.Link, seniority,
 		table.Record.Language, table.Record.Salary)
 
 	return maps, nil
@@ -349,11 +361,34 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	}
 
 	record := candidates.Record
-	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", record.Name, record.Platform_id)
+	platform, _ := db.NewPlatforms(DB)
+	err = platform.SelectOneAndScan(ctx,
+		platform,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(record.Platform_id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
 
-	emailTemplate := fmt.Sprintf(EMAIL_TEXT, "platformName", record.Name, record.Link,
-		record.Seniority_id,
-		record.Language, record.Salary)
+	platformName := platform.Record.Nazva.String
+
+	seniTable, _ := db.NewPlatforms(DB)
+	err = seniTable.SelectOneAndScan(ctx,
+		platform,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(record.Seniority_id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	seniority := seniTable.Record.Nazva.String
+
+	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", record.Name, platformName)
+
+	emailTemplate := fmt.Sprintf(EMAIL_TEXT, platformName, record.Name, record.Link,
+		seniority, record.Language, record.Salary)
 	_, err = SendedEmail.Insert(ctx,
 		dbEngine.ColumnsForSelect("company_id", "user_id",
 			"emails", "subject", "text_emails", "meet_id"),

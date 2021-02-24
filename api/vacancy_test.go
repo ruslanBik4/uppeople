@@ -27,7 +27,11 @@ func TestVacancyDTO_GetValue(t *testing.T) {
 		SelectRecruiter       []SelectedUnit
 		SelectedVacancyStatus int32
 	}
-	tests := []struct {
+	var tests []struct {
+		name   string
+		fields fields
+		want   interface{}
+	} = []struct {
 		name   string
 		fields fields
 		want   interface{}
@@ -36,7 +40,27 @@ func TestVacancyDTO_GetValue(t *testing.T) {
 		{
 			`{"selectPlatform":{"id":1,"label":"Java","value":"java"},"selectSeniority":{"id":2,"label":"Mid","value":"mid"},"selectCompany":{"id":2,"label":"Voicespin","value":"voicespin"},"selectLocation":{"id":2,"label":"Kyiv","value":"kyiv"},"selectRecruiter":[{"id":12,"label":"Helga Nizhnyk","value":"helga nizhnyk"},{"id":11,"label":"Ed","value":"ed"},{"id":19,"label":"Kateryna Denysenko","value":"kateryna denysenko"}],"salary":1000,"comment":"","link":"","selectedVacancyStatus":1,"description":"<p>test</p>\n","details":"<p>test</p>\n"}`,
 			fields{},
-			nil,
+			&VacancyDTO{
+				SelectPlatform:  SelectedUnit{1, "Java", "java"},
+				SelectSeniority: SelectedUnit{2, "Mid", "mid"},
+				SelectCompany:   SelectedUnit{2, "Voicespin", "voicespin"},
+				SelectLocation:  SelectedUnit{2, "Kyiv", "kyiv"},
+				SelectRecruiter: []SelectedUnit{
+					{
+						12,
+						"Helga Nizhnyk",
+						"helga nizhnyk",
+					},
+					{11, "Ed", "ed"},
+					{19, "Kateryna Denysenko", "kateryna denysenko"},
+				},
+				SelectedVacancyStatus: 1,
+				VacanciesFields: &db.VacanciesFields{
+					Salary:      1000,
+					Description: "<p>test</p>\n",
+					Details:     "<p>test</p>\n",
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -44,9 +68,6 @@ func TestVacancyDTO_GetValue(t *testing.T) {
 			v := &VacancyDTO{
 				VacanciesFields:       tt.fields.VacanciesFields,
 				Comment:               tt.fields.Comment,
-				Description:           tt.fields.Description,
-				Phone:                 tt.fields.Phone,
-				Status:                tt.fields.Status,
 				SelectCompany:         tt.fields.SelectCompany,
 				SelectLocation:        tt.fields.SelectLocation,
 				SelectPlatform:        tt.fields.SelectPlatform,
