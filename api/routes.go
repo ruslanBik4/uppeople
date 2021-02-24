@@ -307,9 +307,6 @@ var (
 			Fnc:      HandleDashBoard,
 			Desc:     "show HandleDashBoard for admin",
 			NeedAuth: true,
-			Params: []apis.InParam{
-				ParamID,
-			},
 		},
 		"/api/main/dashBoardRecruiter": {
 			Fnc:      HandleDashBoard,

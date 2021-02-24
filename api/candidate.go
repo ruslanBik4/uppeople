@@ -240,7 +240,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	seniTable, _ := db.NewPlatforms(DB)
 	err = seniTable.SelectOneAndScan(ctx,
-		platform,
+		seniTable,
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(table.Record.Seniority_id),
 	)
