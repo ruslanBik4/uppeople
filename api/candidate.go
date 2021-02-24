@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/services"
@@ -238,7 +239,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	platformName := platform.Record.Nazva.String
 
-	seniTable, _ := db.NewPlatforms(DB)
+	seniTable, _ := db.NewSeniorities(DB)
 	err = seniTable.SelectOneAndScan(ctx,
 		seniTable,
 		dbEngine.WhereForSelect("id"),
@@ -356,7 +357,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			"status", "user_id", "date"),
 		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, 2, user.Id, timeNow),
 	)
-	if err != nil {
+	if err != nil && err != pgx.ErrNoRows {
 		return createErrResult(err)
 	}
 
@@ -373,9 +374,9 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 
 	platformName := platform.Record.Nazva.String
 
-	seniTable, _ := db.NewPlatforms(DB)
+	seniTable, _ := db.NewSeniorities(DB)
 	err = seniTable.SelectOneAndScan(ctx,
-		platform,
+		seniTable,
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(record.Seniority_id),
 	)

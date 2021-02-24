@@ -23,7 +23,7 @@ please review the candidacy of %s for the position of %s </span></p>
 <p>CV:%s</p>
 <p>Experience:%s</p>
 <p>English level:%s</p>
-<p>Salary expectations:%v</p>
+<p>Salary expectations:$%v</p>
 <p><br>Will be appreciate for quick feedback.</p>
 <p><br><br></p>
 <p>Best regards,
@@ -33,7 +33,7 @@ UPPeople team.</p>
 <p>CV:%s</p>
 <p>Опыт:%s</p>
 <p>Уровень английского:%s</p>
-<p>Ожидания по заработной плате:%v</p>
+<p>Ожидания по заработной плате:$%v</p>
 <p><br>Будем благодарны за фидбек.</p>
 <p><br><br></p>
 <p>С наилучшим пожеланиями,

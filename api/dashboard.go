@@ -15,7 +15,7 @@ func HandleDashBoard(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	return DB.Conn.SelectToMaps(ctx,
+	return DB.Conn.SelectToMap(ctx,
 		`with vac as (
     select *
     from vacancies

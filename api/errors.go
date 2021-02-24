@@ -22,7 +22,7 @@ var (
 // todo: add code NoContent
 func createErrResult(err error) (interface{}, error) {
 	if err == pgx.ErrNoRows {
-		return nil, apis.ErrWrongParamsList
+		return "no rows", apis.ErrWrongParamsList
 	}
 	msg := err.Error()
 	e, ok := errors.Cause(err).(*pgconn.PgError)
