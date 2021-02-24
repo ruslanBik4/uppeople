@@ -160,7 +160,7 @@ func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 		nil,
 		&res,
 		`select v.status as id, s.status  as label, lower(s.status) as value
-        from vacancies_to_candidates v join status_for_vacs s on (s.id = status)
+        from vacancies_to_candidates v join status_for_vacs s on (s.id = v.status)
 `,
 	)
 	if err != nil {

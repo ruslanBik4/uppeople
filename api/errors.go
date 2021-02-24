@@ -16,7 +16,7 @@ import (
 
 var (
 	regKeyWrong   = regexp.MustCompile(`Key\s+\((\w+)\)=\((.+)\)([^.]+)`)
-	regDuplicated = regexp.MustCompile(`duplicate key value violates unique constraint "(\w*)"`)
+	regDublicated = regexp.MustCompile(`duplicate key value violates unique constraint "(\w*)"`)
 )
 
 // todo: add code NoContent
@@ -36,7 +36,7 @@ func createErrResult(err error) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	if s := regDuplicated.FindStringSubmatch(msg); len(s) > 0 {
+	if s := regDublicated.FindStringSubmatch(msg); len(s) > 0 {
 		logs.DebugLog("%#v %[1]T", errors.Cause(err))
 		return map[string]string{
 			s[1]: "duplicate key value violates unique constraint",
