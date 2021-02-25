@@ -241,6 +241,8 @@ github.com/ruslanBik4/dbEngine v1.0.1111 h1:GcB7vDX6Tyyf8zf9TgFluP+LashJw6RH1HOe
 github.com/ruslanBik4/dbEngine v1.0.1111/go.mod h1:stgNoDwIkwRRPI7tqZ5GZjfg/a+b8/zlRdIcYxqp+DY=
 github.com/ruslanBik4/httpgo v1.1.10063 h1:2Zts/BFUSAj77mQhJAE69jJ50xAYa9p5vCppQwkThTY=
 github.com/ruslanBik4/httpgo v1.1.10063/go.mod h1:kyt0eeHjO8zEHoMGtc3ejopdA/qwd30/h7kdGIkzu1w=
+github.com/ruslanBik4/httpgo v1.1.10064 h1:XaoG/GdMeljdD1fTy/43aY5ZQJ/EdXHRt07X4dNW1sk=
+github.com/ruslanBik4/httpgo v1.1.10064/go.mod h1:kyt0eeHjO8zEHoMGtc3ejopdA/qwd30/h7kdGIkzu1w=
 github.com/ruslanBik4/logs v0.0.0-20200927155213-df5cc6a3fa8e/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
 github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27 h1:ORUgbGC/46dmd3WFzV9+pgDFkdwrfNCkQNp8SfZWmbg=
 github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=

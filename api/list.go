@@ -82,7 +82,8 @@ FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
 	JOIN vacancies_to_candidates vc on (vacancies.id = vc.vacancy_id)
 	JOIN platforms ON (vacancies.platform_id = platforms.id)
 	JOIN status_for_vacs sv on vc.status = sv.id
-	WHERE vc.candidate_id=$1`, ref.ViewCandidate.Id)
+	WHERE vc.candidate_id=$1 AND vc.status!=1
+`, ref.ViewCandidate.Id)
 	if err != nil {
 		logs.ErrorLog(err, "")
 	}
