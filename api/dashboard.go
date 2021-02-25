@@ -26,7 +26,7 @@ func HandleDashBoard(ctx *fasthttp.RequestCtx) (interface{}, error) {
           from int_rev_candidates
             where status =ANY(ARRAY [2,9])
       )
-select json_build_object('countVac', count(id), 'countCom', count(distinct company_id)) countVacanciesOpenAndHot,
+select json_build_object('countVac', count(id), 'countCom', count(distinct company_id)) "countVacanciesOpenAndHot",
        (select json_object_agg(nazva, cId)
            from (select nazva, count(v.id) cId
                  from platforms p join vac v on p.id = v.platform_id
