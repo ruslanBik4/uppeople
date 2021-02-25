@@ -64,6 +64,7 @@ type CandidateView struct {
 	Platform string          `json:"platform,omitempty"`
 	TagName  string          `json:"tag_name,omitempty"`
 	TagColor string          `json:"tag_color,omitempty"`
+	Color    string          `json:"color,omitempty"`
 	Status   statusCandidate `json:"status"`
 }
 
