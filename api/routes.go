@@ -364,12 +364,12 @@ var (
 		},
 		"/api/admin/all-staff": {
 			Fnc:      HandleAllStaff,
-			Desc:     "show all candidates",
+			Desc:     "show all users",
 			NeedAuth: true,
 		},
 		"/api/main/returnOptionsForSelects": {
 			Fnc:      HandleReturnOptionsForSelects,
-			Desc:     "show all candidates",
+			Desc:     "show options for selects ",
 			NeedAuth: true,
 		},
 		"/api/main/allCandidates/": {
