@@ -7,7 +7,6 @@ package api
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
@@ -51,8 +50,56 @@ type Amoint struct {
 }
 type AmountsByTags struct {
 	Message string                   `json:"message"`
-	Main    []map[string]interface{} `json:"main"`
-	Reject  []map[string]interface{} `json:"reject"`
+	Data    []map[string]interface{} `json:"data,omitempty"`
+	Main    []map[string]interface{} `json:"main,omitempty"`
+	Reject  []map[string]interface{} `json:"reject,omitempty"`
+}
+
+func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	sql := `SELECT vacancy_id, vtc.company_id, count(candidate_id) as quantity,
+				 p.nazva as platform_name,
+				  c.name as company_name,
+				   u.name as user_name,
+				   user_id as recruiter_id
+				FROM vacancies_to_candidates vtc
+				LEFT JOIN vacancies v ON v.id=vtc.vacancy_id
+				LEFT JOIN platforms p ON p.id=v.platform_id
+				LEFT JOIN companies c ON c.id=vtc.company_id
+				LEFT JOIN users u ON u.id=vtc.user_id
+				WHERE v.status IN (0,1) `
+	gr := `      GROUP BY 1 ORDER BY 2`
+
+	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	where := ""
+	if p := params.Company_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.company_id = %d", p)
+	}
+
+	if p := params.Recruiter_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.user_id = %d", p)
+	}
+
+	data, err := DB.Conn.SelectToMaps(ctx,
+		sql+where+gr,
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return AmountsByTags{
+		Message: "Successfully",
+		Data:    data,
+	}, nil
+
 }
 
 func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -101,7 +148,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		0,
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return createErrResult(err)
 	}
 
 	r, err := DB.Conn.SelectToMaps(ctx,
@@ -109,7 +156,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		3,
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return createErrResult(err)
 	}
 
 	return AmountsByTags{

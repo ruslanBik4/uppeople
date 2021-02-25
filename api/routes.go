@@ -288,6 +288,12 @@ var (
 			NeedAuth: true,
 			DTO:      &DTOAmounts{},
 		},
+		"/api/main/getCandidatesAmountByVacancies": {
+			Fnc:      HandleGetCandidatesByVacancies,
+			Desc:     "show all GetCandidatesByVacancies",
+			NeedAuth: true,
+			DTO:      &DTOAmounts{},
+		},
 		"/api/interview/inviteOnInterviewSend/": {
 			Fnc:      HandleInviteOnInterviewSend,
 			Desc:     "invite to interview candidate",
