@@ -1,4 +1,3 @@
-
 POST https://{{host}}/api/auth/login
 Content-Type: application/json
 
@@ -10,6 +9,12 @@ Content-Type: application/json
 ###
 GET https://{{host}}/api/main/viewVacancy/125
 Authorization:Bearer {{auth_token}}
+###
+POST https://{{host}}/api/main/returnAllVacancy
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{"company_id":null,"withRecruiters":true,"isActive":true}
 ###
 POST https://{{host}}/api/main/editVacancy/137
 Authorization:Bearer {{auth_token}}

@@ -211,6 +211,12 @@ var (
 			DTO:      &FollowUpDTO{},
 			NeedAuth: true,
 		},
+		"/api/main/returnAllVacancy": {
+			Fnc:      HandleReturnAllVacancy,
+			Desc:     "get list of vacancies",
+			DTO:      &DTOVacancy{},
+			NeedAuth: true,
+		},
 		"/api/main/viewAllVacancyInCompany/": {
 			Fnc:      HandleViewAllVacancyInCompany,
 			Desc:     "get list of vacancies",

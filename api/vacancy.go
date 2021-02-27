@@ -42,7 +42,7 @@ func (v *VacancyDTO) NewValue() interface{} {
 }
 
 type vacDTO struct {
-	CompanyID             int32          `json:"company_id"`
+	CompanyId             int32          `json:"company_id"`
 	SelectPlatforms       []SelectedUnit `json:"selectPlatforms"`
 	SelectSeniorities     []SelectedUnit `json:"selectSeniorities"`
 	SelectCandidateStatus []SelectedUnit `json:"selectCandidate_status"`
@@ -338,6 +338,54 @@ func HandleDeleteVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return nil, nil
 }
 
+type DTOVacancy struct {
+	CompanyId      int32 `json:"company_id"`
+	WithRecruiters bool  `json:"withRecruiters"`
+	IsActive       bool  `json:"isActive"`
+}
+
+func (d *DTOVacancy) GetValue() interface{} {
+	return d
+}
+
+func (d *DTOVacancy) NewValue() interface{} {
+	return &DTOVacancy{}
+}
+
+func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	filter, ok := ctx.UserValue(apis.JSONParams).(*DTOVacancy)
+	if !ok {
+		return "DTO is wrong", apis.ErrWrongParamsList
+	}
+
+	where, comma := "", "where"
+	if p := filter.CompanyId; p > 0 {
+		where += fmt.Sprintf(" %s v.company_id = %d", comma, p)
+		comma = "AND"
+	}
+
+	if filter.IsActive {
+		where += comma + " v.status = ANY(array[0, 1])"
+	}
+
+	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.nazva, ')') as name`
+	if filter.WithRecruiters {
+		sql += `, (SELECT array_agg(distinct user_id) as recruiter_id
+                            FROM vacancies_to_candidates
+                            WHERE vacancy_id = v.id) as recruiters`
+	}
+	sql += ` from vacancies v left join platforms on v.platform_id=platforms.id
+	left join companies c on v.company_id = c.id
+`
+	return DB.Conn.SelectToMaps(ctx,
+		sql+where)
+}
+
 func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -356,9 +404,9 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 	columns := make([]string, 0)
 	args := make([]interface{}, 0)
-	if filter.CompanyID > 0 {
+	if filter.CompanyId > 0 {
 		columns = append(columns, "company_id")
-		args = append(args, filter.CompanyID)
+		args = append(args, filter.CompanyId)
 	}
 
 	if l := len(filter.SelectStatuses); l > 0 {

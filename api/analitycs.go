@@ -73,7 +73,7 @@ func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, erro
 				LEFT JOIN companies c ON c.id=vtc.company_id
 				LEFT JOIN users u ON u.id=vtc.user_id
 				WHERE v.status IN (0,1) `
-	gr := `      GROUP BY 1,2,3,4,5,6 ORDER BY 2`
+	gr := ` GROUP BY 1,2,3,4,5,6 ORDER BY 2`
 
 	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
 	if !ok {
