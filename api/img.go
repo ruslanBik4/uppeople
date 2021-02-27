@@ -24,7 +24,10 @@ func HandleGetImg(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 	b, err := ioutil.ReadFile(filepath.Join("img", path))
 	if err != nil {
-		return createErrResult(err)
+		b, err = ioutil.ReadFile(filepath.Join("img", "companies_logo/no_logo.png"))
+		if err != nil {
+			return createErrResult(err)
+		}
 	}
 
 	download(ctx, b, path)

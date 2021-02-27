@@ -460,8 +460,7 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	maps := make(map[string]interface{}, 0)
-	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
+	maps, err := DB.Conn.SelectToMaps(ctx,
 		`SELECT c.id as comp_id, c.name, otpravka as send_details,
   (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
            'platform_id', cp.platform_id, 'name', t.name))
