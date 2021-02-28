@@ -183,6 +183,7 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"id":          true,
 		"name":        true,
 		"ord":         true,
+		"date_create": true,
 	}
 	if oldData != nil {
 		for _, col := range table.Columns() {
