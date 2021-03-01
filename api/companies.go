@@ -51,6 +51,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	sqlVacancy := "select count(*) from vacancies where company_id=$1"
+	sqlRecruiters := "SELECT array_agg(user_id) FROM vacancies_to_candidates WHERE company_id=$1"
 	sqlCandidates := "select count(distinct candidate_id) from candidates_to_companies where company_id=$1"
 	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCompany)
 	if ok {
@@ -102,7 +103,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				record.Id,
 			)
 			if err != nil {
-				return errors.Wrap(err, "")
+				return errors.Wrap(err, sqlVacancy)
 			}
 			err = DB.Conn.SelectOneAndScan(ctx,
 				&elem.Candidates,
@@ -110,7 +111,16 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				record.Id,
 			)
 			if err != nil {
-				return errors.Wrap(err, "")
+				return errors.Wrap(err, sqlCandidates)
+			}
+
+			err = DB.Conn.SelectOneAndScan(ctx,
+				&elem.Recruiters,
+				sqlRecruiters,
+				record.Id,
+			)
+			if err != nil {
+				return errors.Wrap(err, sqlRecruiters)
 			}
 
 			rows = append(rows, elem)

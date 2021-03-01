@@ -182,6 +182,7 @@ type ViewCompany struct {
 	Calendar   []*db.MeetingsFields `json:"calendar,omitempty"`
 	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
 	Managers   []*db.UsersFields    `json:"managers,omitempty"`
+	Recruiters []int32              `json:"recruiters"`
 }
 
 func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
