@@ -551,11 +551,12 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					Salary: vacancy["salary"].(int32),
 				},
 				&db.PlatformsFields{Nazva: sql.NullString{
-					String: vacancy["label"].(string),
+					String: vacancy["platform"].(string),
 					Valid:  true,
 				}},
 				vacancy["date_last_change"].(time.Time),
 			},
+			Date_last_change: vacancy["date_last_change"].(time.Time),
 		})
 	}
 	return res, nil
