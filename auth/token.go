@@ -20,8 +20,7 @@ type lastEdit struct {
 type User struct {
 	*db.UsersFields
 	Companies map[int32]map[string]string `json:"companies"`
-	Token     string                      `json:"token"`
-	TokenOld  string                      `json:"token_old"`
+	Token     string                      `json:"access_token"`
 	Host      string                      `json:"-"`
 	LastEdit  lastEdit                    `json:"-"`
 }

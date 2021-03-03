@@ -11,7 +11,6 @@ import (
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
 
-	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
@@ -476,31 +475,6 @@ func doRequest(req *fasthttp.Request, resp *fasthttp.Response, host string) erro
 func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	ctx.SetStatusCode(fasthttp.StatusNotFound)
 	return nil, nil
-
-	user, err := prepareRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	req := &fasthttp.Request{}
-	ctx.Request.CopyTo(req)
-
-	err = doRequest(req, &ctx.Response, user.Host)
-	if err != nil {
-		return nil, err
-	}
-
-	return nil, nil
-}
-
-func prepareRequest(ctx *fasthttp.RequestCtx) (*auth.User, error) {
-	user := auth.GetUserData(ctx)
-	if user == nil {
-		return nil, apis.ErrWrongParamsList
-	}
-
-	ctx.Request.Header.Set("Authorization", "Bearer "+user.TokenOld)
-	return user, nil
 }
 
 func init() {
