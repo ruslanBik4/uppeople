@@ -214,6 +214,8 @@ func getTags(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 		nil,
 		&res,
 		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
+		dbEngine.WhereForSelect("parent_id"),
+		dbEngine.ArgsForSelect(0),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")

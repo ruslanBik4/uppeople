@@ -62,7 +62,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Id = 27
 			u.Name = "julia"
 			u.Email = "julia@uppeople.co"
-			u.Role_id = 4
+			u.Role_id = 2
 		} else {
 
 			req := &fasthttp.Request{}
