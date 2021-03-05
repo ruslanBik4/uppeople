@@ -263,6 +263,15 @@ var (
 				ParamPageNum,
 			},
 		},
+		"/api/main/viewCandidatesFreelancerOnVacancies/": {
+			Fnc:      HandleCandidatesFreelancerOnVacancies,
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			DTO:      &SearchCandidates{},
+			Params: []apis.InParam{
+				ParamPageNum,
+			},
+		},
 		"/api/main/viewAllCandidatesForCompany/": {
 			Fnc:      HandleAllCandidatesForCompany,
 			Desc:     "show all candidates",

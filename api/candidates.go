@@ -7,6 +7,7 @@ package api
 import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -68,15 +69,18 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	seniors := getSeniorities(ctx, DB)
+	optionsCount := []dbEngine.BuildSqlOptions{
+		dbEngine.ColumnsForSelect("count(*)"),
+	}
 	options := []dbEngine.BuildSqlOptions{
 		dbEngine.OrderBy("date desc"),
 		dbEngine.FetchOnlyRows(pageItem),
 		dbEngine.Offset(offset),
 	}
 	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCandidates)
+	args := make([]interface{}, 0)
+	where := make([]string, 0)
 	if ok {
-		args := make([]interface{}, 0)
-		where := make([]string, 0)
 
 		if dto.Name > "" {
 			where = append(where, "~name")
@@ -147,11 +151,6 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			args = append(args, 1)
 		}
 
-		options = append(options,
-			dbEngine.WhereForSelect(where...),
-			dbEngine.ArgsForSelect(args...),
-		)
-
 		if dto.CurrentColumn > "" {
 			orderBy := dto.CurrentColumn
 			if dto.Sort > 0 {
@@ -160,14 +159,24 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			options = append(options, dbEngine.OrderBy(orderBy))
 		}
 
-	} else if _, ok := ctx.UserValue("sendCandidate").(bool); ok {
-		options = append(options,
-			dbEngine.WhereForSelect(`id in (SELECT candidate_id 
-	FROM vacancies_to_candidates
-	WHERE status != %s)`),
-			dbEngine.ArgsForSelect(1),
-		)
+	}
 
+	if _, ok := ctx.UserValue("sendCandidate").(bool); ok {
+		where = append(where, `id in (SELECT candidate_id 
+	FROM vacancies_to_candidates
+	WHERE status != %s)`)
+		args = append(args, 1)
+	}
+
+	if len(where) > 0 {
+		options = append(options,
+			dbEngine.WhereForSelect(where...),
+			dbEngine.ArgsForSelect(args...),
+		)
+		optionsCount = append(optionsCount,
+			dbEngine.WhereForSelect(where...),
+			dbEngine.ArgsForSelect(args...),
+		)
 	}
 
 	err := candidates.SelectSelfScanEach(ctx,
@@ -192,6 +201,15 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if len(res.Candidates) < pageItem {
 		res.ResList.TotalPage = 1
 		res.ResList.Count = len(res.Candidates)
+	} else {
+		err = candidates.SelectOneAndScan(ctx,
+			&res.ResList.Count,
+			optionsCount...)
+		if err != nil {
+			logs.ErrorLog(err, "count")
+		} else {
+			res.ResList.TotalPage = res.ResList.Count / pageItem
+		}
 	}
 
 	return res, nil
@@ -200,6 +218,11 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func HandleReturnAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	ctx.SetUserValue("sendCandidate", true)
 	return HandleAllCandidate(ctx)
+}
+
+func HandleCandidatesFreelancerOnVacancies(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	ctx.SetStatusCode(fasthttp.StatusNoContent)
+	return nil, nil
 }
 
 func HandleAllCandidatesForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {

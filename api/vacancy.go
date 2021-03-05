@@ -459,9 +459,13 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		dbEngine.FetchOnlyRows(pageItem),
 		dbEngine.Offset(offset),
 	}
+	optionsCount := []dbEngine.BuildSqlOptions{
+		dbEngine.ColumnsForSelect("count(*)"),
+	}
+
 	if len(columns) > 0 {
-		options = append(options, dbEngine.WhereForSelect(columns...))
-		options = append(options, dbEngine.ArgsForSelect(args...))
+		options = append(options, dbEngine.WhereForSelect(columns...), dbEngine.ArgsForSelect(args...))
+		optionsCount = append(optionsCount, dbEngine.WhereForSelect(columns...), dbEngine.ArgsForSelect(args...))
 	}
 
 	companies, _ := db.NewCompanies(DB)
@@ -524,8 +528,26 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		return nil, errors.Wrap(err, "	")
 	}
 
-	return res, nil
+	if len(res.Vacancies) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
+	}
 
+	if len(res.Vacancies) < pageItem {
+		res.ResList.TotalPage = 1
+		res.ResList.Count = len(res.Vacancies)
+	} else {
+		err = vacancies.SelectOneAndScan(ctx,
+			&res.ResList.Count,
+			optionsCount...)
+		if err != nil {
+			logs.ErrorLog(err, "count")
+		} else {
+			res.ResList.TotalPage = res.ResList.Count / pageItem
+		}
+	}
+
+	return res, nil
 }
 
 func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string, code int32) {
