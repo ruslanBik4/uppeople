@@ -149,15 +149,17 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 		switch dto.CurrentColumn {
 		case "Company":
-			orderBy = `select name from companies where id = company_id`
+			orderBy = `(select name from companies where id = company_id)`
 		case "Platform":
-			orderBy = `select nazva from platforms where id = platform_id`
+			orderBy = `(select nazva from platforms where id = platform_id)`
 		case "Location":
 			orderBy = `(select name from location_for_vacancies where id = location_id)`
 		case "Seniority":
 			orderBy = `(select nazva from seniorities where id = seniority_id)`
 		case "Contacts":
 			orderBy = `coalesce(email, phone, skype)`
+		case "Date":
+			// orderBy = `coalesce(email, phone, skype)`
 		default:
 			orderBy = dto.CurrentColumn
 		}
