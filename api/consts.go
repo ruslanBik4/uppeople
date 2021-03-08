@@ -39,6 +39,14 @@ UPPeople team.</p>
 <p><br><br></p>
 <p>С наилучшим пожеланиями,
 команда UPPeople.</p>
-<p>&nbsp;<a href="http://my.uppeople.co/" target="_self"><span style="color: blue;font-size: 16px;font-family: Journal, serif;"@"UPpeople" Recruiting agency</span></a><span style="font-size: 16px;"> </span></p>
+<p>&nbsp;
+<a href="http://my.uppeople.co/" target="_self"><span style="color: blue;font-size: 16px;font-family: Journal, serif;"@"UPpeople" Recruiting agency</span></a><span style="font-size: 16px;"> </span></p>
 `
+	EMAIL_INVITE_TEXT = `<p><span style="font-size: 14px;">Interview with %s %s  scheduled on %s %s</span></p>
+<p>%s</p>
+<p><br>Add to google calendar: {link}</p>
+<p><br></p>
+<p><span style="color: rgb(35,40,44);background-color: rgb(255,255,255);font-size: 14px;">
+<a href="http://my.uppeople.co/" target="_self"><span style="color: blue;font-size: 16px;font-family: Journal, serif;"@"UPpeople" Recruiting agency</span></a><span style="font-size: 16px;"> </span></p>
+ <br><br>`
 )
