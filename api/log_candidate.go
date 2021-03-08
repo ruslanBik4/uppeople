@@ -24,10 +24,10 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	return DB.Conn.SelectToMaps(ctx,
 		fmt.Sprintf(`select logs.id as logId, CONCAT('Пользователь ', users.name, 
-		CASE WHEN kod_deystviya=%s THEN ' проработал ' 
-			 WHEN kod_deystviya=%s  THEN ' добавил нового '
-			 WHEN kod_deystviya=%s  THEN ' обновил у '
-			 WHEN kod_deystviya=%s  THEN ' удалил '
+		CASE WHEN kod_deystviya=%d THEN ' проработал ' 
+			 WHEN kod_deystviya=%d  THEN ' добавил нового '
+			 WHEN kod_deystviya=%d  THEN ' обновил у '
+			 WHEN kod_deystviya=%d  THEN ' удалил '
 			ELSE '' END,
 		CASE WHEN candidate_id > 0 THEN CONCAT(' кандидата ', can.name)
 			 WHEN vacancy_id > 0 THEN CONCAT(' вакансию компании ', companies.name)

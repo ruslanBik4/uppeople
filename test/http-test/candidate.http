@@ -28,7 +28,9 @@ Content-Type: application/json
 
 {
   "search": "Pasha",
-  "selectPlatform":[],"selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},
+  "selectPlatform":[],
+  "CurrentColumn": "Recruiter",
+  "selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},
   "date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
 }
 ###
