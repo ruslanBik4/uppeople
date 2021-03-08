@@ -153,6 +153,20 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		if dto.CurrentColumn > "" {
 			orderBy := dto.CurrentColumn
+			switch dto.CurrentColumn {
+			case "Platform":
+				orderBy = `(select name from platforms where id = platform_id)`
+			case "Recruiter":
+				orderBy = `(select name from users where id = recruter_id)`
+			case "Tag/Reason":
+				orderBy = `(select name from tags where id = tag_id)`
+			case "Seniority":
+				orderBy = `(select name from seniorities where id = seniority_id)`
+			case "Contacts":
+				orderBy = `coalesce(email, phone, skype)`
+			default:
+				logs.DebugLog("unknown column for sort - %s", dto.CurrentColumn)
+			}
 			if dto.Sort > 0 {
 				orderBy += " desc"
 			}

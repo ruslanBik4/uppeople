@@ -5,6 +5,7 @@
 package api
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -22,11 +23,11 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	return DB.Conn.SelectToMaps(ctx,
-		`select logs.id as logId, CONCAT('Пользователь ', users.name, 
-		CASE WHEN kod_deystviya=102 THEN ' проработал ' 
-			 WHEN kod_deystviya=101  THEN ' добавил нового '
-			 WHEN kod_deystviya=100  THEN ' обновил у '
-			 WHEN kod_deystviya=103  THEN ' удалил '
+		fmt.Sprintf(`select logs.id as logId, CONCAT('Пользователь ', users.name, 
+		CASE WHEN kod_deystviya=%s THEN ' проработал ' 
+			 WHEN kod_deystviya=%s  THEN ' добавил нового '
+			 WHEN kod_deystviya=%s  THEN ' обновил у '
+			 WHEN kod_deystviya=%s  THEN ' удалил '
 			ELSE '' END,
 		CASE WHEN candidate_id > 0 THEN CONCAT(' кандидата ', can.name)
 			 WHEN vacancy_id > 0 THEN CONCAT(' вакансию компании ', companies.name)
@@ -43,6 +44,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			left Join seniorities ON (vacancies.seniority_id = seniorities.id)
 		where candidate_id =$1
 		order by logs.d_c DESC`,
+			CODE_LOG_PEFORM, CODE_LOG_INSERT, CODE_LOG_UPDATE, CODE_LOG_DELETE),
 		ctx.UserValue("id"),
 	)
 }

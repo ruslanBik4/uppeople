@@ -77,6 +77,7 @@ BEGIN
     PERFORM setval('companies_id_seq'::regclass, (select max(id) from companies));
     PERFORM setval('comments_for_companies_id_seq'::regclass, (select max(id) from comments_for_companies));
     PERFORM setval('comments_for_candidates_id_seq'::regclass, (select max(id) from comments_for_candidates));
+    PERFORM setval('candidates_to_companies_id_seq'::regclass, (select max(id) from candidates_to_companies));
     PERFORM setval('vacancies_id_seq'::regclass, (select max(id) from vacancies));
     PERFORM setval('contacts_id_seq'::regclass, (select max(id) from contacts));
 

@@ -13,18 +13,15 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/services"
-	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
+// todo - shrink struct
 type CandidateDTO struct {
 	*db.CandidatesFields
-	Comment           string         `json:"comment"`
-	Date              string         `json:"date"`
-	Resume            string         `json:"resume"`
 	SelectedVacancies []SelectedUnit `json:"selectedVacancies"`
 }
 
@@ -613,10 +610,10 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Str_companies,
 		u.Status,
 		u.Tag_id,
-		u.Comment,
+		u.Comments,
 		time.Now(),
 		auth.GetUserData(ctx).Id,
-		u.Resume,
+		u.Text_rezume,
 		u.Sfera,
 		u.Experience,
 		u.Education,
@@ -640,16 +637,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	err = table.SelectOneAndScan(ctx,
-		&u.Id,
-		dbEngine.ColumnsForSelect("id"),
-		dbEngine.WhereForSelect("name"),
-		dbEngine.ArgsForSelect(u.Name),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "table.SelectOneAndScan")
-	}
-	toLogCandidate(ctx, DB, int32(u.Id), u.Comment, 101)
+	toLogCandidate(ctx, DB, int32(i), u.Comments, CODE_LOG_INSERT)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
 
@@ -725,8 +713,7 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, "", 103)
-	toLogCandidate(ctx, DB, id, "", 103)
+	toLogCandidate(ctx, DB, id, "", CODE_LOG_DELETE)
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
@@ -755,7 +742,6 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"tag_id": "required value",
 		}, apis.ErrWrongParamsList
 	}
-	u.Comments = u.Comment
 
 	oldData := auth.GetEditCandidate(ctx)
 	table, _ := db.NewCandidates(DB)
@@ -816,8 +802,8 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Str_companies,
 			u.Status,
 			u.Tag_id,
-			u.Comment,
-			u.Resume,
+			u.Comments,
+			u.Text_rezume,
 			u.Sfera,
 			u.Experience,
 			u.Education,
@@ -837,7 +823,10 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		args = append(args, auth.GetUserData(ctx).Id)
 	}
 
-	logs.DebugLog(columns, args)
+	if len(columns) == 0 {
+		return "no new data on record", apis.ErrWrongParamsList
+	}
+
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),
@@ -856,7 +845,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 			text += fmt.Sprintf("%s=%v", col, args[i])
 		}
-		toLogCandidate(ctx, DB, int32(id), text, 100)
+		toLogCandidate(ctx, DB, id, text, CODE_LOG_UPDATE)
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)

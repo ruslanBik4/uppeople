@@ -29,10 +29,10 @@ type CandidatesFields struct {
 	Str_companies  sql.NullString `json:"str_companies"`
 	Status         string         `json:"status"`
 	Tag_id         int32          `json:"tag_id"`
-	Comments       string         `json:"comments"`
+	Comments       string         `json:"comment"`
 	Date           time.Time      `json:"date"`
 	Recruter_id    int32          `json:"recruter_id"`
-	Text_rezume    string         `json:"text_rezume"`
+	Text_rezume    string         `json:"resume"`
 	Sfera          string         `json:"sfera"`
 	Experience     string         `json:"experience"`
 	Education      string         `json:"education"`

@@ -122,8 +122,7 @@ func init() {
 				}
 
 				ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusMovedPermanently)
-				logs.DebugLog("redirect %s", string(uri.FullURI()))
-				logIP(ctx)
+				logIP(ctx, string(uri.FullURI()))
 
 			})
 			if err != nil {
@@ -136,7 +135,7 @@ func init() {
 
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
 
-func logIP(ctx *fasthttp.RequestCtx) {
+func logIP(ctx *fasthttp.RequestCtx, url string) {
 	ipClient := ctx.Request.Header.Peek("X-Forwarded-For")
 	addr := string(ipClient)
 	if len(ipClient) == 0 {
@@ -151,10 +150,10 @@ func logIP(ctx *fasthttp.RequestCtx) {
 	}
 
 	if addr == "" {
-		logs.StatusLog(ctx.RemoteAddr().String())
-	} else {
-		logs.StatusLog(addr)
+		addr = ctx.RemoteAddr().String()
 	}
+
+	logs.StatusLog("redirect'%s'  to %s", addr, url)
 }
 
 // func (dst *CitextArray) MarshalJSON() ([]byte, error) {

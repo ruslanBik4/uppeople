@@ -160,7 +160,7 @@ var (
 		},
 		"/api/main/editCandidate/": {
 			Fnc:      HandleEditCandidate,
-			Desc:     "show search results according range of characteristics",
+			Desc:     "edit candidate",
 			DTO:      &CandidateDTO{},
 			NeedAuth: true,
 			Params: []apis.InParam{
