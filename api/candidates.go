@@ -174,8 +174,6 @@ fetch first 1 row only
 )`
 			case "Contacts":
 				orderBy = `coalesce(email, phone, skype)`
-			default:
-				logs.DebugLog("unknown column for sort - %s", dto.CurrentColumn)
 			}
 			if dto.Sort > 0 {
 				orderBy += " desc"
