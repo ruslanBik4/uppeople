@@ -51,40 +51,38 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Companies:   make(map[int32]map[string]string),
 	}
 
-	users, _ := db.NewUsers(DB)
-	err := users.SelectOneAndScan(ctx,
-		u,
-		dbEngine.WhereForSelect("email"),
-		dbEngine.ArgsForSelect(a.Email),
-	)
-	notFound := err == pgx.ErrNoRows ||
-		bcrypt.CompareHashAndPassword([]byte(u.Pass.String), []byte(a.Password)) != nil
-	if notFound {
-
-		if a.Email == "test@test.com" && a.Password == "1111" {
-			u.Id = 27
-			u.Name = "julia"
-			u.Email = "julia@uppeople.co"
-			u.Role_id = 2
-		} else {
-
-			req := &fasthttp.Request{}
-			ctx.Request.CopyTo(req)
-
-			err = request(req, u)
-			if err != nil {
-				return createErrResult(err)
+	if a.Email == "test@test.com" && a.Password == "1111" {
+		u.Id = 27
+		u.Name = "julia"
+		u.Email = "julia@uppeople.co"
+		u.Role_id = 2
+	} else {
+		users, _ := db.NewUsers(DB)
+		err := users.SelectOneAndScan(ctx,
+			u,
+			dbEngine.WhereForSelect("email"),
+			dbEngine.ArgsForSelect(a.Email),
+		)
+		switch err {
+		case nil:
+			if bcrypt.CompareHashAndPassword([]byte(u.Pass.String), []byte(a.Password)) != nil {
+				createErrResult(pgx.ErrNoRows)
 			}
+		case pgx.ErrNoRows:
+			createErrResult(pgx.ErrNoRows)
+		default:
+			return createErrResult(err)
 		}
-	} else if err != nil && !notFound {
-		return createErrResult(err)
 	}
 
+	var err error
 	u.Token, err = auth.Bearer.NewToken(u)
 	if err != nil {
 		ctx.SetStatusCode(fasthttp.StatusNonAuthoritativeInfo)
 		return nil, errors.Wrap(err, "Bearer.NewToken")
 	}
+
+	u.Pass.String = ""
 
 	return u, nil
 }
