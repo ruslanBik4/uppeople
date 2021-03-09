@@ -14,6 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -57,8 +58,9 @@ var (
 			Desc: "get_reasons linkEdin",
 		},
 		"/api/get_recruiter_vacancies": {
-			Fnc:  HandleGetRecruiterVacancieslinkEdin,
-			Desc: "get_recruiter_vacancies linkEdin",
+			Fnc:      HandleGetRecruiterVacancieslinkEdin,
+			Desc:     "get_recruiter_vacancies linkEdin",
+			NeedAuth: true,
 		},
 		"/api/get_candidate_info": {
 			Fnc:      HandleGetCandidate_infolinkEdin,
@@ -163,9 +165,22 @@ func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{},
 		return nil, dbEngine.ErrDBNotFound
 	}
 
+	data, err := DB.Conn.SelectToMaps(ctx,
+		`select vacancies.id, platform_id, user_ids,
+CONCAT(companies.name, ' (', platforms.nazva , ')') as name,
+LOWER(CONCAT(companies.name, ' (', platforms.nazva , ')')) as label
+from vacancies left join companies on vacancies.company_id = companies.id
+left join platforms on vacancies.platform_id = platforms.id
+where $1=ANY(user_ids)`,
+		auth.GetUserData(ctx).Id,
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
 	m := map[string]interface{}{
 		"status":    "ok",
-		"vacancies": getVacToCand(ctx, DB),
+		"vacancies": data,
 	}
 
 	return m, nil

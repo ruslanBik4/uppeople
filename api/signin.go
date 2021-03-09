@@ -64,12 +64,12 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		)
 		switch err {
 		case nil:
-			logs.DebugLog(u)
 			err := auth.CheckPass(u.Pass.String, a.Password)
 			if err != nil {
 				req := &fasthttp.Request{}
 				ctx.Request.CopyTo(req)
 				if request(req, u) != nil {
+					logs.DebugLog(u)
 					return err.Error(), apis.ErrWrongParamsList
 				}
 				b, err := auth.NewHash(u.Pass.String)
