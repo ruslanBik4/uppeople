@@ -16,12 +16,7 @@ import (
 func TestCandidateDTO_GetValue(t *testing.T) {
 	type fields struct {
 		CandidatesFields  *db.CandidatesFields
-		Comment           string
 		Phone             string
-		Resume            string
-		SelectPlatform    SelectedUnit
-		SelectSeniority   SelectedUnit
-		SelectedTag       SelectedUnit
 		SelectedVacancies []SelectedUnit
 	}
 	tests := []struct {
@@ -35,11 +30,6 @@ func TestCandidateDTO_GetValue(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &CandidateDTO{
 				CandidatesFields:  tt.fields.CandidatesFields,
-				Comment:           tt.fields.Comment,
-				Resume:            tt.fields.Resume,
-				SelectPlatform:    tt.fields.SelectPlatform,
-				SelectSeniority:   tt.fields.SelectSeniority,
-				SelectedTag:       tt.fields.SelectedTag,
 				SelectedVacancies: tt.fields.SelectedVacancies,
 			}
 			if got := c.GetValue(); !reflect.DeepEqual(got, tt.want) {
@@ -52,12 +42,7 @@ func TestCandidateDTO_GetValue(t *testing.T) {
 func TestCandidateDTO_NewValue(t *testing.T) {
 	type fields struct {
 		CandidatesFields  *db.CandidatesFields
-		Comment           string
 		Phone             string
-		Resume            string
-		SelectPlatform    SelectedUnit
-		SelectSeniority   SelectedUnit
-		SelectedTag       SelectedUnit
 		SelectedVacancies []SelectedUnit
 	}
 	tests := []struct {
@@ -71,11 +56,6 @@ func TestCandidateDTO_NewValue(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &CandidateDTO{
 				CandidatesFields:  tt.fields.CandidatesFields,
-				Comment:           tt.fields.Comment,
-				Resume:            tt.fields.Resume,
-				SelectPlatform:    tt.fields.SelectPlatform,
-				SelectSeniority:   tt.fields.SelectSeniority,
-				SelectedTag:       tt.fields.SelectedTag,
 				SelectedVacancies: tt.fields.SelectedVacancies,
 			}
 			if got := c.NewValue(); !reflect.DeepEqual(got, tt.want) {
