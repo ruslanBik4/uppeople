@@ -52,7 +52,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	users, _ := db.NewUsers(DB)
 	err := users.SelectOneAndScan(ctx,
-		u,
+		u.UsersFields,
 		dbEngine.WhereForSelect("email", "password"),
 		dbEngine.ArgsForSelect(a.Email, a.Password),
 	)
