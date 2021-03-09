@@ -61,6 +61,7 @@ var (
 			Fnc:      HandleGetRecruiterVacancieslinkEdin,
 			Desc:     "get_recruiter_vacancies linkEdin",
 			NeedAuth: true,
+			WithCors: true,
 		},
 		"/api/get_candidate_info": {
 			Fnc:      HandleGetCandidate_infolinkEdin,
