@@ -8,7 +8,7 @@ CREATE TABLE users
     phones       character varying[] NOT NULL,
     id_languages integer[],
     isDel        BOOLEAN             NOT NULL DEFAULT false,
-    id_roles     INTEGER             NOT NULL DEFAULT 3,
+    role_id     INTEGER             NOT NULL DEFAULT 3,
     last_login   timestamptz         NOT NULL DEFAULT CURRENT_TIMESTAMP,
     hash         bigint              NOT NULL,
     last_page    character varying,
@@ -24,7 +24,7 @@ COMMENT ON COLUMN users.phones IS 'list of phones which contact user';
 COMMENT ON COLUMN users.id_languages IS 'Preferred languages of user interface';
 COMMENT ON COLUMN users.isDel IS 'Is deleting (read_only)';
 COMMENT ON COLUMN users.hash IS 'Hash (read_only)';
-COMMENT ON COLUMN users.id_roles IS 'Role (read_only)';
+COMMENT ON COLUMN users.role_id IS 'Role (read_only)';
 COMMENT ON COLUMN users.id_homepages IS 'home page';
 COMMENT ON COLUMN users.last_login IS 'Last time when user login (read_only)';
 COMMENT ON COLUMN users.last_page IS 'Last page which visited user (read_only)';

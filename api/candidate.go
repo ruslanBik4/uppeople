@@ -422,7 +422,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		args = append(args, u.Avatar)
 	}
 	table, _ := db.NewCandidates(DB)
-	i, err := table.Insert(ctx,
+	id, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.ArgsForSelect(args...),
 	)
@@ -430,11 +430,15 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, int32(i), u.Comments, CODE_LOG_INSERT)
+	if id < 0 {
+		return DB.Conn.LastRowAffected(), apis.ErrWrongParamsList
+	}
+
+	toLogCandidate(ctx, DB, int32(id), u.Comments, CODE_LOG_INSERT)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
 
-	return i, nil
+	return id, nil
 }
 
 type FollowUpDTO struct {

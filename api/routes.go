@@ -36,7 +36,7 @@ var (
 	PostRoutes = apis.ApiRoutes{
 		"/api/auth/login": {
 			Fnc:  HandleAuthLogin,
-			Desc: "show search results according range of characteristics",
+			Desc: "login & return  candidate info",
 			Params: []apis.InParam{
 				{
 					Name: "email",
