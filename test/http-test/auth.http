@@ -10,6 +10,20 @@ Content-Type: application/json
 POST https://{{host}}/api/auth/login
 Content-Type: application/json
 
+{"email":"ni@gamayun.sk","password":"12345"}
+###
+POST https://{{host}}/api/auth/login
+Content-Type: application/json
+
+{"email":"alona.ryd18@gmail.com","password":"alona.ryd"}
+
+> {%
+    client.global.set("auth_token", response.body.access_token);
+%}
+###
+POST https://{{host}}/api/auth/login
+Content-Type: application/json
+
 {"email":"test@test.com","password":"1111"}
 
 > {%

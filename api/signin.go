@@ -10,11 +10,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/valyala/fasthttp"
-	"golang.org/x/crypto/bcrypt"
-
+	"github.com/ruslanBik4/logs"
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
+	"github.com/valyala/fasthttp"
 )
 
 type DTOAuth struct {
@@ -65,8 +64,25 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		)
 		switch err {
 		case nil:
-			if bcrypt.CompareHashAndPassword([]byte(u.Pass.String), []byte(a.Password)) != nil {
-				return createErrResult(pgx.ErrNoRows)
+			logs.DebugLog(u)
+			err := auth.CheckPass(u.Pass.String, a.Password)
+			if err != nil {
+				req := &fasthttp.Request{}
+				ctx.Request.CopyTo(req)
+				if request(req, u) != nil {
+					return err.Error(), apis.ErrWrongParamsList
+				}
+				b, err := auth.NewHash(u.Pass.String)
+				if err == nil {
+					_, err = users.Update(ctx,
+						dbEngine.ColumnsForSelect("password"),
+						dbEngine.WhereForSelect("id"),
+						dbEngine.ArgsForSelect(string(b), u.Id),
+					)
+				}
+				if err != nil {
+					logs.ErrorLog(err, "auth.NewHash")
+				}
 			}
 		case pgx.ErrNoRows:
 			return createErrResult(pgx.ErrNoRows)
