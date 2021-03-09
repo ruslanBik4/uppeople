@@ -167,6 +167,15 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/addAvatarCandidate/": {
+			Fnc:       HandleEditAvatarCandidate,
+			Desc:      "edit avatar of candidate",
+			Multipart: true,
+			NeedAuth:  true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/deleteVacancy/": {
 			Fnc:      HandleDeleteVacancy,
 			Desc:     "delete Vacancy",

@@ -21,8 +21,16 @@ type User struct {
 	*db.UsersFields
 	Companies map[int32]map[string]string `json:"companies"`
 	Token     string                      `json:"access_token"`
-	Host      string                      `json:"-"`
 	LastEdit  lastEdit                    `json:"-"`
+}
+
+func (u *User) GetFields(columns []dbEngine.Column) []interface{} {
+	values := make([]interface{}, len(columns))
+	for i, col := range columns {
+		values[i] = u.RefColValue(col.Name())
+	}
+
+	return values
 }
 
 func (u *User) IsAdmin() bool {

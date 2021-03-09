@@ -265,7 +265,7 @@ function afterSaveAnyForm(data) {
     if (!data)
       return false;
 
-    if (data.id_roles != 1) {
+    if (data.role_id != 1) {
       alert("only admin access!")
       return
     }
