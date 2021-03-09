@@ -11,6 +11,7 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
@@ -53,10 +54,12 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	users, _ := db.NewUsers(DB)
 	err := users.SelectOneAndScan(ctx,
 		u,
-		dbEngine.WhereForSelect("email", "password"),
-		dbEngine.ArgsForSelect(a.Email, a.Password),
+		dbEngine.WhereForSelect("email"),
+		dbEngine.ArgsForSelect(a.Email),
 	)
-	if err == pgx.ErrNoRows {
+	notFound := err == pgx.ErrNoRows ||
+		bcrypt.CompareHashAndPassword([]byte(u.Pass.String), []byte(a.Password)) != nil
+	if notFound {
 
 		if a.Email == "test@test.com" && a.Password == "1111" {
 			u.Id = 27
@@ -73,7 +76,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				return createErrResult(err)
 			}
 		}
-	} else if err != nil && err != pgx.ErrNoRows {
+	} else if err != nil && !notFound {
 		return createErrResult(err)
 	}
 
