@@ -66,10 +66,10 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		switch err {
 		case nil:
 			if bcrypt.CompareHashAndPassword([]byte(u.Pass.String), []byte(a.Password)) != nil {
-				createErrResult(pgx.ErrNoRows)
+				return createErrResult(pgx.ErrNoRows)
 			}
 		case pgx.ErrNoRows:
-			createErrResult(pgx.ErrNoRows)
+			return createErrResult(pgx.ErrNoRows)
 		default:
 			return createErrResult(err)
 		}
