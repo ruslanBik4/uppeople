@@ -8,6 +8,7 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ruslanBik4/uppeople/db"
 )
@@ -95,10 +96,15 @@ func HandleNewUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
 	users, _ := db.NewUsers(DB)
 	id, err := users.Insert(ctx,
-		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id"),
-		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Role),
+		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id", "password"),
+		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Role, hash),
 	)
 	if err != nil {
 		return createErrResult(err)
