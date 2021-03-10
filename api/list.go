@@ -249,6 +249,7 @@ func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 		nil,
 		&res,
 		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
+		dbEngine.OrderBy("name"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -264,6 +265,7 @@ func getSeniorities(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnit
 		nil,
 		&res,
 		dbEngine.ColumnsForSelect("id", "nazva as label", "LOWER(nazva) as value"),
+		// dbEngine.OrderBy("nazva"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -295,6 +297,7 @@ func getRecruters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 		nil,
 		&res,
 		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
+		dbEngine.OrderBy("name"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
@@ -306,11 +309,11 @@ func getRecruters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, opt ...dbEngine.BuildSqlOptions) (res SelectedUnits) {
 	company, _ := db.NewCompanies(DB)
 
-	opt = append(opt, dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"))
 	err := company.SelectAndScanEach(ctx,
 		nil,
 		&res,
-		opt...,
+		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
+		dbEngine.OrderBy("name"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	SelectSelfScanEach")

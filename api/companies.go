@@ -81,6 +81,7 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			fActive := " AND status=ANY(array[0,1])"
 			sqlVacancy += fActive
 			// sqlCandidates += fActive
+			logs.DebugLog(where, args)
 		}
 		options = append(options,
 			dbEngine.WhereForSelect(where...),
