@@ -346,6 +346,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			Date_last_change: vacancy["date_last_change"].(time.Time),
 		})
 	}
+
 	return res, nil
 }
 

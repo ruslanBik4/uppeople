@@ -5,6 +5,7 @@
 package api
 
 import (
+	"database/sql/driver"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -121,10 +122,14 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		name := col.Name()
-		if v := u.ColValue(name); v != nil && v != table.Record.ColValue(name) {
+		if v := u.ColValue(name); !EmptyValue(v) && v != table.Record.ColValue(name) {
 			columns = append(columns, name)
 			args = append(args, v)
 		}
+	}
+
+	if len(columns) == 0 {
+		return "no new data on record", apis.ErrWrongParamsList
 	}
 
 	i, err := table.Update(ctx,
@@ -139,6 +144,20 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	toLogCompany(ctx, DB, int32(i), "", CODE_LOG_UPDATE)
 
 	return createResult(i)
+}
+
+func EmptyValue(value interface{}) bool {
+	if value == nil {
+		return true
+	}
+
+	v, ok := value.(driver.Valuer)
+	if ok {
+		v1, _ := v.Value()
+		return v1 == nil
+	}
+
+	return false
 }
 
 func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
