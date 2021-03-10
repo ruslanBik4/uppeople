@@ -121,7 +121,7 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		name := col.Name()
-		if v := u.ColValue(name); v != table.Record.ColValue(name) {
+		if v := u.ColValue(name); v != nil && v != table.Record.ColValue(name) {
 			columns = append(columns, name)
 			args = append(args, v)
 		}

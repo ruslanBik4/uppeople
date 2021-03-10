@@ -106,12 +106,12 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if dto.DateFrom > "" {
-			where = append(where, ">=date::date")
-			args = append(args, dto.DateFrom)
+			where = append(where, ">=date")
+			args = append(args, dto.DateFrom+"T23:59:59+02:00")
 
 		}
 		if dto.DateTo > "" {
-			where = append(where, "<=date::date")
+			where = append(where, "<=date")
 			args = append(args, dto.DateTo)
 
 		}
