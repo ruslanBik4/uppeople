@@ -386,6 +386,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"file",
 		"seniority_id",
 		"date_follow_up",
+		"Vacancies",
 	}
 
 	if u.Tag_id == 0 {
@@ -417,6 +418,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.File,
 		u.Seniority_id,
 		u.Date_follow_up,
+		u.Vacancies,
 	}
 
 	if u.Avatar > "" {
@@ -436,9 +438,11 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return DB.Conn.LastRowAffected(), apis.ErrWrongParamsList
 	}
 
-	toLogCandidate(ctx, DB, int32(id), u.Comments, CODE_LOG_INSERT)
+	u.Id = int32(id)
+	toLogCandidate(ctx, DB, u.Id, u.Comments, CODE_LOG_INSERT)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
+	putVacancies(ctx, u, DB)
 
 	return id, nil
 }
@@ -599,9 +603,10 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				continue
 			}
 
-			if oldData.ColValue(name) != u.ColValue(name) {
+			newValue := u.ColValue(name)
+			if !EmptyValue(newValue) && oldData.ColValue(name) != newValue {
 				columns = append(columns, name)
-				args = append(args, u.ColValue(name))
+				args = append(args, newValue)
 			}
 		}
 	} else {
@@ -628,6 +633,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			// "avatar",
 			"seniority_id",
 			"date_follow_up",
+			"vacancies",
 		}
 		args = []interface{}{
 			u.Name,
@@ -652,6 +658,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			// u.Avatar,
 			u.Seniority_id,
 			u.Date_follow_up,
+			u.Vacancies,
 		}
 	}
 
@@ -688,6 +695,12 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
+	putVacancies(ctx, u, DB)
+
+	return nil, nil
+}
+
+func putVacancies(ctx *fasthttp.RequestCtx, u *CandidateDTO, DB *dbEngine.DB) {
 	if len(u.SelectedVacancies) > 0 {
 		table, _ := db.NewVacancies_to_candidates(DB)
 		for _, id := range u.SelectedVacancies {
@@ -701,6 +714,4 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			}
 		}
 	}
-
-	return nil, nil
 }

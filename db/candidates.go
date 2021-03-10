@@ -42,6 +42,7 @@ type CandidatesFields struct {
 	Avatar         string         `json:"avatar"`
 	Seniority_id   int32          `json:"seniority_id"`
 	Date_follow_up *time.Time     `json:"date_follow_up"`
+	Vacancies      []int32        `json:"vacancies"`
 }
 
 func (r *CandidatesFields) RefColValue(name string) interface{} {
@@ -120,6 +121,9 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 
 	case "date_follow_up":
 		return &r.Date_follow_up
+
+	case "Vacancies":
+		return &r.Vacancies
 
 	default:
 		return nil
@@ -202,6 +206,9 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 
 	case "date_follow_up":
 		return r.Date_follow_up
+
+	case "Vacancies":
+		return r.Vacancies
 
 	default:
 		return nil
