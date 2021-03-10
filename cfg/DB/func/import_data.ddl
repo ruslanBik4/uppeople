@@ -4,7 +4,7 @@ AS
 $$
 BEGIN
 
-    truncate candidates cascade ;
+--     truncate candidates cascade ;
 
 --     EXPLAIN
     INSERT INTO candidates
@@ -40,9 +40,10 @@ BEGIN
                                                  or (c.linkedin > '' and c.linkedin = t.linkedin)
                                                  or (c.email > '' AND c.email = t.email)
                                                  or (c.phone > '' AND c.phone = t.phone))
-             ));
+             ))
+    on conflict do nothing ;
     PERFORM setval('candidates_id_seq'::regclass, (select max(id) from candidates));
-    truncate table vacancies cascade;
+--     truncate table vacancies cascade;
 
 --     EXPLAIN
     INSERT INTO vacancies
@@ -61,7 +62,9 @@ BEGIN
                 seniority_id,
                 salary,
                 location_id
-         from vacancies_tmp );
+         from vacancies_tmp )
+    on conflict do nothing ;
+    PERFORM setval('vacancies_id_seq'::regclass, (select max(id) from vacancies));
 
 
     insert into vacancies_to_candidates
@@ -73,12 +76,12 @@ BEGIN
                              (v.vacancy_id = t.vacancy_id)
                                  AND (v.candidate_id = T.candidate_id)))
     on conflict do nothing ;
+    PERFORM setval('vacancies_to_candidates_id_seq'::regclass, (select max(id) from vacancies_to_candidates));
 
     PERFORM setval('companies_id_seq'::regclass, (select max(id) from companies));
     PERFORM setval('comments_for_companies_id_seq'::regclass, (select max(id) from comments_for_companies));
     PERFORM setval('comments_for_candidates_id_seq'::regclass, (select max(id) from comments_for_candidates));
     PERFORM setval('candidates_to_companies_id_seq'::regclass, (select max(id) from candidates_to_companies));
-    PERFORM setval('vacancies_id_seq'::regclass, (select max(id) from vacancies));
     PERFORM setval('contacts_id_seq'::regclass, (select max(id) from contacts));
 
 END;

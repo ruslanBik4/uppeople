@@ -279,6 +279,7 @@ func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 		nil,
 		&res,
 		dbEngine.ColumnsForSelect("id", "nazva as label", "LOWER(nazva) as value"),
+		dbEngine.OrderBy("nazva"),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")

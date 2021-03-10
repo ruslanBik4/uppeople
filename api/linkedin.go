@@ -220,11 +220,14 @@ func HandleGetSelectorslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	table, _ := db.NewChrome_extention_selectors(DB)
 	records := make([]*db.Chrome_extention_selectorsFields, 0)
-	table.SelectSelfScanEach(ctx,
+	err := table.SelectSelfScanEach(ctx,
 		func(record *db.Chrome_extention_selectorsFields) error {
 			records = append(records, record)
 			return nil
 		})
+	if err != nil {
+		return createErrResult(err)
+	}
 	m := map[string]interface{}{
 		"status": "ok",
 		"data":   records,
