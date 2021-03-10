@@ -60,6 +60,7 @@ var (
 		"/api/get_recruiter_vacancies": {
 			Fnc:      HandleGetRecruiterVacancieslinkEdin,
 			Desc:     "get_recruiter_vacancies linkEdin",
+			DTO:      &DTOVacancy{},
 			NeedAuth: true,
 			WithCors: true,
 		},

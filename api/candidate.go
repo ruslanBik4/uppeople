@@ -11,6 +11,7 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
@@ -20,7 +21,7 @@ import (
 // todo - shrink struct
 type CandidateDTO struct {
 	*db.CandidatesFields
-	SelectedVacancies []SelectedUnit `json:"selectedVacancies"`
+	SelectedVacancies []int32 `json:"selectedVacancies"`
 }
 
 func (c *CandidateDTO) GetValue() interface{} {
@@ -687,6 +688,19 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
+	if len(u.SelectedVacancies) > 0 {
+		table, _ := db.NewVacancies_to_candidates(DB)
+		for _, id := range u.SelectedVacancies {
+
+			_, err := table.Upsert(ctx,
+				dbEngine.ColumnsForSelect("candidate_id", "vacancy_id"),
+				dbEngine.ArgsForSelect(u.Id, id),
+			)
+			if err != nil {
+				logs.ErrorLog(err, "NewVacancies_to_candidates")
+			}
+		}
+	}
 
 	return nil, nil
 }
