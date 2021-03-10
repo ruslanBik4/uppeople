@@ -120,11 +120,12 @@ func request(req *fasthttp.Request, u *auth.User) error {
 			}
 
 			user := v["user"].(map[string]interface{})
+			var ok bool
 			u.Id = int32(user["id"].(float64))
 			u.Name = user["name"].(string)
 			u.Email = user["email"].(string)
 			u.Role_id = int32(user["role_id"].(float64))
-			u.Phone.String = user["tel"].(string)
+			u.Phone.String, ok = user["tel"].(string)
 
 			return nil
 		}

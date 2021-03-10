@@ -385,6 +385,17 @@ var (
 				ParamPageNum,
 			},
 		},
+		"/api/main/viewCandidatesFreelancerOnVacancies/": {
+			Fnc: func(ctx *fasthttp.RequestCtx) (interface{}, error) {
+				ctx.SetStatusCode(fasthttp.StatusNoContent)
+				return nil, nil
+			},
+			Desc:     "show all candidates",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamPageNum,
+			},
+		},
 		"/api/admin/all-staff": {
 			Fnc:      HandleAllStaff,
 			Desc:     "show all users",
