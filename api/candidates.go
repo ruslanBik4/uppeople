@@ -34,6 +34,7 @@ type SearchCandidates struct {
 	SelectCompanies SelectedUnits `json:"selectCompanies"`
 	SelectTag       *SelectedUnit `json:"selectTag"`
 	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
+	SelectSeniority SelectedUnits `json:"selectSeniority"`
 	SelectStatuses  SelectedUnits `json:"selectStatuses"`
 }
 
@@ -92,27 +93,43 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if dto.SelectTag != nil {
-			where = append(where, "tag_id")
-			args = append(args, dto.SelectTag.Id)
+			if dto.SelectTag.Id == 3 {
+				where = append(where, `tag_id in (SELECT id 
+												FROM tags 
+												WHERE parent_id=%s)`)
+				args = append(args, dto.SelectTag.Id)
+			} else {
+				where = append(where, "tag_id")
+				args = append(args, dto.SelectTag.Id)
+			}
 		}
 
 		if dto.SelectPlatforms != nil {
 			where = append(where, "platform_id")
 			p := make([]int32, len(dto.SelectPlatforms))
-			for i, tag := range dto.SelectPlatforms {
-				p[i] = tag.Id
+			for i, unit := range dto.SelectPlatforms {
+				p[i] = unit.Id
+			}
+			args = append(args, p)
+		}
+
+		if dto.SelectSeniority != nil {
+			where = append(where, "seniority_id")
+			p := make([]int32, len(dto.SelectSeniority))
+			for i, unit := range dto.SelectSeniority {
+				p[i] = unit.Id
 			}
 			args = append(args, p)
 		}
 
 		if dto.DateFrom > "" {
 			where = append(where, ">=date")
-			args = append(args, dto.DateFrom+"T23:59:59+02:00")
+			args = append(args, dto.DateFrom)
 
 		}
 		if dto.DateTo > "" {
 			where = append(where, "<=date")
-			args = append(args, dto.DateTo)
+			args = append(args, dto.DateTo+"T23:59:59+02:00")
 
 		}
 		if dto.CompanyID > 0 {
@@ -126,8 +143,8 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	FROM vacancies_to_candidates
 	WHERE status=%s)`)
 			p := make([]int32, len(dto.SelectStatuses))
-			for i, tag := range dto.SelectStatuses {
-				p[i] = tag.Id
+			for i, unit := range dto.SelectStatuses {
+				p[i] = unit.Id
 			}
 			args = append(args, p)
 		}
@@ -138,8 +155,8 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id)
 	WHERE companies.id=%s)`)
 			p := make([]int32, len(dto.SelectCompanies))
-			for i, tag := range dto.SelectCompanies {
-				p[i] = tag.Id
+			for i, unit := range dto.SelectCompanies {
+				p[i] = unit.Id
 			}
 			args = append(args, p)
 		}
