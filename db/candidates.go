@@ -122,7 +122,7 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "date_follow_up":
 		return &r.Date_follow_up
 
-	case "Vacancies":
+	case "vacancies":
 		return &r.Vacancies
 
 	default:
@@ -207,7 +207,7 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "date_follow_up":
 		return r.Date_follow_up
 
-	case "Vacancies":
+	case "vacancies":
 		return r.Vacancies
 
 	default:

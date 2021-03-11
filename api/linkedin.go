@@ -9,7 +9,6 @@ import (
 	"go/types"
 	"strings"
 
-	"github.com/jackc/pgx/v4"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -64,7 +63,7 @@ var (
 			WithCors: true,
 		},
 		"/api/get_candidate_info": {
-			Fnc:      HandleGetCandidate_infolinkEdin,
+			Fnc:      HandleGetCandidate_infoLinkedin,
 			Desc:     "get_candidate_info linkEdin",
 			WithCors: true,
 			Params: []apis.InParam{
@@ -115,7 +114,7 @@ func HandleGetPlatformsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return m, nil
 }
 
-func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetCandidate_infoLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
@@ -129,19 +128,17 @@ func HandleGetCandidate_infolinkEdin(ctx *fasthttp.RequestCtx) (interface{}, err
 	}
 	table, _ := db.NewCandidates(DB)
 	err := table.SelectOneAndScan(ctx, table, dbEngine.WhereForSelect("linkedin"), dbEngine.ArgsForSelect(url))
-	if err != nil && err != pgx.ErrNoRows {
+	if err != nil {
 		return createErrResult(err)
 	}
 
 	m := map[string]interface{}{
 		"status": "ok",
-		"data":   []string{},
-	}
-
-	if err == nil {
-		id := table.Record.Id
-		m["crm_url"] = fmt.Sprintf("%s://%s/#/candidates/%d", ctx.URI().Scheme(), ctx.Host(), id)
-		m["data"] = table.Record
+		"data":   table.Record,
+		"crm_url": fmt.Sprintf("%s://%s/#/candidates/%d",
+			ctx.URI().Scheme(),
+			ctx.Host(),
+			table.Record.Id),
 	}
 
 	return m, nil
