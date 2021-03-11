@@ -74,18 +74,22 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	}
 
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
-		`select vacancies.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
+		`select v.id, concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as label, user_ids, platform_id,
 		CONCAT(platforms.nazva, ' ("', (select nazva from seniorities where id=seniority_id), '")') as platform,
-		companies, sv.id as status_id, vacancies.company_id, sv.status, salary, 
-		coalesce(vc.date_last_change, vc.date_create) as date_last_change, vc.rej_text, sv.color
-FROM vacancies JOIN companies on (vacancies.company_id=companies.id)
-	JOIN vacancies_to_candidates vc on (vacancies.id = vc.vacancy_id)
-	JOIN platforms ON (vacancies.platform_id = platforms.id)
-	JOIN status_for_vacs sv on vc.status = sv.id
-	WHERE vc.candidate_id=$1 AND vc.status!=1
+		companies, sv.id as status_id, v.company_id, coalesce(sv.status,'first'), salary, 
+		coalesce(vc.date_last_change, vc.date_create, $3) as date_last_change, vc.rej_text, sv.color
+FROM vacancies v JOIN companies on (v.company_id=companies.id)
+	LEFT JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id)
+	JOIN platforms ON (v.platform_id = platforms.id)
+	JOIN status_for_vacs sv on vc.status = coalesce(sv.id, 1)
+	WHERE (vc.candidate_id=$1 OR v.id = ANY($2)) AND v.status!=1
     order by vc.date_last_change desc
-`, ref.ViewCandidate.Id)
+`,
+		ref.ViewCandidate.Id,
+		ref.ViewCandidate.CandidatesFields.Vacancies,
+		ref.Date,
+	)
 	if err != nil {
 		logs.ErrorLog(err, "")
 	}
