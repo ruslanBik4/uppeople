@@ -7,6 +7,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -603,7 +604,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			}
 
 			newValue := u.ColValue(name)
-			if !EmptyValue(newValue) && oldData.ColValue(name) != newValue {
+			if !EmptyValue(newValue) && (strings.HasPrefix(col.Type(), "_") || oldData.ColValue(name) != newValue) {
 				columns = append(columns, name)
 				args = append(args, newValue)
 			}
