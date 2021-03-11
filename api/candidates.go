@@ -8,6 +8,7 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
+	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -26,12 +27,14 @@ type ResCandidates struct {
 type SearchCandidates struct {
 	Name            string        `json:"search"`
 	CompanyID       int32         `json:"company_id"`
+	MySent          bool          `json:"mySent"`
 	Sort            int32         `json:"sort"`
 	CurrentColumn   string        `json:"currentColumn"`
 	DateFrom        string        `json:"dateFrom"`
 	DateTo          string        `json:"dateTo"`
 	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
 	SelectCompanies SelectedUnits `json:"selectCompanies"`
+	SelectReason    *SelectedUnit `json:"selectReason"`
 	SelectTag       *SelectedUnit `json:"selectTag"`
 	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
 	SelectSeniority SelectedUnits `json:"selectSeniority"`
@@ -94,10 +97,15 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		if dto.SelectTag != nil {
 			if dto.SelectTag.Id == 3 {
-				where = append(where, `tag_id in (SELECT id 
+				if dto.SelectReason != nil {
+					where = append(where, "tag_id")
+					args = append(args, dto.SelectReason.Id)
+				} else {
+					where = append(where, `tag_id in (SELECT id 
 												FROM tags 
 												WHERE parent_id=%s)`)
-				args = append(args, dto.SelectTag.Id)
+					args = append(args, dto.SelectTag.Id)
+				}
 			} else {
 				where = append(where, "tag_id")
 				args = append(args, dto.SelectTag.Id)
@@ -166,6 +174,10 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	FROM vacancies_to_candidates
 	WHERE status != %s)`)
 			args = append(args, 1)
+			if dto.MySent {
+				where = append(where, "recruter_id")
+				args = append(args, auth.GetUserID(ctx))
+			}
 		}
 
 		if dto.CurrentColumn > "" {

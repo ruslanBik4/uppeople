@@ -49,6 +49,17 @@ func (u *User) GetUserID() int {
 	return int(u.Id)
 }
 
+func GetUserID(ctx *fasthttp.RequestCtx) int {
+	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	if ok {
+		return token.GetUserID()
+	}
+
+	logs.ErrorLog(dbEngine.ErrNotFoundColumn{}, "%s not user data but %T %[2]v", token)
+
+	return -1
+}
+
 func GetUserData(ctx *fasthttp.RequestCtx) *User {
 	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
 	if ok {
