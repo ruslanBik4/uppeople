@@ -83,7 +83,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		companies, sv.id as status_id, v.company_id, sv.status, salary, 
 		coalesce(vc.date_last_change, vc.date_create, $3) as date_last_change, vc.rej_text, sv.color
 FROM vacancies v JOIN companies on (v.company_id=companies.id)
-	LEFT JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id)
+	LEFT JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id AND vc.candidate_id=$1)
 	JOIN platforms ON (v.platform_id = platforms.id)
 	JOIN status_for_vacs sv on coalesce(vc.status, 1) = sv.id
 	WHERE (vc.candidate_id=$1 OR v.id = ANY($2)) AND v.status!=1

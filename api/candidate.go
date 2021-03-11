@@ -21,7 +21,6 @@ import (
 // todo - shrink struct
 type CandidateDTO struct {
 	*db.CandidatesFields
-	SelectedVacancies []int32 `json:"selectedVacancies"`
 }
 
 func (c *CandidateDTO) GetValue() interface{} {
@@ -701,9 +700,9 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func putVacancies(ctx *fasthttp.RequestCtx, u *CandidateDTO, DB *dbEngine.DB) {
-	if len(u.SelectedVacancies) > 0 {
+	if len(u.Vacancies) > 0 {
 		table, _ := db.NewVacancies_to_candidates(DB)
-		for _, id := range u.SelectedVacancies {
+		for _, id := range u.Vacancies {
 
 			_, err := table.Upsert(ctx,
 				dbEngine.ColumnsForSelect("candidate_id", "vacancy_id"),
