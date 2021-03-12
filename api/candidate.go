@@ -666,8 +666,8 @@ func putVacancies(ctx *fasthttp.RequestCtx, u *CandidateDTO, DB *dbEngine.DB) {
 		for _, id := range u.Vacancies {
 
 			_, err := table.Upsert(ctx,
-				dbEngine.ColumnsForSelect("candidate_id", "vacancy_id"),
-				dbEngine.ArgsForSelect(u.Id, id),
+				dbEngine.ColumnsForSelect("candidate_id", "vacancy_id", "status"),
+				dbEngine.ArgsForSelect(u.Id, id, 1),
 			)
 			if err != nil {
 				logs.ErrorLog(err, "NewVacancies_to_candidates")

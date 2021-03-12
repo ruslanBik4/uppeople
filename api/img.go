@@ -43,8 +43,13 @@ func HandleSaveImg(ctx *fasthttp.RequestCtx, data []byte, name string) (string, 
 		return "", apis.ErrWrongParamsList
 	}
 
+	err := os.Mkdir(filepath.Join("img", path), os.ModePerm)
+	if err != nil {
+		return "", err
+	}
+
 	fileName := filepath.Join("img", path, name)
-	err := ioutil.WriteFile(fileName, data, os.ModeAppend)
+	err = ioutil.WriteFile(fileName, data, os.ModeAppend)
 	if err != nil {
 		return "", err
 	}

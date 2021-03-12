@@ -5,7 +5,6 @@
 package api
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"mime/multipart"
@@ -46,15 +45,28 @@ func HandleAddAvatar(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			logs.DebugLog(err, fHeader)
 			return nil, errors.Wrap(err, fHeader.Filename)
 		}
-		r := base64.NewDecoder(base64.RawStdEncoding, f)
-		b, err := ioutil.ReadAll(r)
-		if err != nil {
-			return nil, errors.Wrap(err, fHeader.Filename)
+
+		photos, ok := DB.Tables["photos"]
+		if !ok {
+			return nil, dbEngine.ErrNotFoundTable{Table: "photos"}
 		}
 
-		avatar = string(b)
+		i, err := photos.Upsert(ctx,
+			dbEngine.ColumnsForSelect("name", "blob"),
+			dbEngine.ArgsForSelect(fHeader.Filename, f),
+		)
+		if err != nil {
+			return createErrResult(err)
+		}
+
+		avatar = fmt.Sprintf("img/photos/%d", i)
 		break
 	}
+	if avatar == "" {
+		ctx.SetStatusCode(fasthttp.StatusResetContent)
+		return nil, nil
+	}
+
 	table, _ := db.NewCandidates(DB)
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect("avatar"),
@@ -90,7 +102,7 @@ func HandleAddLogo(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	input, ok := ctx.UserValue("file").([]*multipart.FileHeader)
 	if !ok {
 		return map[string]string{
-			"file": fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue("file")),
+			"file": fmt.Sprintf("wrong type %T, expect []*multipart.FileHeader ", ctx.UserValue("file")),
 		}, apis.ErrWrongParamsList
 	}
 
