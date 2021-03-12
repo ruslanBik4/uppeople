@@ -622,8 +622,6 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 	}
 
-	args = append(args, id)
-
 	if u.Tag_id == 3 || u.Tag_id == 4 {
 		columns = append(columns, "recruter_id")
 		args = append(args, auth.GetUserData(ctx).Id)
@@ -636,7 +634,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(args...),
+		dbEngine.ArgsForSelect(append(args, id)...),
 	)
 	if err != nil {
 		return createErrResult(err)
