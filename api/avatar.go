@@ -5,6 +5,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"mime/multipart"
@@ -30,23 +31,35 @@ func HandleAddAvatar(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	input, ok := ctx.UserValue("file").([]*multipart.FileHeader)
+	fHeaders, ok := ctx.UserValue("file").([]*multipart.FileHeader)
 	if !ok {
 		return map[string]string{
 			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
-	_, bytea, err := readByteA(input)
-	table, _ := db.NewCandidates(DB)
-	args := []interface{}{
-		string(bytea[0]),
-		id,
+	avatar := ""
+	for _, fHeader := range fHeaders {
+
+		f, err := fHeader.Open()
+		if err != nil {
+			logs.DebugLog(err, fHeader)
+			return nil, errors.Wrap(err, fHeader.Filename)
+		}
+		r := base64.NewDecoder(base64.RawStdEncoding, f)
+		b, err := ioutil.ReadAll(r)
+		if err != nil {
+			return nil, errors.Wrap(err, fHeader.Filename)
+		}
+
+		avatar = string(b)
+		break
 	}
+	table, _ := db.NewCandidates(DB)
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect("avatar"),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(args...),
+		dbEngine.ArgsForSelect(avatar, id),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -77,7 +90,7 @@ func HandleAddLogo(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	input, ok := ctx.UserValue("file").([]*multipart.FileHeader)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
+			"file": fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue("file")),
 		}, apis.ErrWrongParamsList
 	}
 
