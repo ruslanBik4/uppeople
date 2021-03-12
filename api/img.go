@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 )
 
@@ -25,6 +26,7 @@ func HandleGetImg(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 	b, err := ioutil.ReadFile(filepath.Join("img", path))
 	if err != nil {
+		logs.ErrorLog(err, "read file")
 		b, err = ioutil.ReadFile(filepath.Join("img", "companies_logo/no_logo.png"))
 		if err != nil {
 			return createErrResult(err)
@@ -43,18 +45,19 @@ func HandleSaveImg(ctx *fasthttp.RequestCtx, data []byte, name string) (string, 
 		return "", apis.ErrWrongParamsList
 	}
 
-	err := os.Mkdir(filepath.Join("img", path), os.ModePerm)
+	fullPath := filepath.Join("img", "companies_logo", path)
+	err := os.Mkdir(fullPath, os.ModePerm)
 	if err != nil {
 		return "", err
 	}
 
-	fileName := filepath.Join("img", path, name)
-	err = ioutil.WriteFile(fileName, data, os.ModeAppend)
+	fileName := filepath.Join(fullPath, name)
+	err = ioutil.WriteFile(fileName, data, os.ModePerm)
 	if err != nil {
 		return "", err
 	}
 
-	return fileName, nil
+	return filepath.Join("companies_logo", path, name), nil
 }
 
 func download(ctx *fasthttp.RequestCtx, body []byte, filename string) {

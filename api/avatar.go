@@ -46,6 +46,11 @@ func HandleAddAvatar(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			return nil, errors.Wrap(err, fHeader.Filename)
 		}
 
+		b, err := ioutil.ReadAll(f)
+		if err != nil {
+			return createErrResult(err)
+		}
+
 		photos, ok := DB.Tables["photos"]
 		if !ok {
 			return nil, dbEngine.ErrNotFoundTable{Table: "photos"}
@@ -53,7 +58,7 @@ func HandleAddAvatar(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		i, err := photos.Upsert(ctx,
 			dbEngine.ColumnsForSelect("name", "blob"),
-			dbEngine.ArgsForSelect(fHeader.Filename, f),
+			dbEngine.ArgsForSelect(fHeader.Filename, b),
 		)
 		if err != nil {
 			return createErrResult(err)
