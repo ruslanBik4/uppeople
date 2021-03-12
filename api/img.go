@@ -87,7 +87,7 @@ func HandleSaveImg(ctx *fasthttp.RequestCtx, data []byte, name string) (string, 
 
 	fullPath := filepath.Join("img", "companies_logo", path)
 	err := os.Mkdir(fullPath, os.ModePerm)
-	if err != nil {
+	if err != nil && !os.IsExist(err) {
 		return "", err
 	}
 
