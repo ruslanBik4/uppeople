@@ -522,46 +522,6 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return nil, nil
 }
 
-func HandleEditAvatarCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	id, ok := ctx.UserValue(ParamID.Name).(int32)
-	if !ok {
-		return map[string]string{
-			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
-		}, apis.ErrWrongParamsList
-	}
-
-	arg, ok := ctx.UserValue("avatar").(string)
-	if !ok {
-		return map[string]string{
-			"avatar": fmt.Sprintf("wrong type %T, expect strint ", ctx.UserValue("avatar")),
-		}, apis.ErrWrongParamsList
-	}
-
-	table, _ := db.NewCandidates(DB)
-
-	i, err := table.Update(ctx,
-		dbEngine.ColumnsForSelect("avatar"),
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(arg),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-
-	if i > 0 {
-		toLogCandidate(ctx, DB, id, "avatar", CODE_LOG_UPDATE)
-	}
-
-	ctx.SetStatusCode(fasthttp.StatusAccepted)
-
-	return nil, nil
-}
-
 func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

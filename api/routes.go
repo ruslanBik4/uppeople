@@ -149,18 +149,18 @@ var (
 			WithCors: true,
 			NeedAuth: true,
 		},
-		"/api/main/addAvatarCandidate": {
+		"/api/main/addAvatarCandidate/": {
 			Fnc:       HandleAddAvatar,
-			Desc:      "put avata img to photos",
+			Desc:      "put avatar img to photos",
 			Multipart: true,
 			NeedAuth:  true,
 			Params: []apis.InParam{
 				ParamID,
 			},
 		},
-		"/api/main/addLogoCompanies": {
+		"/api/main/addLogoCompanies/": {
 			Fnc:       HandleAddLogo,
-			Desc:      "put avata img to photos",
+			Desc:      "put logo to company",
 			Multipart: true,
 			NeedAuth:  true,
 			Params: []apis.InParam{
@@ -172,15 +172,6 @@ var (
 			Desc:     "edit candidate",
 			DTO:      &CandidateDTO{},
 			NeedAuth: true,
-			Params: []apis.InParam{
-				ParamID,
-			},
-		},
-		"/api/main/addAvatarCandidate/": {
-			Fnc:       HandleEditAvatarCandidate,
-			Desc:      "edit avatar of candidate",
-			Multipart: true,
-			NeedAuth:  true,
 			Params: []apis.InParam{
 				ParamID,
 			},
