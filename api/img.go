@@ -6,6 +6,7 @@ package api
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
@@ -34,6 +36,44 @@ func HandleGetImg(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	download(ctx, b, path)
+
+	return nil, nil
+}
+
+func HandleImg(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
+		}, apis.ErrWrongParamsList
+	}
+
+	photos, ok := DB.Tables["photos"]
+	if !ok {
+		return nil, dbEngine.ErrNotFoundTable{Table: "photos"}
+	}
+
+	b := make([]byte, 0)
+	name := ""
+	row := []interface{}{
+		&b, &name,
+	}
+	err := photos.SelectOneAndScan(ctx,
+		row,
+		dbEngine.ColumnsForSelect("blob", "name"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	download(ctx, b, name)
 
 	return nil, nil
 }

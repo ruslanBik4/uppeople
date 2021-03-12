@@ -157,7 +157,20 @@ func EmptyValue(value interface{}) bool {
 		return v1 == nil
 	}
 
-	return false
+	switch val := value.(type) {
+	case []int32:
+		return len(val) == 0
+	case []int64:
+		return len(val) == 0
+	case []float32:
+		return len(val) == 0
+	case []float64:
+		return len(val) == 0
+	case []string:
+		return len(val) == 0
+	default:
+		return false
+	}
 }
 
 func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {

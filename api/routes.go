@@ -330,7 +330,14 @@ var (
 	GetRoutes = apis.ApiRoutes{
 		"/api/img/": {
 			Fnc:  HandleGetImg,
-			Desc: "show img",
+			Desc: "show img of company",
+		},
+		"/img/photos/": {
+			Fnc:  HandleImg,
+			Desc: "show img of candidate",
+			Params: []apis.InParam{
+				ParamID,
+			},
 		},
 		"/api/main/dashBoardAdmin": {
 			Fnc:      HandleDashBoard,
