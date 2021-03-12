@@ -158,6 +158,15 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/addLogoCompanies": {
+			Fnc:       HandleAddLogo,
+			Desc:      "put avata img to photos",
+			Multipart: true,
+			NeedAuth:  true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/main/editCandidate/": {
 			Fnc:      HandleEditCandidate,
 			Desc:     "edit candidate",

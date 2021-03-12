@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -33,6 +34,22 @@ func HandleGetImg(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	download(ctx, b, path)
 
 	return nil, nil
+}
+
+// todo change to ioReader
+func HandleSaveImg(ctx *fasthttp.RequestCtx, data []byte, name string) (string, error) {
+	path, ok := ctx.UserValue(apis.ChildRoutePath).(string)
+	if !ok {
+		return "", apis.ErrWrongParamsList
+	}
+
+	fileName := filepath.Join("img", path, name)
+	err := ioutil.WriteFile(fileName, data, os.ModeAppend)
+	if err != nil {
+		return "", err
+	}
+
+	return fileName, nil
 }
 
 func download(ctx *fasthttp.RequestCtx, body []byte, filename string) {
