@@ -161,6 +161,11 @@ func HandleDeleteContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	return nil, nil
 }
 
+type ViewContact struct {
+	*db.ContactsFields
+	SelectPlatforms SelectedUnits `json:"selectedPlatforms"`
+}
+
 func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -184,5 +189,19 @@ func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	return contacts.Record, nil
+	v := &ViewContact{
+		contacts.Record,
+		SelectedUnits{},
+	}
+	err = DB.Conn.SelectAndScanEach(ctx,
+		nil,
+		&v.SelectPlatforms,
+		`select platform_id from contacts_to_platforms where contact_id=$1`,
+		id,
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return v, nil
 }
