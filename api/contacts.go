@@ -119,9 +119,9 @@ func HandleEditContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	if !u.IsChecked {
 		table, _ := db.NewContacts_to_platforms(DB)
 		for _, val := range u.SelectPlatforms {
-			_, err := table.Insert(ctx,
+			_, err := table.Upsert(ctx,
 				dbEngine.ColumnsForSelect("contact_id", "platform_id"),
-				dbEngine.ArgsForSelect(idC, val.Id),
+				dbEngine.ArgsForSelect(u.Id, val.Id),
 			)
 			if err != nil {
 				logs.ErrorLog(err, "NewContacts_to_platforms %s", val.Label)
@@ -196,7 +196,9 @@ func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	err = DB.Conn.SelectAndScanEach(ctx,
 		nil,
 		&v.SelectPlatforms,
-		`select platform_id from contacts_to_platforms where contact_id=$1`,
+		`select p.id, p.nazva as label, p.nazva as value 
+			from contacts_to_platforms c join platforms p on p.id=platform_id
+			where contact_id=$1`,
 		id,
 	)
 	if err != nil {
