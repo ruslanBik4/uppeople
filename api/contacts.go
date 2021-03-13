@@ -19,7 +19,7 @@ type DTOContact struct {
 	Email           string        `json:"email"`
 	Phone           string        `json:"phone"`
 	Skype           string        `json:"skype"`
-	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
+	SelectPlatforms SelectedUnits `json:"selectedPlatforms"`
 	IsChecked       bool          `json:"isChecked"`
 }
 
