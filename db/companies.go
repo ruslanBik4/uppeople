@@ -21,7 +21,7 @@ type CompaniesFields struct {
 	Name             sql.NullString `json:"name"`
 	SendDetails      sql.NullString `json:"sendDetails"`
 	Interview_detail sql.NullString `json:"interview_detail"`
-	Uslovia          sql.NullString `json:"cooperation"`
+	Cooperation      sql.NullString `json:"cooperation"`
 	Contact          sql.NullString `json:"contact"`
 	About            sql.NullString `json:"about"`
 	Map              sql.NullString `json:"map"`
@@ -56,8 +56,8 @@ func (r *CompaniesFields) RefColValue(name string) interface{} {
 	case "interview_detail":
 		return &r.Interview_detail
 
-	case "uslovia":
-		return &r.Uslovia
+	case "cooperation":
+		return &r.Cooperation
 
 	case "contact":
 		return &r.Contact
@@ -108,8 +108,8 @@ func (r *CompaniesFields) ColValue(name string) interface{} {
 	case "interview_detail":
 		return r.Interview_detail
 
-	case "uslovia":
-		return r.Uslovia
+	case "cooperation":
+		return r.Cooperation
 
 	case "contact":
 		return r.Contact
