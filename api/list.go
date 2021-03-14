@@ -91,7 +91,7 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 `,
 		ref.ViewCandidate.Id,
 		ref.ViewCandidate.CandidatesFields.Vacancies,
-		ref.Date,
+		"2020-01-01",
 	)
 	if err != nil {
 		logs.ErrorLog(err, "")
