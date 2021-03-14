@@ -540,6 +540,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
+	u.Id = id
 	if u.Tag_id == 0 {
 		return map[string]interface{}{
 			"tag_id": "required value",
@@ -634,7 +635,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(append(args, id)...),
+		dbEngine.ArgsForSelect(append(args, u.Id)...),
 	)
 	if err != nil {
 		return createErrResult(err)
