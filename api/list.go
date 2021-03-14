@@ -87,7 +87,7 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	JOIN platforms ON (v.platform_id = platforms.id)
 	JOIN status_for_vacs sv on coalesce(vc.status, 1) = sv.id
 	WHERE (vc.candidate_id=$1 OR v.id = ANY($2)) AND v.status!=1
-    order by vc.date_last_change desc
+    order by date_last_change desc
 `,
 		ref.ViewCandidate.Id,
 		ref.ViewCandidate.CandidatesFields.Vacancies,
