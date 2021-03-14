@@ -192,6 +192,12 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			apis.ErrWrongParamsList
 	}
 
+	if len(u.SelectedContacts) < 1 {
+		return "need leas a one contact",
+			apis.ErrWrongParamsList
+
+	}
+
 	vacID := u.SelectedVacancy.Id
 	user := auth.GetUserData(ctx)
 	timeNow := time.Now()
