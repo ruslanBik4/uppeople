@@ -166,7 +166,8 @@ func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{},
 	data, err := DB.Conn.SelectToMaps(ctx,
 		`select vacancies.id, platform_id, user_ids,
 CONCAT(companies.name, ' (', platforms.nazva , ')') as name,
-LOWER(CONCAT(companies.name, ' (', platforms.nazva , ')')) as label
+CONCAT(companies.name, ' (', platforms.nazva , ')') as label,
+LOWER(CONCAT(companies.name, ' (', platforms.nazva , ')')) as value
 from vacancies left join companies on vacancies.company_id = companies.id
 left join platforms on vacancies.platform_id = platforms.id
 where $1=ANY(user_ids)`,
