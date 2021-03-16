@@ -215,8 +215,8 @@ fetch first 1 row only
 	if _, ok := ctx.UserValue("sendCandidate").(bool); ok {
 		where = append(where, `id in (SELECT candidate_id 
 	FROM vacancies_to_candidates
-	WHERE status != %s)`)
-		args = append(args, 1)
+	WHERE status > %s)`)
+		args = append(args, 0)
 	}
 
 	if len(where) > 0 {
