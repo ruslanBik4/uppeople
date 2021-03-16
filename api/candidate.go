@@ -657,7 +657,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
-	putVacancies(ctx, u, DB)
+	// putVacancies(ctx, u, DB)
 
 	return nil, nil
 }
