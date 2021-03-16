@@ -250,11 +250,6 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		return nil, errors.Wrap(err, "	")
 	}
 
-	if len(res.Vacancies) == 0 {
-		ctx.SetStatusCode(fasthttp.StatusNoContent)
-		return nil, nil
-	}
-
 	if len(res.Vacancies) < pageItem {
 		res.ResList.TotalPage = 1
 		res.ResList.Count = len(res.Vacancies)
