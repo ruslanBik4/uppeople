@@ -444,7 +444,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	toLogCandidate(ctx, DB, u.Id, u.Comments, CODE_LOG_INSERT)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
-	putVacancies(ctx, u, DB)
+	//putVacancies(ctx, u, DB)
 
 	return id, nil
 }
