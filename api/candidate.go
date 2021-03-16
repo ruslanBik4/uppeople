@@ -558,6 +558,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"id":          true,
 		"date":        true,
 		"avatar":      true,
+		"status": true,
 	}
 	if oldData != nil {
 		for _, col := range table.Columns() {
