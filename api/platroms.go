@@ -37,7 +37,6 @@ func HandleAllPlatforms(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		dbEngine.ColumnsForSelect("count(*)"),
 	}
 	options := []dbEngine.BuildSqlOptions{
-		dbEngine.ColumnsForSelect("id", "nazva as name"),
 		dbEngine.OrderBy("nazva"),
 		dbEngine.FetchOnlyRows(pageItem),
 		dbEngine.Offset(offset),
