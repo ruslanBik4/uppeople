@@ -115,7 +115,8 @@ func HandleEditStatusVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogVacancy(ctx, DB, u.SelectCompany.Id, u.Id, "status", CODE_LOG_UPDATE)
+		text := fmt.Sprintf("status=%d", u.Id)
+		toLogVacancy(ctx, DB, u.SelectCompany.Id, u.Id, text, CODE_LOG_UPDATE)
 	}
 
 	return createResult(i)

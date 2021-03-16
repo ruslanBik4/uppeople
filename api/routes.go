@@ -408,6 +408,14 @@ var (
 			Desc:     "show all users",
 			NeedAuth: true,
 		},
+		"/api/admin/returnAllPlatforms/": {
+			Fnc:      HandleAllPlatforms,
+			Desc:     "show all users",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamPageNum,
+			},
+		},
 		"/api/main/returnOptionsForSelects": {
 			Fnc:      HandleReturnOptionsForSelects,
 			Desc:     "show options for selects ",
