@@ -444,7 +444,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	toLogCandidate(ctx, DB, u.Id, u.Comments, CODE_LOG_INSERT)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
-	putVacancies(ctx, u, DB)
+	//putVacancies(ctx, u, DB)
 
 	return id, nil
 }
@@ -558,6 +558,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"id":          true,
 		"date":        true,
 		"avatar":      true,
+		"status": true,
 	}
 	if oldData != nil {
 		for _, col := range table.Columns() {
@@ -656,7 +657,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
-	putVacancies(ctx, u, DB)
+	// putVacancies(ctx, u, DB)
 
 	return nil, nil
 }
