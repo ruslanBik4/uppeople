@@ -4,7 +4,7 @@ AS
 $$
 BEGIN
 
---     truncate candidates cascade ;
+    truncate candidates cascade ;
 
 --     EXPLAIN
     INSERT INTO candidates
@@ -43,7 +43,7 @@ BEGIN
              ))
     on conflict do nothing ;
     PERFORM setval('candidates_id_seq'::regclass, (select max(id) from candidates));
---     truncate table vacancies cascade;
+    truncate table vacancies cascade;
 
 --     EXPLAIN
     INSERT INTO vacancies
@@ -68,8 +68,18 @@ BEGIN
 
 
     insert into vacancies_to_candidates
-        (select *
-        from vacancies_to_candidates_tmp v
+        (select id,
+                candidate_id,
+                company_id,
+                vacancy_id,
+                status,
+                user_id,
+                date_create,
+                date_last_change,
+                coalesce(rej_text, ''),
+                rating,
+                notice
+         from vacancies_to_candidates_tmp v
         where v.candidate_id in (select id from candidates)
               AND not exists(select null from vacancies_to_candidates_tmp t
                          where v.id < t.id AND

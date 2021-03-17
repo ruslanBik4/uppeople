@@ -216,7 +216,7 @@ fetch first 1 row only
 		where = append(where, `id in (SELECT candidate_id 
 	FROM vacancies_to_candidates
 	WHERE status > %s)`)
-		args = append(args, 0)
+		args = append(args, 1)
 	}
 
 	if len(where) > 0 {
