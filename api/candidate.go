@@ -313,8 +313,29 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	view := NewCandidateView(ctx, table.Record, DB, res.SelectOpt.Platforms, res.SelectOpt.Seniorities)
-	res.Candidate = view.ViewCandidate
 
+	view.Vacancies, err = DB.Conn.SelectToMaps(ctx,
+		`select v.id, 
+		concat(companies.name, ' ("', platforms.nazva, '")') as name, 
+		concat(companies.name, ' ("', platforms.nazva, '")') as label, 
+		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value, 
+		user_ids, 
+		platform_id,
+		CONCAT(platforms.nazva, ' ("', (select nazva from seniorities where id=seniority_id), '")') as platform,
+		companies, sv.id as status_id, v.company_id, sv.status, salary, 
+		$2::date as date_last_change, sv.color
+FROM vacancies v JOIN companies on (v.company_id=companies.id)
+	JOIN platforms ON (v.platform_id = platforms.id)
+	JOIN status_for_vacs sv on (1 = sv.id)
+	WHERE v.id=ANY($1)
+`,
+		view.CandidatesFields.Vacancies, view.Date,
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	res.Candidate = view.ViewCandidate
 	for _, vacancy := range res.Candidate.Vacancies {
 		res.Statuses = append(res.Statuses, StatusesCandidate{
 			Candidate_id: table.Record.Id,
@@ -326,8 +347,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					Valid:  true,
 				},
 			},
-			Id:       vacancy["id"].(int32),
-			Rej_text: vacancy["rej_text"].(string),
+			Id: vacancy["id"].(int32),
 			Status_vac: &db.Status_for_vacsFields{
 				Id: vacancy["status_id"].(int64),
 				Status: sql.NullString{
@@ -436,7 +456,11 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	if id < 0 {
+	if id <= 0 {
+		err = db.LastErr
+		if err != nil {
+			return createErrResult(err)
+		}
 		return DB.Conn.LastRowAffected(), apis.ErrWrongParamsList
 	}
 
@@ -558,7 +582,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"id":          true,
 		"date":        true,
 		"avatar":      true,
-		"status": true,
+		"status":      true,
 	}
 	if oldData != nil {
 		for _, col := range table.Columns() {

@@ -20,7 +20,7 @@ type CandidatesFields struct {
 	Id             int32          `json:"id"`
 	Platform_id    int32          `json:"platform_id"`
 	Name           string         `json:"name"`
-	Salary         string         `json:"salary"`
+	Salary         int32          `json:"salary"`
 	Email          string         `json:"email"`
 	Phone          string         `json:"phone"`
 	Skype          string         `json:"skype"`

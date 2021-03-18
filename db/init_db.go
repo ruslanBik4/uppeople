@@ -20,6 +20,8 @@ import (
 	"golang.org/x/net/context"
 )
 
+var LastErr *pgconn.PgError
+
 func GetDB() *dbEngine.DB {
 	conn := psql.NewConn(AfterConnect, nil, printNotice)
 	ctx := context.WithValue(context.Background(), "dbURL", "")
@@ -42,6 +44,7 @@ func printNotice(c *pgconn.PgConn, n *pgconn.Notice) {
 		logs.StatusLog(n.Message)
 	} else if n.Code > "00000" {
 		err := (*pgconn.PgError)(n)
+		LastErr = err
 		logs.ErrorLog(err, n.Hint, err.SQLState(), err.File, err.Line, err.Routine)
 	} else if strings.HasPrefix(n.Message, "[[ERROR]]") {
 		logs.ErrorLog(errors.New(strings.TrimPrefix(n.Message, "[[ERROR]]") + n.Severity))
