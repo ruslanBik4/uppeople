@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jackc/pgconn"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
@@ -458,9 +459,10 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	if id <= 0 {
 		err = db.LastErr
-		if err != nil {
+		if err != (*pgconn.PgError)(nil) {
 			return createErrResult(err)
 		}
+
 		return DB.Conn.LastRowAffected(), apis.ErrWrongParamsList
 	}
 
