@@ -170,6 +170,9 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		columns = append(columns, name)
 		args = append(args, newVal)
 	}
+	if len(columns) == 0 {
+		return "no new data on record", apis.ErrWrongParamsList
+	}
 
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
