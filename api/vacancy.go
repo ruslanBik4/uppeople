@@ -159,14 +159,16 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			continue
 		}
 
-		oldVal := oldData.ColValue(name)
-		if (name == "user_ids") && (isNeedAssert || !reflect.DeepEqual(oldVal, newVal)) {
-			columns = append(columns, name)
-			args = append(args, newVal)
-		} else if isNeedAssert || oldVal != newVal {
-			columns = append(columns, name)
-			args = append(args, newVal)
+		if isNeedAssert {
+			oldVal := oldData.ColValue(name)
+			if (name == "user_ids") && reflect.DeepEqual(oldVal, newVal) ||
+				oldVal == newVal {
+				continue
+			}
 		}
+
+		columns = append(columns, name)
+		args = append(args, newVal)
 	}
 
 	i, err := table.Update(ctx,
