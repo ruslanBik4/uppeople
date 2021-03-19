@@ -150,50 +150,24 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"ord":         true,
 		"date_create": true,
 	}
-	if oldData != nil {
-		for _, col := range table.Columns() {
-			name := col.Name()
-			if stopColumns[name] {
-				continue
-			}
 
-			newVal := u.ColValue(name)
-			oldVal := oldData.ColValue(name)
-			if name == "user_ids" {
-				if !EmptyValue(newVal) && !reflect.DeepEqual(oldVal, newVal) {
-					columns = append(columns, name)
-					args = append(args, newVal)
-				}
-			} else if !EmptyValue(newVal) && oldVal != newVal {
-				columns = append(columns, name)
-				args = append(args, newVal)
-			}
+	isNeedAssert := oldData != nil && id == oldData.Id
+	for _, col := range table.Columns() {
+		name := col.Name()
+		newVal := u.ColValue(name)
+		if stopColumns[name] || EmptyValue(newVal) {
+			continue
 		}
-	} else {
-		columns = []string{
-			"platform_id",
-			"seniority_id",
-			"company_id",
-			"location_id",
-			"description",
-			"details",
-			"link",
-			"status",
-			"salary",
-			"user_ids",
+
+		oldVal := oldData.ColValue(name)
+		if (name == "user_ids") && (isNeedAssert || !reflect.DeepEqual(oldVal, newVal)) {
+			columns = append(columns, name)
+			args = append(args, newVal)
+		} else if isNeedAssert || oldVal != newVal {
+			columns = append(columns, name)
+			args = append(args, newVal)
 		}
-		args = []interface{}{
-			u.Platform_id,
-			u.Seniority_id,
-			u.Company_id,
-			u.Location_id,
-			u.Description,
-			u.Details,
-			u.Link,
-			u.Status,
-			u.Salary,
-			u.User_ids,
-		}
+
 	}
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
