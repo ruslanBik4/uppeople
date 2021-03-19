@@ -169,7 +169,7 @@ func EmptyValue(value interface{}) bool {
 	case []string:
 		return len(val) == 0
 	default:
-		return false
+		return value != 0
 	}
 }
 

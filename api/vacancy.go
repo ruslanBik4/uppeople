@@ -167,8 +167,8 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			columns = append(columns, name)
 			args = append(args, newVal)
 		}
-
 	}
+
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),
