@@ -63,12 +63,16 @@ var (
 			WithCors: true,
 		},
 		"/api/get_candidate_info": {
-			Fnc:      HandleGetCandidate_infoLinkedin,
+			Fnc:      HandleGetCandidateInfoLinkedin,
 			Desc:     "get_candidate_info linkEdin",
 			WithCors: true,
 			Params: []apis.InParam{
 				{
 					Name: "url",
+					Type: apis.NewTypeInParam(types.String),
+				},
+				{
+					Name: "name",
 					Type: apis.NewTypeInParam(types.String),
 				},
 			},
@@ -114,34 +118,61 @@ func HandleGetPlatformsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return m, nil
 }
 
-func HandleGetCandidate_infoLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleGetCandidateInfoLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
+	table, _ := db.NewCandidates(DB)
+
 	url, ok := ctx.UserValue("url").(string)
 	if !ok {
+		if name, ok := ctx.UserValue("name").(string); ok {
+			err := table.SelectOneAndScan(ctx,
+				table,
+				dbEngine.ColumnsForSelect("id"),
+				dbEngine.WhereForSelect("name"),
+				dbEngine.ArgsForSelect(name),
+			)
+			if err != nil {
+				return createErrResult(err)
+			}
+
+			return map[string]interface{}{
+				"status":  "ok",
+				"data":    table.Record,
+				"crm_url": GetCandidateURL(ctx, table.Record.Id),
+			}, nil
+		}
+
 		return map[string]interface{}{
-			"url": "wrong type",
+			"url": fmt.Sprintf("wrong type %T (expect 'string')", ctx.UserValue("name")),
 		}, apis.ErrWrongParamsList
 	}
-	table, _ := db.NewCandidates(DB)
-	err := table.SelectOneAndScan(ctx, table, dbEngine.WhereForSelect("linkedin"), dbEngine.ArgsForSelect(url))
+	err := table.SelectOneAndScan(ctx,
+		table,
+		dbEngine.WhereForSelect("linkedin"),
+		dbEngine.ArgsForSelect(url),
+	)
 	if err != nil {
 		return createErrResult(err)
 	}
 
 	m := map[string]interface{}{
-		"status": "ok",
-		"data":   table.Record,
-		"crm_url": fmt.Sprintf("%s://%s/#/candidates/%d",
-			ctx.URI().Scheme(),
-			ctx.Host(),
-			table.Record.Id),
+		"status":  "ok",
+		"data":    table.Record,
+		"crm_url": GetCandidateURL(ctx, table.Record.Id),
 	}
 
 	return m, nil
+}
+
+func GetCandidateURL(ctx *fasthttp.RequestCtx, id int32) string {
+	return fmt.Sprintf("%s://%s/#/candidates/%d",
+		ctx.URI().Scheme(),
+		ctx.Host(),
+		id)
 }
 
 func HandleGetReasonsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {

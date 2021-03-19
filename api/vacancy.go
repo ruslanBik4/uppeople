@@ -160,11 +160,11 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			newVal := u.ColValue(name)
 			oldVal := oldData.ColValue(name)
 			if name == "user_ids" {
-				if !reflect.DeepEqual(oldVal, newVal) {
+				if !EmptyValue(newVal) && !reflect.DeepEqual(oldVal, newVal) {
 					columns = append(columns, name)
 					args = append(args, newVal)
 				}
-			} else if oldVal != newVal {
+			} else if !EmptyValue(newVal) && oldVal != newVal {
 				columns = append(columns, name)
 				args = append(args, newVal)
 			}
