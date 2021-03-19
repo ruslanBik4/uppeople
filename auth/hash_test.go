@@ -30,6 +30,14 @@ func TestCheckPass(t *testing.T) {
 			},
 			false,
 		},
+		{
+			"Anastasiya Syradoeva",
+			args{
+				"$2a$10$AdHqywHa6BXWnwVHmMOZoeqaWfuxY4wYeLM7YsAYfMn9xk6yliLze",
+				"syradoevanast",
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
