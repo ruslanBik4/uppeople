@@ -170,13 +170,13 @@ func EmptyValue(value interface{}) bool {
 	case []string:
 		return len(val) == 0
 	case int32:
-		return value == 0
+		return val == 0
 
 	case int64:
-		return value == 0
+		return val == 0
 
 	case string:
-		return strings.TrimSpace(value) == ""
+		return strings.TrimSpace(val) == ""
 	default:
 		return false
 	}
