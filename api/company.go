@@ -6,6 +6,7 @@ package api
 
 import (
 	"database/sql/driver"
+	"strings"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -168,8 +169,16 @@ func EmptyValue(value interface{}) bool {
 		return len(val) == 0
 	case []string:
 		return len(val) == 0
-	default:
+	case int32:
 		return value == 0
+
+	case int64:
+		return value == 0
+
+	case string:
+		return strings.TrimSpace(value) == ""
+	default:
+		return false
 	}
 }
 
