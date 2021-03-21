@@ -320,17 +320,10 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		nil,
 		&view.SelectedVacancies,
 		`select v.id, 
-		concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 		concat(companies.name, ' ("', platforms.nazva, '")') as label, 
 		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value, 
-		user_ids, 
-		platform_id,
-		CONCAT(platforms.nazva, ' ("', (select nazva from seniorities where id=seniority_id), '")') as platform,
-		companies, sv.id as status_id, v.company_id, sv.status, salary, 
-		$2::date as date_last_change, sv.color
-FROM vacancies v JOIN companies on (v.company_id=companies.id)
+	FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	JOIN platforms ON (v.platform_id = platforms.id)
-	JOIN status_for_vacs sv on (1 = sv.id)
 	WHERE v.id=ANY($1)
 `,
 		view.CandidatesFields.Vacancies, view.Date,
