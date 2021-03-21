@@ -321,7 +321,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		&view.SelectedVacancies,
 		`select v.id, 
 		concat(companies.name, ' ("', platforms.nazva, '")') as label, 
-		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value, 
+		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value
 	FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	JOIN platforms ON (v.platform_id = platforms.id)
 	WHERE v.id=ANY($1)
