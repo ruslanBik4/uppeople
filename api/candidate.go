@@ -45,12 +45,13 @@ type statusCandidate struct {
 }
 type ViewCandidate struct {
 	*db.CandidatesFields
-	Platform  *SelectedUnit            `json:"platforms,omitempty"`
-	Companies SelectedUnits            `json:"companies,omitempty"`
-	Seniority string                   `json:"seniority"`
-	Tags      *db.TagsFields           `json:"tags,omitempty"`
-	Recruiter string                   `json:"recruiter"`
-	Vacancies []map[string]interface{} `json:"vacancies"`
+	Platform          *SelectedUnit            `json:"platforms,omitempty"`
+	Companies         SelectedUnits            `json:"companies,omitempty"`
+	Seniority         string                   `json:"seniority"`
+	Tags              *db.TagsFields           `json:"tags,omitempty"`
+	Recruiter         string                   `json:"recruiter"`
+	Vacancies         []map[string]interface{} `json:"vacancies"`
+	SelectedVacancies SelectedUnits            `json:"selectedVacancies"`
 }
 
 type CandidateView struct {
@@ -315,7 +316,9 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	view := NewCandidateView(ctx, table.Record, DB, res.SelectOpt.Platforms, res.SelectOpt.Seniorities)
 
-	view.Vacancies, err = DB.Conn.SelectToMaps(ctx,
+	err = DB.Conn.SelectAndScanEach(ctx,
+		nil,
+		&view.SelectedVacancies,
 		`select v.id, 
 		concat(companies.name, ' ("', platforms.nazva, '")') as name, 
 		concat(companies.name, ' ("', platforms.nazva, '")') as label, 

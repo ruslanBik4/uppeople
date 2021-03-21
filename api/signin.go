@@ -72,7 +72,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					logs.DebugLog(u)
 					return err.Error(), apis.ErrWrongParamsList
 				}
-				b, err := auth.NewHash(u.Pass.String)
+				b, err := auth.NewHash(a.Password)
 				if err == nil {
 					_, err = users.Update(ctx,
 						dbEngine.ColumnsForSelect("password"),

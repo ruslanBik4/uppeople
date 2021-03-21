@@ -33,7 +33,7 @@ func TestCheckPass(t *testing.T) {
 		{
 			"Anastasiya Syradoeva",
 			args{
-				"$2a$10$AdHqywHa6BXWnwVHmMOZoeqaWfuxY4wYeLM7YsAYfMn9xk6yliLze",
+				"$2y$10$phuDw8Vd6AtaDeKVkmW/4.KWsShN6Nwi2H/eMcpcfv0AP.UQpWBIS",
 				"syradoevanast",
 			},
 			false,
@@ -41,9 +41,14 @@ func TestCheckPass(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if !assert.Equal(t, tt.wantErr, CheckPass(tt.args.hash, tt.args.pass)) {
+			if !assert.Equal(t, tt.wantErr, CheckPass(tt.args.hash, tt.args.pass) != nil) {
 				h, err := NewHash(tt.args.pass)
-				assert.Nil(t, err)
+				if assert.Nil(t, err) {
+					// b, err := bcrypt.GenerateFromPassword([]byte(tt.args.pass), bcrypt.DefaultCost)
+					// assert.Nil(t, err)
+					assert.Equal(t, tt.args.hash, string(h))
+				}
+
 				t.Logf("Hash = %v", h)
 			}
 		})
