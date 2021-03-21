@@ -326,7 +326,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	JOIN platforms ON (v.platform_id = platforms.id)
 	WHERE v.id=ANY($1)
 `,
-		view.CandidatesFields.Vacancies, view.Date,
+		view.CandidatesFields.Vacancies,
 	)
 	if err != nil {
 		return createErrResult(err)
