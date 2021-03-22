@@ -427,7 +427,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Tag_id,
 		u.Comments,
 		time.Now(),
-		auth.GetUserData(ctx).Id,
+		auth.GetUserID(ctx),
 		u.Text_rezume,
 		u.Sfera,
 		u.Experience,

@@ -162,8 +162,8 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		if isNeedAssert {
 			oldVal := oldData.ColValue(name)
-			if (name == "user_ids") && reflect.DeepEqual(oldVal, newVal) ||
-				oldVal == newVal {
+			if (name == "user_ids" && reflect.DeepEqual(oldVal, newVal)) ||
+				(name != "user_ids" && oldVal == newVal) {
 				continue
 			}
 		}
