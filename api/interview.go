@@ -320,7 +320,7 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	}
 
 	maps, err := DB.Conn.SelectToMaps(ctx,
-		`SELECT c.id as comp_id, c.name, otpravka as send_details,
+		`SELECT c.id as comp_id, c.name, send_details,
   (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
            'platform_id', cp.platform_id, 'name', t.name))
              from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
