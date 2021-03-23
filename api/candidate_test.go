@@ -15,9 +15,7 @@ import (
 
 func TestCandidateDTO_GetValue(t *testing.T) {
 	type fields struct {
-		CandidatesFields  *db.CandidatesFields
-		Phone             string
-		SelectedVacancies []SelectedUnit
+		CandidatesFields *db.CandidatesFields
 	}
 	tests := []struct {
 		name   string
@@ -29,8 +27,7 @@ func TestCandidateDTO_GetValue(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &CandidateDTO{
-				CandidatesFields:  tt.fields.CandidatesFields,
-				SelectedVacancies: tt.fields.SelectedVacancies,
+				CandidatesFields: tt.fields.CandidatesFields,
 			}
 			if got := c.GetValue(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetValue() = %v, want %v", got, tt.want)
@@ -41,9 +38,7 @@ func TestCandidateDTO_GetValue(t *testing.T) {
 
 func TestCandidateDTO_NewValue(t *testing.T) {
 	type fields struct {
-		CandidatesFields  *db.CandidatesFields
-		Phone             string
-		SelectedVacancies []SelectedUnit
+		CandidatesFields *db.CandidatesFields
 	}
 	tests := []struct {
 		name   string
@@ -55,8 +50,7 @@ func TestCandidateDTO_NewValue(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &CandidateDTO{
-				CandidatesFields:  tt.fields.CandidatesFields,
-				SelectedVacancies: tt.fields.SelectedVacancies,
+				CandidatesFields: tt.fields.CandidatesFields,
 			}
 			if got := c.NewValue(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewValue() = %v, want %v", got, tt.want)

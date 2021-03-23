@@ -17,21 +17,21 @@ type Companies struct {
 }
 
 type CompaniesFields struct {
-	Id               int64          `json:"id"`
-	Name             sql.NullString `json:"name"`
-	SendDetails      sql.NullString `json:"sendDetails"`
-	Interview_detail sql.NullString `json:"interview_detail"`
-	Cooperation      sql.NullString `json:"cooperation"`
-	Contact          sql.NullString `json:"contact"`
-	About            sql.NullString `json:"about"`
-	Map              sql.NullString `json:"map"`
-	Phone            sql.NullString `json:"phone"`
-	Email            sql.NullString `json:"email"`
-	Skype            sql.NullString `json:"skype"`
-	Logo             sql.NullString `json:"logo"`
-	Address          sql.NullString `json:"address"`
-	Email_template   sql.NullString `json:"email_template"`
-	Manager_id       sql.NullInt64  `json:"manager_id"`
+	Id              int64          `json:"id"`
+	Name            sql.NullString `json:"name"`
+	SendDetails     sql.NullString `json:"send_details"`
+	InterviewDetail sql.NullString `json:"interview_detail"`
+	Cooperation     sql.NullString `json:"cooperation"`
+	Contact         sql.NullString `json:"contact"`
+	About           sql.NullString `json:"about"`
+	Map             sql.NullString `json:"map"`
+	Phone           sql.NullString `json:"phone"`
+	Email           sql.NullString `json:"email"`
+	Skype           sql.NullString `json:"skype"`
+	Logo            sql.NullString `json:"logo"`
+	Address         sql.NullString `json:"address"`
+	EmailTemplate   sql.NullString `json:"email_template"`
+	ManagerId       sql.NullInt64  `json:"manager_id"`
 }
 
 func (r *CompaniesFields) GetValue() interface{} {
@@ -50,11 +50,11 @@ func (r *CompaniesFields) RefColValue(name string) interface{} {
 	case "name":
 		return &r.Name
 
-	case "otpravka":
+	case "send_details":
 		return &r.SendDetails
 
 	case "interview_detail":
-		return &r.Interview_detail
+		return &r.InterviewDetail
 
 	case "cooperation":
 		return &r.Cooperation
@@ -84,10 +84,10 @@ func (r *CompaniesFields) RefColValue(name string) interface{} {
 		return &r.Address
 
 	case "email_template":
-		return &r.Email_template
+		return &r.EmailTemplate
 
 	case "manager_id":
-		return &r.Manager_id
+		return &r.ManagerId
 
 	default:
 		return nil
@@ -102,11 +102,11 @@ func (r *CompaniesFields) ColValue(name string) interface{} {
 	case "name":
 		return r.Name
 
-	case "otpravka":
+	case "send_details":
 		return r.SendDetails
 
 	case "interview_detail":
-		return r.Interview_detail
+		return r.InterviewDetail
 
 	case "cooperation":
 		return r.Cooperation
@@ -136,10 +136,10 @@ func (r *CompaniesFields) ColValue(name string) interface{} {
 		return r.Address
 
 	case "email_template":
-		return r.Email_template
+		return r.EmailTemplate
 
 	case "manager_id":
-		return r.Manager_id
+		return r.ManagerId
 
 	default:
 		return nil

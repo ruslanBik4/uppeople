@@ -14,7 +14,7 @@ import (
 func TestCheckPass(t *testing.T) {
 	type args struct {
 		hash string
-		pass string
+		key  string
 	}
 	tests := []struct {
 		name    string
@@ -25,7 +25,7 @@ func TestCheckPass(t *testing.T) {
 		{
 			"alyona",
 			args{
-				"$2y$10$afhoGJsACLqisT6qOzQoTOY0A4RFbHVebVenA.xIrEtEbWrrntHh.",
+				"$2a$10$fHY1cLCnHEWW4wogO3bJE.kwOdPZst.kyIUEhJKx9KqCbuJi7Vlza",
 				"alona.ryd",
 			},
 			false,
@@ -38,11 +38,19 @@ func TestCheckPass(t *testing.T) {
 			},
 			false,
 		},
+		{
+			"Leonova Kate",
+			args{
+				"$2a$10$ivzIGJ6g7jhUiN/eWpVfpe82sbj8pIrQ/u/nbyRDOwDlUw.tcfW22",
+				"leonovakate",
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if !assert.Equal(t, tt.wantErr, CheckPass(tt.args.hash, tt.args.pass) != nil) {
-				h, err := NewHash(tt.args.pass)
+			if !assert.Equal(t, tt.wantErr, CheckPass(tt.args.hash, tt.args.key) != nil) {
+				h, err := NewHash(tt.args.key)
 				if assert.Nil(t, err) {
 					// b, err := bcrypt.GenerateFromPassword([]byte(tt.args.pass), bcrypt.DefaultCost)
 					// assert.Nil(t, err)
