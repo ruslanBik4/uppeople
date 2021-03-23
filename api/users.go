@@ -5,6 +5,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
@@ -45,7 +47,7 @@ func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 	users, _ := db.NewUsers(DB)

@@ -151,7 +151,7 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -180,7 +180,7 @@ func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -209,7 +209,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 	table, _ := db.NewCandidates(DB)
@@ -279,7 +279,7 @@ WHERE c.id in (select v.company_id from vacancies v
 	}
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
-	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, platformName, name, table.Record.Link, seniority,
+	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, name, platformName, table.Record.Link, seniority,
 		table.Record.Language, table.Record.Salary)
 
 	return maps, nil
@@ -294,7 +294,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -531,7 +531,7 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 

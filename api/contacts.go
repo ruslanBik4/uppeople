@@ -5,6 +5,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
@@ -40,7 +42,7 @@ func HandleAddContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	idCompany, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -92,7 +94,7 @@ func HandleEditContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	idCompany, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -146,7 +148,7 @@ func HandleDeleteContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -176,7 +178,7 @@ func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 

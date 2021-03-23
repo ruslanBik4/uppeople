@@ -6,6 +6,7 @@ package api
 
 import (
 	"database/sql/driver"
+	"fmt"
 	"strings"
 	"time"
 
@@ -67,7 +68,7 @@ func HandleAddCommentForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -95,7 +96,7 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -203,7 +204,7 @@ func HandleCommentsCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -235,7 +236,7 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 

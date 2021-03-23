@@ -44,7 +44,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 
@@ -173,7 +173,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 	candidates, _ := db.NewCandidates(DB)
@@ -306,7 +306,7 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
-			ParamID.Name: "wrong type, expect int32",
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
 	table, _ := db.NewCandidates(DB)

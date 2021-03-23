@@ -147,7 +147,7 @@ func HandleGetCandidateInfoLinkedin(ctx *fasthttp.RequestCtx) (interface{}, erro
 		}
 
 		return map[string]interface{}{
-			"url": fmt.Sprintf("wrong type %T (expect 'string')", ctx.UserValue("name")),
+			"url": fmt.Sprintf("wrong type %T (expect 'string')", ctx.UserValue("url")),
 		}, apis.ErrWrongParamsList
 	}
 	err := table.SelectOneAndScan(ctx,
