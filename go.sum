@@ -239,6 +239,8 @@ github.com/rs/zerolog v1.15.0/go.mod h1:xYTKnLHcpfU2225ny5qZjxnj9NvkumZYjJHlAThC
 github.com/ruslanBik4/dbEngine v1.0.1096/go.mod h1:SuqcBtJkG/GC8UGU+y9scIS5EwFcx2HKiAd8unCB/54=
 github.com/ruslanBik4/dbEngine v1.0.1123 h1:ubN/qOSFwRXFyUAD4EVCNmJZfl1S70wsL43dx2+sKrk=
 github.com/ruslanBik4/dbEngine v1.0.1123/go.mod h1:stgNoDwIkwRRPI7tqZ5GZjfg/a+b8/zlRdIcYxqp+DY=
+github.com/ruslanBik4/dbEngine v1.0.1124 h1:BRdidcDr24noejvASm7bKUbTKUoyWvkBdeEwkvXuiPg=
+github.com/ruslanBik4/dbEngine v1.0.1124/go.mod h1:stgNoDwIkwRRPI7tqZ5GZjfg/a+b8/zlRdIcYxqp+DY=
 github.com/ruslanBik4/httpgo v1.1.10073 h1:dsKc+EzXor1WZxLkCS9mHMGTYrlPqtqq5EV1qERXQNY=
 github.com/ruslanBik4/httpgo v1.1.10073/go.mod h1:kyt0eeHjO8zEHoMGtc3ejopdA/qwd30/h7kdGIkzu1w=
 github.com/ruslanBik4/logs v0.0.0-20200927155213-df5cc6a3fa8e/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
