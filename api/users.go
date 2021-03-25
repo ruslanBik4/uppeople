@@ -64,7 +64,6 @@ func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		users,
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id),
-		dbEngine.OrderBy("name"),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -147,8 +146,8 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 from logs
 where age(date_create) < interval '7 day' and user_id = $4`,
 				CODE_LOG_INSERT,
-				CODE_LOG_PEFORM,
 				CODE_LOG_UPDATE,
+				CODE_LOG_PEFORM,
 				users.Record.Id,
 			)
 			if err != nil {
@@ -156,7 +155,9 @@ where age(date_create) < interval '7 day' and user_id = $4`,
 			}
 			r = append(r, row)
 			return nil
-		})
+		},
+		dbEngine.OrderBy("name"),
+	)
 	if err != nil {
 		return createErrResult(err)
 	}
