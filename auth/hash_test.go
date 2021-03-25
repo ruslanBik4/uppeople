@@ -46,6 +46,22 @@ func TestCheckPass(t *testing.T) {
 			},
 			false,
 		},
+		{
+			"Hanna Skorokhod (макбук)",
+			args{
+				"$2a$10$X9OPL0.x9FGqUTO53d4tou.CFKF1jbqNgVpXLb7j4DW8QDi41JlC.",
+				"hanna.skorokhod",
+			},
+			false,
+		},
+		{
+			"mironyana90@gmail.com",
+			args{
+				"$2a$10$X9OPL0.x9FGqUTO53d4tou.CFKF1jbqNgVpXLb7j4DW8QDi41JlC.",
+				"hanna.skorokhod",
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

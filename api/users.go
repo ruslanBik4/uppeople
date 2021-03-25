@@ -9,6 +9,7 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
 
@@ -38,6 +39,14 @@ func (d *DTOUser) GetValue() interface{} {
 func (d *DTOUser) NewValue() interface{} {
 	return &DTOUser{}
 }
+
+type UserRow struct {
+	*db.UsersFields
+	CreateCount int32 `json:"createCount"`
+	UpdateCount int32 `json:"updateCount"`
+	SendCount   int32 `json:"sendCount"`
+}
+
 func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -55,12 +64,31 @@ func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		users,
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id),
+		dbEngine.OrderBy("name"),
 	)
 	if err != nil {
 		return createErrResult(err)
 	}
 
-	return users.Record, nil
+	row := UserRow{users.Record, 0, 0, 0}
+
+	err = DB.Conn.SelectOneAndScan(ctx,
+		[]interface{}{&row.CreateCount, &row.UpdateCount, &row.SendCount},
+		`select count(*) FILTER ( WHERE kod_deystviya = $1 ),
+       count(*) FILTER ( WHERE kod_deystviya = $2 ),
+       count(*) FILTER ( WHERE kod_deystviya = $3 )
+from logs
+where age(date_create) < interval '7 day' and user_id = $4`,
+		CODE_LOG_INSERT,
+		CODE_LOG_PEFORM,
+		CODE_LOG_UPDATE,
+		users.Record.Id,
+	)
+	if err != nil {
+		logs.ErrorLog(err, "DB.Conn.SelectOneAndScan")
+	}
+
+	return row, nil
 }
 
 func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
