@@ -5,11 +5,14 @@
 package api
 
 import (
+	"time"
+
 	"github.com/jackc/pgx/v4"
 	"github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 	"github.com/valyala/fasthttp"
@@ -49,53 +52,61 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Companies:   make(map[int32]map[string]string),
 	}
 
-	if a.Email == "test@test.com" && a.Password == "1111" {
-		u.Id = 27
-		u.Name = "julia"
-		u.Email = "julia@uppeople.co"
-		u.Role_id = 2
-	} else {
-		users, _ := db.NewUsers(DB)
-		err := users.SelectOneAndScan(ctx,
-			u,
-			dbEngine.WhereForSelect("email"),
-			dbEngine.ArgsForSelect(a.Email),
-		)
-		switch err {
-		case nil:
-			err := auth.CheckPass(u.Pass.String, a.Password)
-			if err != nil {
-				// req := &fasthttp.Request{}
-				// ctx.Request.CopyTo(req)
-				// if request(req, u) != nil {
-				// 	logs.DebugLog(u)
-				// 	return err.Error(), apis.ErrWrongParamsList
-				// }
-				// b, err := auth.NewHash(a.Password)
-				// if err == nil {
-				// 	_, err = users.Update(ctx,
-				// 		dbEngine.ColumnsForSelect("password"),
-				// 		dbEngine.WhereForSelect("id"),
-				// 		dbEngine.ArgsForSelect(string(b), u.Id),
-				// 	)
-				// }
-				// if err != nil {
-				// 	logs.ErrorLog(err, "auth.NewHash")
-				// }
-				return createErrResult(err)
-			}
-		case pgx.ErrNoRows:
-			return createErrResult(pgx.ErrNoRows)
-		default:
+	opts := []dbEngine.BuildSqlOptions{
+		dbEngine.WhereForSelect("email"),
+		dbEngine.ArgsForSelect(a.Email),
+	}
+	users, _ := db.NewUsers(DB)
+	err := users.SelectOneAndScan(ctx,
+		u,
+		opts...,
+	)
+	switch err {
+	case nil:
+		err := auth.CheckPass(u.Pass.String, a.Password)
+		if err != nil {
+			// req := &fasthttp.Request{}
+			// ctx.Request.CopyTo(req)
+			// if request(req, u) != nil {
+			// 	logs.DebugLog(u)
+			// 	return err.Error(), apis.ErrWrongParamsList
+			// }
+			// b, err := auth.NewHash(a.Password)
+			// if err == nil {
+			// 	_, err = users.Update(ctx,
+			// 		dbEngine.ColumnsForSelect("password"),
+			// 		dbEngine.WhereForSelect("id"),
+			// 		dbEngine.ArgsForSelect(string(b), u.Id),
+			// 	)
+			// }
+			// if err != nil {
+			// 	logs.ErrorLog(err, "auth.NewHash")
+			// }
 			return createErrResult(err)
 		}
+	case pgx.ErrNoRows:
+		return createErrResult(pgx.ErrNoRows)
+	default:
+		return createErrResult(err)
 	}
 
-	var err error
 	u.Token, err = auth.Bearer.NewToken(u)
 	if err != nil {
 		ctx.SetStatusCode(fasthttp.StatusNonAuthoritativeInfo)
 		return nil, errors.Wrap(err, "Bearer.NewToken")
+	}
+
+	opts[1] = dbEngine.ArgsForSelect(time.Now(), a.Email)
+
+	opts = append(opts,
+		dbEngine.ColumnsForSelect("last_login"),
+	)
+
+	_, err = users.Update(ctx,
+		opts...,
+	)
+	if err != nil {
+		logs.ErrorLog(err, "users.Update")
 	}
 
 	u.Pass.String = ""
