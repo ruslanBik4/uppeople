@@ -17,10 +17,10 @@ import (
 )
 
 type UserResponse struct {
-	Users       []*db.UsersFields `json:"users"`
-	Partners    SelectedUnits     `json:"partners"`
-	Freelancers SelectedUnits     `json:"freelancers"`
-	Recruiters  SelectedUnits     `json:"recruiters"`
+	Users       []UserRow     `json:"users"`
+	Partners    SelectedUnits `json:"partners"`
+	Freelancers SelectedUnits `json:"freelancers"`
+	Recruiters  SelectedUnits `json:"recruiters"`
 }
 
 type DTOUser struct {
@@ -70,25 +70,7 @@ func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	row := UserRow{users.Record, 0, 0, 0}
-
-	err = DB.Conn.SelectOneAndScan(ctx,
-		[]interface{}{&row.CreateCount, &row.UpdateCount, &row.SendCount},
-		`select count(*) FILTER ( WHERE kod_deystviya = $1 ),
-       count(*) FILTER ( WHERE kod_deystviya = $2 ),
-       count(*) FILTER ( WHERE kod_deystviya = $3 )
-from logs
-where age(date_create) < interval '7 day' and user_id = $4`,
-		CODE_LOG_INSERT,
-		CODE_LOG_PEFORM,
-		CODE_LOG_UPDATE,
-		users.Record.Id,
-	)
-	if err != nil {
-		logs.ErrorLog(err, "DB.Conn.SelectOneAndScan")
-	}
-
-	return row, nil
+	return users.Table, nil
 }
 
 func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -151,11 +133,28 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	r := make([]*db.UsersFields, 0)
+	r := make([]UserRow, 0)
 	users, _ := db.NewUsers(DB)
 	err := users.SelectSelfScanEach(ctx,
 		func(record *db.UsersFields) error {
-			r = append(r, record)
+			row := UserRow{users.Record, 0, 0, 0}
+
+			err := DB.Conn.SelectOneAndScan(ctx,
+				[]interface{}{&row.CreateCount, &row.UpdateCount, &row.SendCount},
+				`select count(*) FILTER ( WHERE kod_deystviya = $1 ),
+       count(*) FILTER ( WHERE kod_deystviya = $2 ),
+       count(*) FILTER ( WHERE kod_deystviya = $3 )
+from logs
+where age(date_create) < interval '7 day' and user_id = $4`,
+				CODE_LOG_INSERT,
+				CODE_LOG_PEFORM,
+				CODE_LOG_UPDATE,
+				users.Record.Id,
+			)
+			if err != nil {
+				logs.ErrorLog(err, "DB.Conn.SelectOneAndScan")
+			}
+			r = append(r, row)
 			return nil
 		})
 	if err != nil {
