@@ -69,7 +69,7 @@ func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	return users.Table, nil
+	return users.Record, nil
 }
 
 func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
