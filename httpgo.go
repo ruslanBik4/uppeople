@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"net"
@@ -83,16 +82,6 @@ func init() {
 		logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
 	}
 
-	// badRoutings = a.AddRoutes(auth2.AuthRoutes)
-	// if len(badRoutings) > 0 {
-	// 	logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
-	// }
-	//
-	// badRoutings = a.AddRoutes(data.RoutesFromDB(DB, data.PathVersion))
-	// if len(badRoutings) > 0 {
-	// 	logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
-	// }
-
 	cfg, err := httpgo.NewCfgHttp(path.Join(*fSystem, *fCfgPath, "httpgo.yml"))
 	if err != nil || cfg == nil {
 		// not work without correct config
@@ -102,35 +91,7 @@ func init() {
 	httpServer = httpgo.NewHttpgo(cfg, listener, a)
 
 	ctx := context.WithValue(context.TODO(), "mapRouting", api.Routes)
-	services.InitServices(ctx, "mail", "crypto", "showLogs")
-
-	if ln, err := net.Listen("tcp", *fPortRdr); err != nil {
-		// port is occupied - work without redirect
-		logs.ErrorLog(err)
-	} else {
-		go func() {
-			logs.StatusLog("Redirect service starting %s on port %s", time.Now(), *fPortRdr)
-			err = fasthttp.Serve(ln, func(ctx *fasthttp.RequestCtx) {
-				uri := ctx.Request.URI()
-				proto := map[bool]string{
-					true:  "http",
-					false: "https",
-				}
-				uri.SetScheme(proto[*fNoSecure])
-				if h := bytes.Split(uri.Host(), []byte(":")); len(h) > 1 {
-					uri.SetHostBytes(h[0])
-				}
-
-				ctx.RedirectBytes(uri.FullURI(), fasthttp.StatusMovedPermanently)
-				logIP(ctx, string(uri.FullURI()))
-
-			})
-			if err != nil {
-				logs.ErrorLog(err, "fasthttpServe")
-			}
-
-		}()
-	}
+	services.InitServices(ctx, "mail", "showLogs")
 }
 
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
@@ -198,7 +159,7 @@ func main() {
 	defer func() {
 		errRec := recover()
 		if err, ok := errRec.(error); ok {
-			logs.ErrorLog(err)
+			logs.ErrorStack(err)
 		}
 	}()
 
@@ -207,7 +168,7 @@ func main() {
 		path.Join(*fSystem, *fCfgPath, "server.crt"),
 		path.Join(*fSystem, *fCfgPath, "server.key"))
 	if err != nil {
-		logs.ErrorLog(err)
+		logs.ErrorStack(err)
 	} else {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
 	}
