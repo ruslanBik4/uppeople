@@ -128,7 +128,6 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 
 	m, err := DB.Conn.SelectToMaps(ctx,
 		sql+where+gr,
-		0,
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -143,6 +142,7 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 		Data:    data,
 	}, nil
 }
+
 func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
