@@ -14,6 +14,7 @@ import (
 
 	"github.com/ruslanBik4/httpgo/apis"
 	httpgo "github.com/ruslanBik4/httpgo/httpGo"
+	"github.com/ruslanBik4/httpgo/models/telegrambot"
 	"github.com/ruslanBik4/httpgo/services"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
@@ -92,6 +93,15 @@ func init() {
 
 	ctx := context.WithValue(context.TODO(), "mapRouting", api.Routes)
 	services.InitServices(ctx, "mail", "showLogs")
+
+	go func() {
+		t, err := telegrambot.NewTelegramBotFromEnv()
+		if err != nil {
+			logs.ErrorLog(err, "NewTelegramBotFromEnv")
+			return
+		}
+		logs.SetWriters(t, logs.FgErr, logs.FgDebug)
+	}()
 }
 
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)

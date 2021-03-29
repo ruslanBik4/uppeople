@@ -50,7 +50,7 @@ type Amoint struct {
 }
 type AmountsByTags struct {
 	Message string                   `json:"message"`
-	Data    []map[string]interface{} `json:"data,omitempty"`
+	Data    interface{}              `json:"data,omitempty"`
 	Main    []map[string]interface{} `json:"main,omitempty"`
 	Reject  []map[string]interface{} `json:"reject,omitempty"`
 }
@@ -103,6 +103,46 @@ func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, erro
 
 }
 
+func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{}, error) {
+
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	sql := `SELECT count(vtc.id) as count, vtc.status as status_id, sfv.status, sfv.color, c.tag_id
+			FROM vacancies_to_candidates vtc
+			LEFT JOIN status_for_vacs sfv ON sfv.id = vtc.status
+			LEFT JOIN candidates c ON c.id = vtc.candidate_id
+			LEFT JOIN vacancies v ON v.id = vtc.vacancy_id
+			WHERE v.status IN (0,1)
+`
+	gr := `      GROUP BY 3`
+
+	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	where := getParams(params)
+
+	m, err := DB.Conn.SelectToMaps(ctx,
+		sql+where+gr,
+		0,
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	data := make(map[string]map[string]interface{}, len(m))
+	for _, val := range m {
+		data[val["status"].(string)] = val
+	}
+	return AmountsByTags{
+		Message: "Successfully",
+		Data:    data,
+	}, nil
+}
 func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -123,26 +163,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	where := ""
-	if p := params.Company_id; p > 0 {
-		where += fmt.Sprintf(" and vtc.company_id = %d", p)
-	}
-
-	if p := params.Vacancy_id; p > 0 {
-		where += fmt.Sprintf(" and vtc.vacancy_id = %d", p)
-	}
-
-	if p := params.Recruiter_id; p > 0 {
-		where += fmt.Sprintf(" and vtc.user_id = %d", p)
-	}
-
-	if p := params.Start_date; p > "" {
-		where += fmt.Sprintf(" AND c.date >= '%s'", p)
-	}
-
-	if p := params.End_date; p > "" {
-		where += fmt.Sprintf(" AND c.date <= '%s'", p)
-	}
+	where := getParams(params)
 
 	m, err := DB.Conn.SelectToMaps(ctx,
 		sql+where+gr,
@@ -165,4 +186,29 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		Main:    m,
 		Reject:  r,
 	}, nil
+}
+
+func getParams(params *DTOAmounts) string {
+	where := ""
+	if p := params.Company_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.company_id = %d", p)
+	}
+
+	if p := params.Vacancy_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.vacancy_id = %d", p)
+	}
+
+	if p := params.Recruiter_id; p > 0 {
+		where += fmt.Sprintf(" and vtc.user_id = %d", p)
+	}
+
+	if p := params.Start_date; p > "" {
+		where += fmt.Sprintf(" AND c.date >= '%s'", p)
+	}
+
+	if p := params.End_date; p > "" {
+		where += fmt.Sprintf(" AND c.date <= '%s'", p)
+	}
+
+	return where
 }

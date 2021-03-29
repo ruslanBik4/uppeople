@@ -306,7 +306,7 @@ var (
 			DTO:      &DTOAmounts{},
 		},
 		"/api/main/getCandidatesAmountByStatuses": {
-			Fnc:      HandleGetCandidatesAmountByTags,
+			Fnc:      HandleGetCandidatesAmountByStatuses,
 			Desc:     "show all candidates",
 			NeedAuth: true,
 			DTO:      &DTOAmounts{},
