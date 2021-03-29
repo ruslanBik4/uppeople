@@ -110,14 +110,14 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	sql := `SELECT count(vtc.id) as count, vtc.status as status_id, sfv.status, sfv.color, c.tag_id
+	sql := `SELECT vtc.status as status_id, sfv.status, sfv.color, c.tag_id, count(vtc.id) as count 
 			FROM vacancies_to_candidates vtc
 			LEFT JOIN status_for_vacs sfv ON sfv.id = vtc.status
 			LEFT JOIN candidates c ON c.id = vtc.candidate_id
 			LEFT JOIN vacancies v ON v.id = vtc.vacancy_id
 			WHERE v.status IN (0,1)
 `
-	gr := `      GROUP BY 3`
+	gr := `      GROUP BY 1,2,3,4`
 
 	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
 	if !ok {
