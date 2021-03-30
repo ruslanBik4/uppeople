@@ -117,7 +117,7 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 			 JOIN vacancies v ON v.id = vtc.vacancy_id
 			WHERE v.status IN (0,1) AND vtc.status > 1
 `
-	gr := `      GROUP BY 1,2,4`
+	gr := `      GROUP BY 1,2,3`
 
 	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
 	if !ok {
