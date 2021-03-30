@@ -17,14 +17,15 @@ Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
 ###
-GET https://{{host}}/api/main/allCandidates/1
+POST https://{{host}}/api/main/allCandidates/1
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
-{"dateFrom":"2021-03-09","mySent":true,
-  "dateFromAllCandidates":"2021-03-09","dateTo":"2021-03-09",
-  "dateToAllCandidates":"2021-03-10",
-  "selectTag":{"id":3,"label":"first contact","value":"first contact"}
+{
+  "mySent":false,
+  "selectRecruiter":{"id":42,"label":"Volodymyr","value":"volodymyr"},
+  "dateFrom":"2021-03-29","dateFromAllCandidates":"2021-03-29",
+  "dateTo":"2021-03-29","dateToAllCandidates":"2021-03-29"
 }
 ###
 POST https://{{host}}/api/main/allCandidates/1
@@ -37,6 +38,17 @@ Content-Type: application/json
   "CurrentColumn": "Recruiter",
   "selectSeniority":[],"selectedTag":{"id":1,"label":"first contact","value":"first contact"},
   "date":"2020-12-21","salary":"","language":"","phone":"","skype":"","email":"","linkedIn":"","resume":"","comment":"","selectedVacancies":[]
+}
+###
+POST https://{{host}}/api/main/returnAllCandidates/2
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "mySent":false,
+  "selectRecruiter":{"id":42,"label":"Volodymyr","value":"volodymyr"},
+  "dateFrom":"2021-03-29","dateFromAllCandidates":"2021-03-29",
+  "dateTo":"2021-03-29","dateToAllCandidates":"2021-03-29"
 }
 ###
 POST https://{{host}}/api/main/returnAllCandidates/1

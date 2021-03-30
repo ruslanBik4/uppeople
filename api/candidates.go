@@ -49,7 +49,7 @@ func (s *SearchCandidates) NewValue() interface{} {
 	return &SearchCandidates{}
 }
 
-func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
@@ -58,7 +58,7 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	offset := 0
 	id, ok := ctx.UserValue(ParamPageNum.Name).(int)
 	if ok && id > 1 {
-		offset = id * pageItem
+		offset = (id - 1) * pageItem
 	}
 
 	candidates, _ := db.NewCandidates(DB)
@@ -81,9 +81,9 @@ func HandleAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		dbEngine.FetchOnlyRows(pageItem),
 		dbEngine.Offset(offset),
 	}
-	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCandidates)
 	args := make([]interface{}, 0)
 	where := make([]string, 0)
+	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCandidates)
 	if ok {
 
 		if dto.Name > "" {
@@ -249,7 +249,7 @@ fetch first 1 row only
 		return nil, nil
 	}
 
-	if len(res.Candidates) < pageItem {
+	if id == 1 && len(res.Candidates) < pageItem {
 		res.ResList.TotalPage = 1
 		res.ResList.Count = len(res.Candidates)
 	} else {
@@ -260,6 +260,9 @@ fetch first 1 row only
 			logs.ErrorLog(err, "count")
 		} else {
 			res.ResList.TotalPage = res.ResList.Count / pageItem
+			if res.ResList.Count%pageItem > 0 {
+				res.ResList.TotalPage++
+			}
 		}
 	}
 
@@ -268,7 +271,7 @@ fetch first 1 row only
 
 func HandleReturnAllCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	ctx.SetUserValue("sendCandidate", true)
-	return HandleAllCandidate(ctx)
+	return HandleAllCandidates(ctx)
 }
 
 func HandleCandidatesFreelancerOnVacancies(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -277,5 +280,5 @@ func HandleCandidatesFreelancerOnVacancies(ctx *fasthttp.RequestCtx) (interface{
 }
 
 func HandleAllCandidatesForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	return HandleAllCandidate(ctx)
+	return HandleAllCandidates(ctx)
 }

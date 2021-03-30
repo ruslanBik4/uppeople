@@ -255,7 +255,7 @@ var (
 			NeedAuth: true,
 		},
 		"/api/main/allCandidates/": {
-			Fnc:      HandleAllCandidate,
+			Fnc:      HandleAllCandidates,
 			Desc:     "show all candidates",
 			NeedAuth: true,
 			DTO:      &SearchCandidates{},
@@ -422,7 +422,7 @@ var (
 			NeedAuth: true,
 		},
 		"/api/main/allCandidates/": {
-			Fnc:      HandleAllCandidate,
+			Fnc:      HandleAllCandidates,
 			Desc:     "show all candidates",
 			NeedAuth: true,
 			Params: []apis.InParam{
@@ -478,12 +478,12 @@ var (
 			},
 		},
 		// "/api/main/returnAllCandidates/": {
-		// 	Fnc:      HandleAllCandidate,
+		// 	Fnc:      HandleAllCandidates,
 		// 	Desc:     "show search results according range of characteristics",
 		// 	NeedAuth: true,
 		// },
 		// "/api/main/viewCandidatesFreelancerOnVacancies/": {
-		// 	Fnc:      HandleAllCandidate,
+		// 	Fnc:      HandleAllCandidates,
 		// 	Desc:     "show search results according range of characteristics",
 		// 	NeedAuth: true,
 		// },
