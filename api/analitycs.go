@@ -152,9 +152,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	sql := `SELECT t.id, t.name, t.color, count(c.id), t.parent_id
 	FROM tags t
 			LEFT JOIN candidates c ON t.id=c.tag_id
-			LEFT JOIN  vacancies_to_candidates vtc ON c.id=vtc.candidate_id
-			LEFT JOIN vacancies v ON v.id = vtc.vacancy_id
-			WHERE v.status IN (0,1) AND parent_id=$1
+			WHERE parent_id=$1
 `
 	gr := `      GROUP BY 1, 2, 3, 5`
 

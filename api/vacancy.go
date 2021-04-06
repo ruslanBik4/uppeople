@@ -300,11 +300,10 @@ func (d *DTOVacancy) NewValue() interface{} {
 }
 
 func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string, code int32) {
-	user := auth.GetUserData(ctx)
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "company_id", "vacancy_id", "text", "date_create", "d_c",
 			"kod_deystviya"),
-		dbEngine.ArgsForSelect(user.Id, companyId, vacancyId,
+		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId, vacancyId,
 			text,
 			time.Now(),
 			time.Now(),

@@ -184,11 +184,10 @@ func EmptyValue(value interface{}) bool {
 }
 
 func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
-	user := auth.GetUserData(ctx)
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create", "d_c",
 			"kod_deystviya"),
-		dbEngine.ArgsForSelect(user.Id, companyId,
+		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
 			text,
 			time.Now(),
 			time.Now(),

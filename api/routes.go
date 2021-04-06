@@ -59,9 +59,17 @@ var (
 		},
 		"/api/main/updateStatusCandidates": {
 			Fnc:      HandleUpdateStatusCandidates,
-			Desc:     "add new vacancy",
+			Desc:     "update status candidate",
 			DTO:      &db.Vacancies_to_candidatesFields{},
 			NeedAuth: true,
+		},
+		"/api/main/reContactCandidate": {
+			Fnc:      HandleReContactCandidate,
+			Desc:     "update status candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
 		},
 		"/api/main/addNewCompany": {
 			Fnc:      HandleAddCompany,
