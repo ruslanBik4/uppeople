@@ -63,7 +63,7 @@ var (
 			DTO:      &db.Vacancies_to_candidatesFields{},
 			NeedAuth: true,
 		},
-		"/api/main/reContactCandidate": {
+		"/api/main/reContactCandidate/": {
 			Fnc:      HandleReContactCandidate,
 			Desc:     "update status candidate",
 			NeedAuth: true,

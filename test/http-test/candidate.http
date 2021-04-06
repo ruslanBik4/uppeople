@@ -7,6 +7,11 @@ Content-Type: application/json
     client.global.set("auth_token", response.body.access_token);
 %}
 ###
+POST https://{{host}}/api/main/reContactCandidate/14815
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+###
 GET https://{{host}}/api/main/viewOneCandidate/14227
 Authorization:Bearer {{auth_token}}
 Content-Type: application/json
