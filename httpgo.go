@@ -44,7 +44,7 @@ var (
 		// 	Desc:   "default endpoint",
 		// 	Fnc:    HandleTest,
 		// 	Method: apis.POST,
-		// },
+		// }, //
 	}
 	fPort     = flag.String("port", ":443", "host address to listen on")
 	fPortRdr  = flag.String("port_redirect", ":80", "redirect anather proto")
