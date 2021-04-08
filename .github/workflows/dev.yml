@@ -29,13 +29,13 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Build
-      run: go build -o httpgo .
+      run: go build -o httpgo_dev .
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
         # Artifact name
-        name: httpgo
+        name: httpgo_dev
         # A file, directory or wildcard pattern that describes what to upload
         path: httpgo_dev
 
