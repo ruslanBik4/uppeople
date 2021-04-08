@@ -13,7 +13,7 @@ jobs:
       - uses: kolpav/purge-artifacts-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          expire-in: 1days # Setting this to 0 will delete all artifacts
+          expire-in: 0 # Setting this to 0 will delete all artifacts
 
   build:
     name: Build
@@ -100,6 +100,17 @@ jobs:
         source: "httpgo_dev"
         target: "/opt/uppeople/"
 
+    - name: Copy systemd _dev files via scp
+      uses: appleboy/scp-action@master
+      env:
+        HOST: ${{ secrets.SSH_PROD_HOST }}
+        USERNAME: ${{ secrets.SSH_PROD_USER }}
+        PORT: 22
+        KEY: ${{ secrets.SSH_KEY }}
+      with:
+        source: "systemd/*_dev.service"
+        target: "/opt/uppeople/"
+
     - name: stop services on pm-db.net
       uses: appleboy/ssh-action@master
       env:
@@ -115,17 +126,6 @@ jobs:
             sudo systemctl stop $(basename "$sd_unit")
             sudo cp $sd_unit /etc/systemd/system/
           done
-
-    - name: Copy systemd _dev files via scp
-      uses: appleboy/scp-action@master
-      env:
-        HOST: ${{ secrets.SSH_PROD_HOST }}
-        USERNAME: ${{ secrets.SSH_PROD_USER }}
-        PORT: 22
-        KEY: ${{ secrets.SSH_KEY }}
-      with:
-        source: "systemd/*_dev.service"
-        target: "/opt/uppeople/"
 
     - name: Restart services
       uses: appleboy/ssh-action@master
