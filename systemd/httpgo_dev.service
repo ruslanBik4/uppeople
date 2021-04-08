@@ -10,7 +10,7 @@ Environment=PGHOST=
 Environment=TBTOKEN=1745642725:AAE6GiVlshMYMl9uCZF3jjdnDciJDFbcirA
 Environment=TBCHATID=-1001301115992
 
-ExecStart=/opt/uppeople/httpgo_dev -port :4443 -web ./ -debug
+ExecStart=/opt/uppeople/httpgo_dev -port :4443 -web ./dev -debug
 WorkingDirectory=/opt/uppeople
 RootDirectoryStartOnly=true
 Type=simple
