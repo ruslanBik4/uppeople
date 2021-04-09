@@ -53,7 +53,7 @@ jobs:
   #  steps:
     - shell: bash
       env:
-        PROD_PGDATABASE: ${{secrets.PGDATABASE }}
+        PGDATABASE_DEV: ${{secrets.PGDATABASE_DEV }}
         PROD_PGUSER: ${{secrets.PGUSER }}
         PROD_PGPASSWORD: ${{secrets.PGPASS }}
         TBTOKEN: ${{secrets.TBTOKEN }}
@@ -62,7 +62,7 @@ jobs:
         for sd_unit in systemd/*.service; do
 
           sed -i "s|PGHOST=|PGHOST=localhost|g" $sd_unit
-          sed -i "s|PGDATABASE=|PGDATABASE=$PROD_PGDATABASE|g" $sd_unit
+          sed -i "s|PGDATABASE_DEV=|PGDATABASE=$PROD_PGDATABASE_DEV|g" $sd_unit
           sed -i "s|PGUSER=|PGUSER=$PROD_PGUSER|g" $sd_unit
           sed -i "s|PGPASSWORD=|PGPASSWORD=$PROD_PGPASSWORD|g" $sd_unit
           sed -i "s|TBTOKEN=|TBTOKEN=$TBTOKEN|g" $sd_unit

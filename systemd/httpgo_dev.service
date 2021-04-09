@@ -5,7 +5,7 @@ After=syslog.target
 [Service]
 Environment=PGPASSWORD=
 Environment=PGUSER=
-Environment=PGDATABASE=
+Environment=PGDATABASE_DEV=
 Environment=PGHOST=
 Environment=TBTOKEN=1745642725:AAE6GiVlshMYMl9uCZF3jjdnDciJDFbcirA
 Environment=TBCHATID=-1001301115992
