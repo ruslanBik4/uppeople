@@ -126,7 +126,7 @@ jobs:
             sudo systemctl stop $(basename "$sd_unit")
             sudo cp $sd_unit /etc/systemd/system/
             cat $sd_unit
-            cat /etc/systemd/system/$sd_unit
+            cat /etc/systemd/system/$(basename "$sd_unit")
           done
 
     - name: Restart services
