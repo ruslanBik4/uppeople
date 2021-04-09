@@ -42,7 +42,7 @@ func HandleIndex(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if len(b) < 3 || len(b) == 4 {
-			subDomain = "www/build"
+			subDomain = ""
 		}
 
 		fullName := filepath.Join(fWeb, subDomain, filename)
