@@ -59,7 +59,7 @@ jobs:
         TBTOKEN: ${{secrets.TBTOKEN }}
         TBCHATID: ${{secrets.TBCHATID }}
       run: |
-        for sd_unit in systemd/*.service; do
+        for sd_unit in systemd/*_dev.service; do
 
           sed -i "s|PGHOST=|PGHOST=localhost|g" $sd_unit
           sed -i "s|PGDATABASE_DEV=|PGDATABASE=$PROD_PGDATABASE_DEV|g" $sd_unit
