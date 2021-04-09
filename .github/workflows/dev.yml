@@ -125,9 +125,9 @@ jobs:
 
             sudo systemctl stop $(basename "$sd_unit")
             sudo cp $sd_unit /etc/systemd/system/
-            cat $sd_unit
-            cat /etc/systemd/system/$(basename "$sd_unit")
           done
+
+          echo $USERNAME
 
     - name: Restart services
       uses: appleboy/ssh-action@master
