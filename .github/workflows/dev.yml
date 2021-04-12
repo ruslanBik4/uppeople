@@ -86,8 +86,9 @@ jobs:
         #PORT: 22
         KEY: ${{ secrets.SSH_KEY }}
       with:
-        source: "cfg/DB/"
-        target: "/opt/uppeople"
+        source: "cfg/DB/*"
+        target: "/opt/uppeople/cfg/dev"
+        strip_components: 1
 
     - name: Copy httpgo_dev via scp
       uses: appleboy/scp-action@master

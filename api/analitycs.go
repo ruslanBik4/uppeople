@@ -9,6 +9,7 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 )
 
@@ -31,11 +32,11 @@ func HandleGetStatuses(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 type DTOAmounts struct {
-	Recruiter_id int32  `json:"recruiter_id"`
-	Company_id   int32  `json:"company_id"`
-	Vacancy_id   int32  `json:"vacancy_id"`
-	Start_date   string `json:"start_date"`
-	End_date     string `json:"end_date"`
+	RecruiterId int32  `json:"recruiter_id"`
+	CompanyId   int32  `json:"company_id"`
+	VacancyId   int32  `json:"vacancy_id"`
+	StartDate   string `json:"start_date"`
+	EndDate     string `json:"end_date"`
 }
 
 func (d *DTOAmounts) GetValue() interface{} {
@@ -81,11 +82,11 @@ func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, erro
 	}
 
 	where := ""
-	if p := params.Company_id; p > 0 {
+	if p := params.CompanyId; p > 0 {
 		where += fmt.Sprintf(" and vtc.company_id = %d", p)
 	}
 
-	if p := params.Recruiter_id; p > 0 {
+	if p := params.RecruiterId; p > 0 {
 		where += fmt.Sprintf(" and vtc.user_id = %d", p)
 	}
 
@@ -149,9 +150,11 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	sql := `SELECT t.id, t.name, t.color, count(c.id), t.parent_id
-	FROM tags t
-			LEFT JOIN candidates c ON t.id=c.tag_id
+	sql := `SELECT t.id, t.name, t.color, 
+			count(c.id) + (select count(*) from logs where kod_deystviya = 104) as count , 
+			t.parent_id
+	FROM tags t JOIN candidates c ON t.id=c.tag_id
+		%s	
 			WHERE parent_id=$1
 `
 	gr := `      GROUP BY 1, 2, 3, 5`
@@ -162,7 +165,21 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	}
 
 	where := getParams(params)
+	if params.VacancyId > 0 || params.CompanyId > 0 {
+		sql = fmt.Sprintf(sql, `
+			 JOIN vacancies_to_candidates vtc on c.id = vtc.candidate_id
+			JOIN vacancies v ON v.id = vtc.vacancy_id`)
+		if p := params.StartDate; p > "" {
+			where += fmt.Sprintf(" AND vtc.date_last_change >= '%s'", p)
+		}
+		if p := params.EndDate; p > "" {
+			where += fmt.Sprintf(" AND vtc.date_last_change <= '%s'", p)
+		}
+	} else {
+		sql = fmt.Sprintf(sql, ` `)
+	}
 
+	logs.DebugLog(sql + where + gr)
 	m, err := DB.Conn.SelectToMaps(ctx,
 		sql+where+gr,
 		0,
@@ -188,23 +205,23 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 
 func getParams(params *DTOAmounts) string {
 	where := ""
-	if p := params.Company_id; p > 0 {
-		where += fmt.Sprintf(" and vtc.company_id = %d", p)
+	if p := params.CompanyId; p > 0 {
+		where += fmt.Sprintf(" and v.company_id = %d", p)
 	}
 
-	if p := params.Vacancy_id; p > 0 {
-		where += fmt.Sprintf(" and vtc.vacancy_id = %d", p)
+	if p := params.VacancyId; p > 0 {
+		where += fmt.Sprintf(" and v.id = %d", p)
 	}
 
-	if p := params.Recruiter_id; p > 0 {
-		where += fmt.Sprintf(" and vtc.user_id = %d", p)
+	if p := params.RecruiterId; p > 0 {
+		where += fmt.Sprintf(" and c.recruter_id = %d", p)
 	}
 
-	if p := params.Start_date; p > "" {
+	if p := params.StartDate; p > "" {
 		where += fmt.Sprintf(" AND c.date >= '%s'", p)
 	}
 
-	if p := params.End_date; p > "" {
+	if p := params.EndDate; p > "" {
 		where += fmt.Sprintf(" AND c.date <= '%s'", p)
 	}
 
