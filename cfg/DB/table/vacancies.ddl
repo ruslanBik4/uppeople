@@ -7,9 +7,9 @@ create table vacancies
     name varchar(255) default NULL::character varying,
     description text,
     details text,
-    link text default ''::text not null,
+    link text not null default ''::text,
     file varchar(255) default NULL::character varying,
-    date_create timestamp default CURRENT_TIMESTAMP not null,
+    date_create timestamp not null default CURRENT_TIMESTAMP,
     ord bigint,
     status bigint,
     seniority_id integer not null,
@@ -21,6 +21,7 @@ create table vacancies
 -- todo: https://commitfest.postgresql.org/17/1252/
 -- todo: add foreign keys
 
+CREATE EXTENSION IF NOT EXISTS citext;
 
 create index idx_17194_vacancies_seniority_id_foreign
     on vacancies (seniority_id);

@@ -113,7 +113,6 @@ github.com/jackc/pgconn v0.0.0-20190831204454-2fabfa3c18b7/go.mod h1:ZJKsE/KZfsU
 github.com/jackc/pgconn v1.4.0/go.mod h1:Y2O3ZDF0q4mMacyWV3AstPJpeHXWGEetiFttmq5lahk=
 github.com/jackc/pgconn v1.5.0/go.mod h1:QeD3lBfpTFe8WUnPZWN5KY/mB8FGMIYRdd8P8Jr0fAI=
 github.com/jackc/pgconn v1.5.1-0.20200601181101-fa742c524853/go.mod h1:QeD3lBfpTFe8WUnPZWN5KY/mB8FGMIYRdd8P8Jr0fAI=
-github.com/jackc/pgconn v1.6.1/go.mod h1:g8mKMqmSUO6AzAvha7vy07g1rbGOlc7iF0nU0ei83hc=
 github.com/jackc/pgconn v1.8.0 h1:FmjZ0rOyXTr1wfWs45i4a9vjnjWUAGpMuQLD9OSs+lw=
 github.com/jackc/pgconn v1.8.0/go.mod h1:1C2Pb36bGIP9QHGBYCjnyhqu7Rv3sGshaQUvmfGIB/o=
 github.com/jackc/pgio v1.0.0 h1:g12B9UwVnzGhueNavwioyEEpAmqMe1E/BN9ES+8ovkE=
@@ -129,7 +128,6 @@ github.com/jackc/pgproto3/v2 v2.0.0-alpha1.0.20190609003834-432c2951c711/go.mod 
 github.com/jackc/pgproto3/v2 v2.0.0-rc3/go.mod h1:ryONWYqW6dqSg1Lw6vXNMXoBJhpzvWKnT95C46ckYeM=
 github.com/jackc/pgproto3/v2 v2.0.0-rc3.0.20190831210041-4c03ce451f29/go.mod h1:ryONWYqW6dqSg1Lw6vXNMXoBJhpzvWKnT95C46ckYeM=
 github.com/jackc/pgproto3/v2 v2.0.1/go.mod h1:WfJCnwN3HIg9Ish/j3sgWXnAfK8A9Y0bwXYU5xKaEdA=
-github.com/jackc/pgproto3/v2 v2.0.2/go.mod h1:WfJCnwN3HIg9Ish/j3sgWXnAfK8A9Y0bwXYU5xKaEdA=
 github.com/jackc/pgproto3/v2 v2.0.6 h1:b1105ZGEMFe7aCvrT1Cca3VoVb4ZFMaFJLJcg/3zD+8=
 github.com/jackc/pgproto3/v2 v2.0.6/go.mod h1:WfJCnwN3HIg9Ish/j3sgWXnAfK8A9Y0bwXYU5xKaEdA=
 github.com/jackc/pgservicefile v0.0.0-20200307190119-3430c5407db8/go.mod h1:vsD4gTJCa9TptPL8sPkXrLZ+hDuNrZCnj29CQpr4X1E=
@@ -141,7 +139,6 @@ github.com/jackc/pgtype v0.0.0-20190828014616-a8802b16cc59/go.mod h1:MWlu30kVJrU
 github.com/jackc/pgtype v1.2.0/go.mod h1:5m2OfMh1wTK7x+Fk952IDmI4nw3nPrvtQdM0ZT4WpC0=
 github.com/jackc/pgtype v1.3.1-0.20200510190516-8cd94a14c75a/go.mod h1:vaogEUkALtxZMCH411K+tKzNpwzCKU+AnPzBKZ+I+Po=
 github.com/jackc/pgtype v1.3.1-0.20200606141011-f6355165a91c/go.mod h1:cvk9Bgu/VzJ9/lxTO5R5sf80p0DiucVtN7ZxvaC4GmQ=
-github.com/jackc/pgtype v1.4.0/go.mod h1:JCULISAZBFGrHaOXIIFiyfzW5VY0GRitRr8NeJsrdig=
 github.com/jackc/pgtype v1.6.2 h1:b3pDeuhbbzBYcg5kwNmNDun4pFUD/0AAr1kLXZLeNt8=
 github.com/jackc/pgtype v1.6.2/go.mod h1:JCULISAZBFGrHaOXIIFiyfzW5VY0GRitRr8NeJsrdig=
 github.com/jackc/pgx/v4 v4.0.0-20190420224344-cc3461e65d96/go.mod h1:mdxmSJJuR08CZQyj1PVQBHy9XOp5p8/SHH6a0psbY9Y=
@@ -150,7 +147,6 @@ github.com/jackc/pgx/v4 v4.0.0-pre1.0.20190824185557-6972a5742186/go.mod h1:X+GQ
 github.com/jackc/pgx/v4 v4.5.0/go.mod h1:EpAKPLdnTorwmPUUsqrPxy5fphV18j9q3wrfRXgo+kA=
 github.com/jackc/pgx/v4 v4.6.1-0.20200510190926-94ba730bb1e9/go.mod h1:t3/cdRQl6fOLDxqtlyhe9UWgfIi9R8+8v8GKV5TRA/o=
 github.com/jackc/pgx/v4 v4.6.1-0.20200606145419-4e5062306904/go.mod h1:ZDaNWkt9sW1JMiNn0kdYBaLelIhw7Pg4qd+Vk6tw7Hg=
-github.com/jackc/pgx/v4 v4.7.1/go.mod h1:nu42q3aPjuC1M0Nak4bnoprKlXPINqopEKqbq5AZSC4=
 github.com/jackc/pgx/v4 v4.10.1 h1:/6Q3ye4myIj6AaplUm+eRcz4OhK9HAvFf4ePsG40LJY=
 github.com/jackc/pgx/v4 v4.10.1/go.mod h1:QlrWebbs3kqEZPHCTGyxecvzG6tvIsYu+A5b1raylkA=
 github.com/jackc/puddle v0.0.0-20190413234325-e4ced69a3a2b/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dvjSWk=
@@ -160,7 +156,6 @@ github.com/jackc/puddle v1.1.1/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dv
 github.com/jackc/puddle v1.1.3 h1:JnPg/5Q9xVJGfjsO5CPUOjnJps1JaRUm8I9FXVCFK94=
 github.com/jackc/puddle v1.1.3/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dvjSWk=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
-github.com/json-iterator/go v1.1.9/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
 github.com/json-iterator/go v1.1.10 h1:Kz6Cvnvv2wGdaG/V8yMvfkmNiXq9Ya2KUv4rouJJr68=
 github.com/json-iterator/go v1.1.10/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
@@ -237,11 +232,11 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/rs/xid v1.2.1/go.mod h1:+uKXf+4Djp6Md1KODXJxgGQPKngRmWyn10oCKFzNHOQ=
 github.com/rs/zerolog v1.13.0/go.mod h1:YbFCdg8HfsridGWAh22vktObvhZbQsZXe4/zB0OKkWU=
 github.com/rs/zerolog v1.15.0/go.mod h1:xYTKnLHcpfU2225ny5qZjxnj9NvkumZYjJHlAThCjNc=
-github.com/ruslanBik4/dbEngine v1.0.1096/go.mod h1:SuqcBtJkG/GC8UGU+y9scIS5EwFcx2HKiAd8unCB/54=
-github.com/ruslanBik4/dbEngine v1.0.1125 h1:doYF44/zEDthDEejiofxj0Pcf6D3HYbNd5+52UbVsDM=
-github.com/ruslanBik4/dbEngine v1.0.1125/go.mod h1:stgNoDwIkwRRPI7tqZ5GZjfg/a+b8/zlRdIcYxqp+DY=
-github.com/ruslanBik4/httpgo v1.1.10073 h1:dsKc+EzXor1WZxLkCS9mHMGTYrlPqtqq5EV1qERXQNY=
-github.com/ruslanBik4/httpgo v1.1.10073/go.mod h1:kyt0eeHjO8zEHoMGtc3ejopdA/qwd30/h7kdGIkzu1w=
+github.com/ruslanBik4/dbEngine v1.0.1121/go.mod h1:stgNoDwIkwRRPI7tqZ5GZjfg/a+b8/zlRdIcYxqp+DY=
+github.com/ruslanBik4/dbEngine v1.0.1126 h1:qFWkULJAl2j2l3QBH38gLse/praLYJY6blEc62t40OI=
+github.com/ruslanBik4/dbEngine v1.0.1126/go.mod h1:stgNoDwIkwRRPI7tqZ5GZjfg/a+b8/zlRdIcYxqp+DY=
+github.com/ruslanBik4/httpgo v1.1.10079 h1:xxxCjSZdJ+zuN1d/BZhnGeWPSKR7SYmA0PnOWgMTSXY=
+github.com/ruslanBik4/httpgo v1.1.10079/go.mod h1:VvgwTn9Q7ioNsptHZ52KZTDGHr3sOBaxfNkSuGNCnYw=
 github.com/ruslanBik4/logs v0.0.0-20200927155213-df5cc6a3fa8e/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
 github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27 h1:ORUgbGC/46dmd3WFzV9+pgDFkdwrfNCkQNp8SfZWmbg=
 github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=

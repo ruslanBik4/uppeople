@@ -65,16 +65,16 @@ func init() {
 
 	ctxApis := apis.NewCtxApis(0)
 
-	ctxApis.AddValue(api.CFG_PATH, *fCfgPath)
 	ctxApis.AddValue("migration", path.Join(*fCfgPath, "DB"))
-	ctxApis.AddValue(api.SYSTEM_PATH, *fSystem)
-	ctxApis.AddValue(api.WEB_PATH, *fWeb)
 	DB := db.GetDB(ctxApis)
 	if DB == nil {
-		logs.DebugLog(" ot DB")
+		panic("cannot init DB")
 	}
 
 	ctxApis.AddValue("DB", DB)
+	ctxApis.AddValue(api.CFG_PATH, *fCfgPath)
+	ctxApis.AddValue(api.SYSTEM_PATH, *fSystem)
+	ctxApis.AddValue(api.WEB_PATH, *fWeb)
 	ctxApis.AddValue("auth", auth.Bearer)
 	ctxApis.AddValue("startedAt", time.Now())
 
