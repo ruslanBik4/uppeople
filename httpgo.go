@@ -6,6 +6,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net"
 	"path"
 	"regexp"
@@ -65,6 +66,7 @@ func init() {
 	ctxApis := apis.NewCtxApis(0)
 
 	ctxApis.AddValue(api.CFG_PATH, *fCfgPath)
+	ctxApis.AddValue("migration", path.Join(*fCfgPath, "DB"))
 	ctxApis.AddValue(api.SYSTEM_PATH, *fSystem)
 	ctxApis.AddValue(api.WEB_PATH, *fWeb)
 	DB := db.GetDB(ctxApis)
@@ -140,7 +142,7 @@ func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func main() {
-	title, err := HandleVersion(nil)
+	title := fmt.Sprintf("polymer (%s) Version: %s, Build Time: %s", Branch, Version, Build)
 
 	t := "https"
 	if *fNoSecure {
@@ -156,7 +158,7 @@ func main() {
 		}
 	}()
 
-	err = httpServer.Run(
+	err := httpServer.Run(
 		!(*fNoSecure),
 		path.Join(*fSystem, *fCfgPath, "server.crt"),
 		path.Join(*fSystem, *fCfgPath, "server.key"))

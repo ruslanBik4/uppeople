@@ -7,7 +7,6 @@ package db
 import (
 	"bytes"
 	"fmt"
-	"path"
 	"strings"
 
 	"github.com/jackc/pgconn"
@@ -19,7 +18,6 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine/psql"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
-	"github.com/ruslanBik4/uppeople/api"
 	"golang.org/x/net/context"
 )
 
@@ -29,7 +27,6 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 	conn := psql.NewConn(AfterConnect, nil, printNotice)
 	ctx := context.WithValue(ctxApis, "dbURL", "")
 	ctx = context.WithValue(ctx, "fillSchema", true)
-	ctx = context.WithValue(ctx, "migration", path.Join(ctxApis.Value(api.CFG_PATH).(string), "DB"))
 	db, err := dbEngine.NewDB(ctx, conn)
 	if err != nil {
 		logs.ErrorLog(err, "")

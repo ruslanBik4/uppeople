@@ -15,7 +15,7 @@ import (
 
 func main() {
 
-	DB := db.GetDB()
+	DB := db.GetDB(nil)
 	if DB == nil {
 		logs.Fatal(dbEngine.ErrDBNotFound, " ot DB")
 	}
