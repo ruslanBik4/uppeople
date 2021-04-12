@@ -31,7 +31,7 @@ jobs:
     - name: Tags
       run: make dev
     - name: Build
-      run:  git describe --tags
+      run:  git version # describe --tags
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
@@ -131,8 +131,6 @@ jobs:
             sudo systemctl stop $(basename "$sd_unit")
             sudo cp $sd_unit /etc/systemd/system/
           done
-
-          set | grep USERNAME
 
     - name: Restart services
       uses: appleboy/ssh-action@master
