@@ -7,8 +7,8 @@ Environment=PGPASSWORD=
 Environment=PGUSER=
 Environment=PGDATABASE=
 Environment=PGHOST=
-Environment=TBTOKEN=1745642725:AAE6GiVlshMYMl9uCZF3jjdnDciJDFbcirA
-Environment=TBCHATID=-1001301115992
+Environment=TBTOKEN=
+Environment=TBCHATID=
 
 ExecStart=/opt/uppeople/httpgo -port :443 -port_redirect :80 -web www/build -debug
 WorkingDirectory=/opt/uppeople

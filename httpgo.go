@@ -6,7 +6,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"net"
 	"path"
 	"regexp"
@@ -47,7 +46,6 @@ var (
 		// }, //
 	}
 	fPort     = flag.String("port", ":443", "host address to listen on")
-	fPortRdr  = flag.String("port_redirect", ":80", "redirect anather proto")
 	fNoSecure = flag.Bool("insecure", false, "flag to force https")
 	fSystem   = flag.String("path", "./", "path to system files")
 	fCfgPath  = flag.String("config_path", "cfg", "path to cfg files")
@@ -69,13 +67,14 @@ func init() {
 	ctxApis.AddValue(api.CFG_PATH, *fCfgPath)
 	ctxApis.AddValue(api.SYSTEM_PATH, *fSystem)
 	ctxApis.AddValue(api.WEB_PATH, *fWeb)
-	DB := db.GetDB()
+	DB := db.GetDB(ctxApis)
 	if DB == nil {
 		logs.DebugLog(" ot DB")
 	}
 
 	ctxApis.AddValue("DB", DB)
 	ctxApis.AddValue("auth", auth.Bearer)
+	ctxApis.AddValue("startedAt", time.Now())
 
 	a := apis.NewApis(ctxApis, api.Routes, auth.Bearer)
 	badRoutings := a.AddRoutes(routes)
@@ -106,27 +105,6 @@ func init() {
 
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
 
-func logIP(ctx *fasthttp.RequestCtx, url string) {
-	ipClient := ctx.Request.Header.Peek("X-Forwarded-For")
-	addr := string(ipClient)
-	if len(ipClient) == 0 {
-		ipClient = ctx.Request.Header.Peek("Forwarded")
-		ips := regIp.FindSubmatch(ipClient)
-
-		if len(ips) == 0 {
-			addr = string(ctx.Request.Header.Peek("X-ProxyUser-Ip"))
-		} else {
-			addr = string(ips[0])
-		}
-	}
-
-	if addr == "" {
-		addr = ctx.RemoteAddr().String()
-	}
-
-	logs.StatusLog("redirect'%s'  to %s", addr, url)
-}
-
 // func (dst *CitextArray) MarshalJSON() ([]byte, error) {
 // 	buf := bytes.NewBufferString("[")
 // 	for i, text := range dst.Elements {
@@ -153,7 +131,12 @@ var (
 // @/api/version/
 func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
-	return fmt.Sprintf("UPPeople (%s) Version: %s, Build Time: %s", Branch, Version, Build), nil
+	return map[string]interface{}{
+		"UPPeople":  Branch,
+		"Version":   Version,
+		"BuildTime": Build,
+		"StartTime": ctx.Value("startedAt"),
+	}, nil
 }
 
 func main() {

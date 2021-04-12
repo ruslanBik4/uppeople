@@ -7,6 +7,7 @@ package db
 import (
 	"bytes"
 	"fmt"
+	"path"
 	"strings"
 
 	"github.com/jackc/pgconn"
@@ -16,17 +17,19 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/dbEngine/dbEngine/psql"
+	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
+	"github.com/ruslanBik4/uppeople/api"
 	"golang.org/x/net/context"
 )
 
 var LastErr *pgconn.PgError
 
-func GetDB() *dbEngine.DB {
+func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 	conn := psql.NewConn(AfterConnect, nil, printNotice)
-	ctx := context.WithValue(context.Background(), "dbURL", "")
+	ctx := context.WithValue(ctxApis, "dbURL", "")
 	ctx = context.WithValue(ctx, "fillSchema", true)
-	// ctx = context.WithValue(ctx, "migration", "cfg/DB")
+	ctx = context.WithValue(ctx, "migration", path.Join(ctxApis.Value(api.CFG_PATH).(string), "DB"))
 	db, err := dbEngine.NewDB(ctx, conn)
 	if err != nil {
 		logs.ErrorLog(err, "")
@@ -49,7 +52,7 @@ func printNotice(c *pgconn.PgConn, n *pgconn.Notice) {
 	} else if strings.HasPrefix(n.Message, "[[ERROR]]") {
 		logs.ErrorLog(errors.New(strings.TrimPrefix(n.Message, "[[ERROR]]") + n.Severity))
 	} else { // DEBUG
-		logs.DebugLog("%+v %s", n.Severity, n.Message)
+		logs.DebugLog("%d: %+v %s", c.PID(), n.Severity, n.Message)
 	}
 }
 
@@ -177,11 +180,11 @@ func (src CitextArray) EncodeBinary(ci *pgtype.ConnInfo, buf []byte) ([]byte, er
 }
 
 var customTypes = map[string]*pgtype.DataType{
-	"citext": &pgtype.DataType{
+	"citext": {
 		Value: &pgtype.Text{},
 		Name:  "citext",
 	},
-	"_citext": &pgtype.DataType{
+	"_citext": {
 		Value: &CitextArray{pgtype.TextArray{}}, // (*pgtype.ArrayType)(nil),
 		Name:  "[]string",
 	},

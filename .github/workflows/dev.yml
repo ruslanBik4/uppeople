@@ -68,6 +68,7 @@ jobs:
           sed -i "s|TBTOKEN=|TBTOKEN=$TBTOKEN|g" $sd_unit
           sed -i "s|TBCHATID=|TBCHATID=$TBCHATID|g" $sd_unit
 
+          cat  $sd_unit
         done
 
     - name: Upload a systemd Artifact

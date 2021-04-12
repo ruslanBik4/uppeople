@@ -1,8 +1,8 @@
 create table vacancies
 (
     id serial not null,
-    company_id bigint,
-    platform_id bigint,
+    company_id integer,
+    platform_id integer,
     user_ids integer[] not null,
     name varchar(255) default NULL::character varying,
     description text,
@@ -12,13 +12,14 @@ create table vacancies
     date_create timestamp default CURRENT_TIMESTAMP not null,
     ord bigint,
     status bigint,
-    seniority_id bigint not null,
+    seniority_id integer not null,
     salary bigint not null,
     location_id bigint,
     primary key (id)
 );
 
 -- todo: https://commitfest.postgresql.org/17/1252/
+-- todo: add foreign keys
 
 
 create index idx_17194_vacancies_seniority_id_foreign
