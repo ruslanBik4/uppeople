@@ -28,9 +28,10 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
       
-    - name: Build
+    - name: Tags
       run: make dev
-        git describe --tags
+    - name: Build
+      run:  git describe --tags
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
