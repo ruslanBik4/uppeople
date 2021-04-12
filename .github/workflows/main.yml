@@ -29,11 +29,8 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Build
-      run: go build -o httpgo .
+      run: make
 
-    - name: Test
-      run: go test -v .
-      
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:

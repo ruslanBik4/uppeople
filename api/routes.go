@@ -313,6 +313,12 @@ var (
 			NeedAuth: true,
 			DTO:      &DTOAmounts{},
 		},
+		"/api/reports/by_tags": {
+			Fnc:      HandleDownloadExecutions,
+			Desc:     "reports by tags",
+			NeedAuth: true,
+			DTO:      &DTOAmounts{},
+		},
 		"/api/main/getCandidatesAmountByStatuses": {
 			Fnc:      HandleGetCandidatesAmountByStatuses,
 			Desc:     "show all candidates",
