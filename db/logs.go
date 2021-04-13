@@ -25,7 +25,7 @@ type LogsFields struct {
 	Text          string        `json:"text"`
 	Kod_deystviya int64         `json:"kod_deystviya"`
 	Date_create   time.Time     `json:"date_create"`
-	D_c           time.Time     `json:"d_c"`
+	create_at     time.Time     `json:"create_at"`
 }
 
 func (r *LogsFields) RefColValue(name string) interface{} {
@@ -54,8 +54,8 @@ func (r *LogsFields) RefColValue(name string) interface{} {
 	case "date_create":
 		return &r.Date_create
 
-	case "d_c":
-		return &r.D_c
+	case "create_at":
+		return &r.create_at
 
 	default:
 		return nil
@@ -88,8 +88,8 @@ func (r *LogsFields) ColValue(name string) interface{} {
 	case "date_create":
 		return r.Date_create
 
-	case "d_c":
-		return r.D_c
+	case "create_at":
+		return r.create_at
 
 	default:
 		return nil

@@ -33,7 +33,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			 WHEN vacancy_id > 0 THEN CONCAT(' вакансию компании ', companies.name)
 			ELSE '' END,
 			' ', logs.text) as text, 
-		logs.d_c as date, 
+		logs.create_at as date, 
 		companies.id as compId, companies.name as compName, vacancies.id as vacId, 
 		CONCAT_WS(' - ', platforms.nazva, seniorities.nazva) as vac
 		from logs left Join companies on (logs.company_id = companies.id)
@@ -43,7 +43,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			left Join platforms ON (vacancies.platform_id = platforms.id)
 			left Join seniorities ON (vacancies.seniority_id = seniorities.id)
 		where candidate_id =$1
-		order by logs.d_c DESC`,
+		order by logs.create_at DESC`,
 			CODE_LOG_PEFORM, CODE_LOG_INSERT, CODE_LOG_UPDATE, CODE_LOG_DELETE),
 		ctx.UserValue("id"),
 	)
