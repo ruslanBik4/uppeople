@@ -10,11 +10,11 @@ create table vacancies
     link text not null default ''::text,
     file varchar(255) default NULL::character varying,
     date_create timestamp not null default CURRENT_TIMESTAMP,
-    ord bigint,
-    status bigint,
+    ord integer,
+    status integer,
     seniority_id integer not null,
-    salary bigint not null,
-    location_id bigint,
+    salary integer not null,
+    location_id integer,
     primary key (id)
 );
 

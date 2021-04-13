@@ -196,28 +196,28 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		func(record *db.VacanciesFields) error {
 			view := VacanciesView{
 				VacanciesFields: record,
-				Date:            record.Date_create.Format("2006-01-02"),
+				Date:            record.DateCreate.Format("2006-01-02"),
 				Company:         "",
 				Location:        "",
 			}
-			if record.Company_id > 0 {
+			if record.CompanyId > 0 {
 				err := companies.SelectOneAndScan(ctx,
 					&view.Company,
 					dbEngine.ColumnsForSelect("name"),
 					dbEngine.WhereForSelect("id"),
-					dbEngine.ArgsForSelect(record.Company_id),
+					dbEngine.ArgsForSelect(record.CompanyId),
 				)
 				if err != nil {
 					logs.ErrorLog(err, "companies.SelectOneAndScan")
 				}
 			}
 
-			if record.Location_id > 0 {
+			if record.LocationId > 0 {
 				err := locs.SelectOneAndScan(ctx,
 					&view.Location,
 					dbEngine.ColumnsForSelect("name"),
 					dbEngine.WhereForSelect("id"),
-					dbEngine.ArgsForSelect(record.Location_id),
+					dbEngine.ArgsForSelect(record.LocationId),
 				)
 				if err != nil {
 					logs.ErrorLog(err, "locs.SelectOneAndScan")
@@ -226,14 +226,14 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 			}
 
 			for _, s := range res.Seniority {
-				if s.Id == int32(record.Seniority_id) {
+				if s.Id == int32(record.SeniorityId) {
 					view.Seniority = s.Label
 					break
 				}
 			}
 
 			for _, s := range res.Platforms {
-				if s.Id == record.Platform_id {
+				if s.Id == record.PlatformId {
 					view.Platform = s.Label
 					break
 				}

@@ -87,7 +87,7 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	v.Date = v.Date_create.Format("2006-01-02")
+	v.Date = v.DateCreate.Format("2006-01-02")
 
 	auth.PutEditVacancy(ctx, v.VacanciesFields)
 
@@ -225,16 +225,16 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"user_ids",
 	}
 	args := []interface{}{
-		u.Platform_id,
-		u.Seniority_id,
-		u.Company_id,
-		u.Location_id,
+		u.PlatformId,
+		u.SeniorityId,
+		u.CompanyId,
+		u.LocationId,
 		u.Description,
 		u.Details,
 		u.Link,
 		u.SelectedVacancyStatus,
 		u.Salary,
-		u.User_ids,
+		u.UserIds,
 	}
 
 	table, _ := db.NewVacancies(DB)
@@ -279,7 +279,7 @@ func HandleDeleteVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogVacancy(ctx, DB, table.Record.Company_id, id, table.Record.Name.String, CODE_LOG_DELETE)
+	toLogVacancy(ctx, DB, table.Record.CompanyId, id, table.Record.Name.String, CODE_LOG_DELETE)
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil

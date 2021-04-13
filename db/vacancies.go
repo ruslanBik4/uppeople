@@ -17,21 +17,21 @@ type Vacancies struct {
 }
 
 type VacanciesFields struct {
-	Id           int32          `json:"id"`
-	Company_id   int32          `json:"company_id"`
-	Platform_id  int32          `json:"platform_id"`
-	User_ids     []int32        `json:"user_ids"`
-	Name         sql.NullString `json:"name"`
-	Description  string         `json:"description"`
-	Details      string         `json:"details"`
-	Link         string         `json:"link"`
-	File         sql.NullString `json:"file"`
-	Date_create  time.Time      `json:"date_create"`
-	Ord          sql.NullInt64  `json:"ord"`
-	Status       int32          `json:"status"`
-	Seniority_id int32          `json:"seniority_id"`
-	Salary       int32          `json:"salary"`
-	Location_id  int32          `json:"location_id"`
+	Id          int32          `json:"id"`
+	CompanyId   int32          `json:"company_id"`
+	PlatformId  int32          `json:"platform_id"`
+	UserIds     []int32        `json:"user_ids"`
+	Name        sql.NullString `json:"name"`
+	Description string         `json:"description"`
+	Details     string         `json:"details"`
+	Link        string         `json:"link"`
+	File        sql.NullString `json:"file"`
+	DateCreate  time.Time      `json:"date_create"`
+	Ord         sql.NullInt64  `json:"ord"`
+	Status      int32          `json:"status"`
+	SeniorityId int32          `json:"seniority_id"`
+	Salary      int32          `json:"salary"`
+	LocationId  int32          `json:"location_id"`
 }
 
 func (r *VacanciesFields) RefColValue(name string) interface{} {
@@ -40,13 +40,13 @@ func (r *VacanciesFields) RefColValue(name string) interface{} {
 		return &r.Id
 
 	case "company_id":
-		return &r.Company_id
+		return &r.CompanyId
 
 	case "platform_id":
-		return &r.Platform_id
+		return &r.PlatformId
 
 	case "user_ids":
-		return &r.User_ids
+		return &r.UserIds
 
 	case "name":
 		return &r.Name
@@ -64,7 +64,7 @@ func (r *VacanciesFields) RefColValue(name string) interface{} {
 		return &r.File
 
 	case "date_create":
-		return &r.Date_create
+		return &r.DateCreate
 
 	case "ord":
 		return &r.Ord
@@ -73,13 +73,13 @@ func (r *VacanciesFields) RefColValue(name string) interface{} {
 		return &r.Status
 
 	case "seniority_id":
-		return &r.Seniority_id
+		return &r.SeniorityId
 
 	case "salary":
 		return &r.Salary
 
 	case "location_id":
-		return &r.Location_id
+		return &r.LocationId
 
 	default:
 		return nil
@@ -92,13 +92,13 @@ func (r *VacanciesFields) ColValue(name string) interface{} {
 		return r.Id
 
 	case "company_id":
-		return r.Company_id
+		return r.CompanyId
 
 	case "platform_id":
-		return r.Platform_id
+		return r.PlatformId
 
 	case "user_ids":
-		return r.User_ids
+		return r.UserIds
 
 	case "name":
 		return r.Name
@@ -116,7 +116,7 @@ func (r *VacanciesFields) ColValue(name string) interface{} {
 		return r.File
 
 	case "date_create":
-		return r.Date_create
+		return r.DateCreate
 
 	case "ord":
 		return r.Ord
@@ -125,13 +125,13 @@ func (r *VacanciesFields) ColValue(name string) interface{} {
 		return r.Status
 
 	case "seniority_id":
-		return r.Seniority_id
+		return r.SeniorityId
 
 	case "salary":
 		return r.Salary
 
 	case "location_id":
-		return r.Location_id
+		return r.LocationId
 
 	default:
 		return nil
