@@ -31,7 +31,7 @@ jobs:
     - name: Tags
       run: make dev
     - name: Build
-      run:  git tags # describe --tags
+      run:  git tag # describe --tags
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
