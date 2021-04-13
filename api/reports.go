@@ -22,7 +22,7 @@ func HandleDownloadExecutions(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	sqlCmd := fmt.Sprintf(`\copy (
     select *
-    from amoung_by_tags(%s, %s, %d, %d, %d)
+    from amoung_by_tags('%s', '%s', %d, %d, %d)
 )
 to stdout csv header;`, p.StartDate, p.EndDate, p.RecruiterId, p.CompanyId, p.VacancyId)
 	cmd := exec.CommandContext(ctx, `sudo`, `-u`, `postgres`, `psql`, "-d", "test", "-c", sqlCmd)
