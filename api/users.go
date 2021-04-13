@@ -96,6 +96,29 @@ func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return createResult(i)
 }
 
+func HandleDelUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
+		}, apis.ErrWrongParamsList
+	}
+
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	err := DB.Conn.ExecDDL(ctx, "delete from users where id = $1", id)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	ctx.SetStatusCode(fasthttp.StatusAccepted)
+
+	return nil, nil
+}
+
 func HandleNewUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {

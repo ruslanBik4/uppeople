@@ -301,11 +301,10 @@ func (d *DTOVacancy) NewValue() interface{} {
 
 func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string, code int32) {
 	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "company_id", "vacancy_id", "text", "date_create", "d_c",
+		dbEngine.ColumnsForSelect("user_id", "company_id", "vacancy_id", "text", "date_create",
 			"kod_deystviya"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId, vacancyId,
 			text,
-			time.Now(),
 			time.Now(),
 			code))
 }

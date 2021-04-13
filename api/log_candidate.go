@@ -51,22 +51,20 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string, code int32) {
 	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create", "d_c",
+		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create",
 			"kod_deystviya"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId,
 			text,
-			time.Now(),
 			time.Now(),
 			code))
 }
 
 func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, companyId, vacancyId int32, text string, code int32) {
 	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "candidate_id", "company_id", "vacancy_id", "text", "date_create", "d_c",
+		dbEngine.ColumnsForSelect("user_id", "candidate_id", "company_id", "vacancy_id", "text", "date_create",
 			"kod_deystviya"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId, companyId, vacancyId,
 			text,
-			time.Now(),
 			time.Now(),
 			code))
 }
