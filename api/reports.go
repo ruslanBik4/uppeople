@@ -14,17 +14,46 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func HandleDownloadExecutions(ctx *fasthttp.RequestCtx) (interface{}, error) {
+func HandleDownloadReportByTag(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	p, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
 	if !ok {
 		return "wrong json", apis.ErrWrongParamsList
 	}
 
+	s, err := createCommandWithSql(ctx, "amoung_by_tags", p)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return s, nil
+}
+
+func HandleDownloadReportByStatus(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	p, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
+	if !ok {
+		return "wrong json", apis.ErrWrongParamsList
+	}
+
+	s, err := createCommandWithSql(ctx, "amoung_by_status", p)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return s, nil
+}
+
+func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string, p *DTOAmounts) (interface{}, error) {
 	sqlCmd := fmt.Sprintf(`\copy (
     select *
-    from amoung_by_tags('%s', '%s', %d, %d, %d)
+    from %s('%s', '%s', %d, %d, %d)
 )
-to stdout csv header;`, p.StartDate, p.EndDate, p.RecruiterId, p.CompanyId, p.VacancyId)
+to stdout csv header;`,
+		funcName,
+		p.StartDate, p.EndDate, p.RecruiterId, p.CompanyId, p.VacancyId)
+	return downloadCommand(ctx, sqlCmd)
+}
+
+func downloadCommand(ctx *fasthttp.RequestCtx, sqlCmd string) (interface{}, error) {
 	cmd := exec.CommandContext(ctx, `sudo`, `-u`, `postgres`, `psql`, "-d", "test", "-c", sqlCmd)
 	cmd.Stdout = ctx.Response.BodyWriter()
 	cmd.Stderr = ctx.Response.BodyWriter()

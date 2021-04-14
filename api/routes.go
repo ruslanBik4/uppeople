@@ -322,7 +322,13 @@ var (
 			DTO:      &DTOAmounts{},
 		},
 		"/api/reports/by_tags": {
-			Fnc:      HandleDownloadExecutions,
+			Fnc:      HandleDownloadReportByTag,
+			Desc:     "reports by tags",
+			NeedAuth: true,
+			DTO:      &DTOAmounts{},
+		},
+		"/api/reports/by_status": {
+			Fnc:      HandleDownloadReportByStatus,
 			Desc:     "reports by tags",
 			NeedAuth: true,
 			DTO:      &DTOAmounts{},
