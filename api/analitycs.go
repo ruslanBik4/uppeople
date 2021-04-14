@@ -168,7 +168,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 				row[col.Name()] = values[i]
 			}
 
-			if row["parent_id"] == 0 {
+			if row["parent_id"].(int32) == 0 {
 				m = append(m, row)
 			} else {
 				r = append(r, row)
