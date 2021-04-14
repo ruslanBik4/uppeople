@@ -258,13 +258,13 @@ var (
 			NeedAuth: true,
 			// Resp:   search.RespGroups(),
 		},
-		"api/main/getTags": {
+		"/api/main/getTags": {
 			Fnc:      HandleGetTags,
 			Desc:     "return select of tags",
 			Method:   apis.POST,
 			NeedAuth: true,
 		},
-		"api/main/getStatuses": {
+		"/api/main/getStatuses": {
 			Fnc:      HandleGetStatuses,
 			Desc:     "return select of tags",
 			Method:   apis.POST,

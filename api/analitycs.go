@@ -167,6 +167,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 				row[col.Name()] = values[i]
 			}
 
+			m = append(m, row)
 			return nil
 		},
 		dbEngine.ArgsForSelect(params.StartDate, params.EndDate, params.RecruiterId, params.CompanyId, params.VacancyId),
