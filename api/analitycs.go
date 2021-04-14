@@ -9,7 +9,6 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 )
 
@@ -150,57 +149,33 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	sql := `SELECT t.id, t.name, t.color, 
-			count(c.id) + (select count(*) from logs where kod_deystviya = 104) as count , 
-			t.parent_id
-	FROM tags t JOIN candidates c ON t.id=c.tag_id
-		%s	
-			WHERE parent_id=$1
-`
-	gr := `      GROUP BY 1, 2, 3, 5`
+	proc, ok := DB.Routines["amoung_by_tags"]
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
 
 	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
 	if !ok {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	where := getParams(params)
-	if params.VacancyId > 0 || params.CompanyId > 0 {
-		sql = fmt.Sprintf(sql, `
-			 JOIN vacancies_to_candidates vtc on c.id = vtc.candidate_id
-			JOIN vacancies v ON v.id = vtc.vacancy_id`)
-		if p := params.StartDate; p > "" {
-			where += fmt.Sprintf(" AND vtc.date_last_change >= '%s'", p)
-		}
-		if p := params.EndDate; p > "" {
-			where += fmt.Sprintf(" AND vtc.date_last_change <= '%s'", p)
-		}
-	} else {
-		sql = fmt.Sprintf(sql, ` `)
-	}
+	m := make([]map[string]interface{}, 0)
+	err := proc.SelectAndRunEach(ctx,
+		func(values []interface{}, columns []dbEngine.Column) error {
+			row := make(map[string]interface{})
+			for i, col := range columns {
+				row[col.Name()] = values[i]
+			}
 
-	logs.DebugLog(sql + where + gr)
-	m, err := DB.Conn.SelectToMaps(ctx,
-		sql+where+gr,
-		0,
+			return nil
+		},
+		dbEngine.ArgsForSelect(params.StartDate, params.EndDate, params.RecruiterId, params.CompanyId, params.VacancyId),
 	)
 	if err != nil {
 		return createErrResult(err)
 	}
 
-	r, err := DB.Conn.SelectToMaps(ctx,
-		sql+where+gr,
-		3,
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-
-	return AmountsByTags{
-		Message: "Successfully",
-		Main:    m,
-		Reject:  r,
-	}, nil
+	return m, nil
 }
 
 func getParams(params *DTOAmounts) string {
