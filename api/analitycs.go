@@ -161,6 +161,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 
 	m := make([]map[string]interface{}, 0)
 	r := make([]map[string]interface{}, 0)
+	reject := int32(0)
 	err := proc.SelectAndRunEach(ctx,
 		func(values []interface{}, columns []dbEngine.Column) error {
 			row := make(map[string]interface{})
@@ -172,6 +173,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 				m = append(m, row)
 			} else {
 				r = append(r, row)
+				reject += row["count"].(int32)
 			}
 			return nil
 		},
@@ -180,6 +182,8 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	if err != nil {
 		return createErrResult(err)
 	}
+
+	m = append(m, map[string]interface{}{"reject": reject})
 
 	return AmountsByTags{
 		Message: "Successfully",
