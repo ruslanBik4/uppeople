@@ -160,6 +160,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	}
 
 	m := make([]map[string]interface{}, 0)
+	r := make([]map[string]interface{}, 0)
 	err := proc.SelectAndRunEach(ctx,
 		func(values []interface{}, columns []dbEngine.Column) error {
 			row := make(map[string]interface{})
@@ -167,7 +168,11 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 				row[col.Name()] = values[i]
 			}
 
-			m = append(m, row)
+			if row["parent_id"] == 0 {
+				m = append(m, row)
+			} else {
+				r = append(r, row)
+			}
 			return nil
 		},
 		dbEngine.ArgsForSelect(params.StartDate, params.EndDate, params.RecruiterId, params.CompanyId, params.VacancyId),
@@ -176,7 +181,11 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return createErrResult(err)
 	}
 
-	return m, nil
+	return AmountsByTags{
+		Message: "Successfully",
+		Main:    m,
+		Reject:  r,
+	}, nil
 }
 
 func getParams(params *DTOAmounts) string {
