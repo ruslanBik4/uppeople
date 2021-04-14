@@ -26,6 +26,7 @@ BEGIN
                (count(c.id) + CASE WHEN t.id::integer = 1 THEN reContact ELSE 0 END)::integer as count,
                t.parent_id::integer
         FROM tags t JOIN candidates c ON t.id=c.tag_id
+                        OR c.tag_id in (select t2.id from tags t2 where t2.parent_id = t.id)
                     JOIN vacancies_to_candidates vtc on c.id = vtc.candidate_id
                     JOIN vacancies v ON v.id = vtc.vacancy_id
         WHERE c.date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
@@ -41,7 +42,9 @@ BEGIN
         SELECT t.id::integer, t.name, t.color,
                (count(c.id) + CASE WHEN t.id::integer = 1 THEN reContact ELSE 0 END)::integer as count,
                t.parent_id::integer
-        FROM tags t JOIN candidates c ON t.id=c.tag_id
+        FROM tags t
+            JOIN candidates c ON t.id=c.tag_id
+                            OR c.tag_id in (select t2.id from tags t2 where t2.parent_id = t.id)
         WHERE c.date  between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
           and (userID = 0 OR c.recruter_id = userID)
         GROUP BY 1, 2, 3, 5

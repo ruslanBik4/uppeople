@@ -110,36 +110,36 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	sql := `SELECT vtc.status as status_id, sfv.status, sfv.color, count(vtc.id) as count 
-			FROM vacancies_to_candidates vtc
-			 JOIN status_for_vacs sfv ON sfv.id = vtc.status
-			 JOIN candidates c ON c.id = vtc.candidate_id
-			 JOIN vacancies v ON v.id = vtc.vacancy_id
-			WHERE v.status IN (0,1) AND vtc.status > 1
-`
-	gr := `      GROUP BY 1,2,3`
+	proc, ok := DB.Routines["amoung_by_status"]
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
 
 	params, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
 	if !ok {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	where := getParams(params)
+	m := make([]map[string]interface{}, 0)
+	err := proc.SelectAndRunEach(ctx,
+		func(values []interface{}, columns []dbEngine.Column) error {
+			row := make(map[string]interface{})
+			for i, col := range columns {
+				row[col.Name()] = values[i]
+			}
 
-	m, err := DB.Conn.SelectToMaps(ctx,
-		sql+where+gr,
+			m = append(m, row)
+			return nil
+		},
+		dbEngine.ArgsForSelect(params.StartDate, params.EndDate, params.RecruiterId, params.CompanyId, params.VacancyId),
 	)
 	if err != nil {
 		return createErrResult(err)
 	}
 
-	data := make(map[string]map[string]interface{}, len(m))
-	for _, val := range m {
-		data[val["status"].(string)] = val
-	}
 	return AmountsByTags{
 		Message: "Successfully",
-		Data:    data,
+		Data:    m,
 	}, nil
 }
 
@@ -161,7 +161,6 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 
 	m := make([]map[string]interface{}, 0)
 	r := make([]map[string]interface{}, 0)
-	reject := int32(0)
 	err := proc.SelectAndRunEach(ctx,
 		func(values []interface{}, columns []dbEngine.Column) error {
 			row := make(map[string]interface{})
@@ -173,7 +172,6 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 				m = append(m, row)
 			} else {
 				r = append(r, row)
-				reject += row["count"].(int32)
 			}
 			return nil
 		},
@@ -181,16 +179,6 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	)
 	if err != nil {
 		return createErrResult(err)
-	}
-
-	if reject > 0 {
-		m = append(m, map[string]interface{}{
-			"name":      "reject",
-			"count":     reject,
-			"id":        3,
-			"parent_id": 0,
-			"color":     "#e06666",
-		})
 	}
 
 	return AmountsByTags{
