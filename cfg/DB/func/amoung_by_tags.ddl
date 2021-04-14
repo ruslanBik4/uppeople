@@ -23,7 +23,7 @@ BEGIN
     if vacancyId > 0 OR companyId > 0 then
         return query
         SELECT t.id::integer, t.name, t.color,
-               (count(c.id) + CASE WHEN t.id = 1 THEN reContact ELSE 0 END)::integer as count,
+               (count(c.id) + CASE WHEN t.id::integer = 1 THEN reContact ELSE 0 END)::integer as count,
                t.parent_id::integer
         FROM tags t JOIN candidates c ON t.id=c.tag_id
                     JOIN vacancies_to_candidates vtc on c.id = vtc.candidate_id
@@ -39,7 +39,7 @@ BEGIN
     else
         return query
         SELECT t.id::integer, t.name, t.color,
-               (count(c.id) + CASE WHEN t.id = 1 THEN reContact ELSE 0 END)::integer as count,
+               (count(c.id) + CASE WHEN t.id::integer = 1 THEN reContact ELSE 0 END)::integer as count,
                t.parent_id::integer
         FROM tags t JOIN candidates c ON t.id=c.tag_id
         WHERE c.date  between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )

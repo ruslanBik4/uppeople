@@ -183,7 +183,15 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return createErrResult(err)
 	}
 
-	m = append(m, map[string]interface{}{"reject": reject})
+	if reject > 0 {
+		m = append(m, map[string]interface{}{
+			"name":      "reject",
+			"count":     reject,
+			"id":        3,
+			"parent_id": 0,
+			"color":     "#e06666",
+		})
+	}
 
 	return AmountsByTags{
 		Message: "Successfully",
