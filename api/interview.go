@@ -14,6 +14,7 @@ import (
 	"github.com/ruslanBik4/httpgo/services"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
+	"golang.org/x/net/context"
 
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
@@ -144,7 +145,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	tableCandidate, _ := db.NewCandidates(DB)
-	i, err := tableCandidate.Update(ctx,
+	i, err := tableCandidate.Update(context.TODO(),
 		dbEngine.ColumnsForSelect("tag_id"),
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(2, id),
