@@ -1,4 +1,5 @@
-CREATE OR REPLACE FUNCTION amoung_by_tags(sDate date, eDate date, userID integer, companyID integer, vacancyId integer)
+CREATE OR REPLACE FUNCTION amoung_by_tags(sDate date, eDate date, userID integer, companyID integer,
+            vacancyId integer, tags integer[])
     RETURNS table(
                     id integer,
                     name character varying,
@@ -35,6 +36,7 @@ BEGIN
               AND coalesce(vtc.date_last_change, vtc.date_create)
                   between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() ))
           and (userID = 0 OR c.recruter_id = userID)
+          and (tags is null or t.id = ANY(tags))
         GROUP BY 1, 2, 3, 5
         ORDER BY 1;
     else
@@ -47,6 +49,7 @@ BEGIN
                             OR c.tag_id in (select t2.id from tags t2 where t2.parent_id = t.id)
         WHERE c.date  between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
           and (userID = 0 OR c.recruter_id = userID)
+          and (tags is null or t.id = ANY(tags))
         GROUP BY 1, 2, 3, 5
         ORDER BY 1;
     END IF;

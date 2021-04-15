@@ -7,6 +7,7 @@ package api
 import (
 	"fmt"
 	"os/exec"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -43,13 +44,30 @@ func HandleDownloadReportByStatus(ctx *fasthttp.RequestCtx) (interface{}, error)
 }
 
 func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string, p *DTOAmounts) (interface{}, error) {
+	arr := "NULL"
+	if len(p.Includes) > 0 {
+		arr = "ARRAY["
+		for key, val := range p.Includes {
+			if key > 0 {
+				arr += ","
+			}
+			arr += strconv.Itoa(val)
+		}
+		arr += "]"
+	}
 	sqlCmd := fmt.Sprintf(`\copy (
-    select *
-    from %s('%s', '%s', %d, %d, %d)
-)
-to stdout csv header;`,
+							select *
+							from %s('%s', '%s', %d, %d, %d, %s)
+						)
+						to stdout csv header;`,
 		funcName,
-		p.StartDate, p.EndDate, p.RecruiterId, p.CompanyId, p.VacancyId)
+		p.StartDate,
+		p.EndDate,
+		p.RecruiterId,
+		p.CompanyId,
+		p.VacancyId,
+		arr)
+
 	return downloadCommand(ctx, sqlCmd)
 }
 

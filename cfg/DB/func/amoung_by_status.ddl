@@ -1,4 +1,5 @@
-CREATE OR REPLACE FUNCTION amoung_by_status(sDate date, eDate date, userID integer, companyID integer, vacancyId integer)
+CREATE OR REPLACE FUNCTION amoung_by_status(sDate date, eDate date, userID integer, companyID integer,
+            vacancyId integer, statuses integer[])
     RETURNS table(
                     id integer,
                     name character varying,
@@ -21,6 +22,7 @@ BEGIN
           and (companyID = 0 OR v.company_id = companyID)
           and (vacancyId = 0 OR v.id = vacancyId)
           and (userID = 0 OR c.recruter_id = userID)
+          and (statuses is null OR vtc.status =ANY(statuses))
         GROUP BY 1, 2, 3
         ORDER BY 1;
 END;

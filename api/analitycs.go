@@ -36,6 +36,7 @@ type DTOAmounts struct {
 	VacancyId   int32  `json:"vacancy_id"`
 	StartDate   string `json:"start_date"`
 	EndDate     string `json:"end_date"`
+	Includes    []int  `json:"includes"`
 }
 
 func (d *DTOAmounts) GetValue() interface{} {
