@@ -12,6 +12,7 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/services"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
@@ -140,6 +141,19 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				return createErrResult(err)
 			}
 		}
+	}
+
+	tableCandidate, _ := db.NewCandidates(DB)
+	i, err := tableCandidate.Update(ctx,
+		dbEngine.ColumnsForSelect("tag_id"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(2, id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+	if i == 0 {
+		logs.DebugLog("Tag_id not updated for candidate id %d on SendCV", id)
 	}
 
 	return u, nil
