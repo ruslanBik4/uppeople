@@ -188,7 +188,7 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 			}
 
 			switch row["parent_id"] {
-			case 3:
+			case int32(3):
 				res.Reject = append(res.Reject, row)
 			case nil:
 				res.Total = row["count"].(int32)
