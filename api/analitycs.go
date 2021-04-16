@@ -60,9 +60,10 @@ func (d *DTOAmounts) GetParamsArgs() dbEngine.BuildSqlOptions {
 
 type AmountsByTags struct {
 	Message string                   `json:"message"`
-	Data    interface{}              `json:"data,omitempty"`
+	Data    []map[string]interface{} `json:"data,omitempty"`
 	Main    []map[string]interface{} `json:"main,omitempty"`
 	Reject  []map[string]interface{} `json:"reject,omitempty"`
+	Total   int32                    `json:"total"`
 }
 
 func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -130,7 +131,10 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	m := make([]map[string]interface{}, 0)
+	res := AmountsByTags{
+		Message: "Successfully",
+		Data:    make([]map[string]interface{}, 0),
+	}
 	err := proc.SelectAndRunEach(ctx,
 		func(values []interface{}, columns []dbEngine.Column) error {
 			row := make(map[string]interface{})
@@ -138,7 +142,12 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 				row[col.Name()] = values[i]
 			}
 
-			m = append(m, row)
+			if row["id"] != nil {
+				res.Data = append(res.Data, row)
+			} else {
+				res.Total = row["count"].(int32)
+			}
+
 			return nil
 		},
 		params.GetParamsArgs(),
@@ -147,10 +156,7 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 		return createErrResult(err)
 	}
 
-	return AmountsByTags{
-		Message: "Successfully",
-		Data:    m,
-	}, nil
+	return res, nil
 }
 
 func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -169,8 +175,11 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	m := make([]map[string]interface{}, 0)
-	r := make([]map[string]interface{}, 0)
+	res := AmountsByTags{
+		Message: "Successfully",
+		Main:    make([]map[string]interface{}, 0),
+		Reject:  make([]map[string]interface{}, 0),
+	}
 	err := proc.SelectAndRunEach(ctx,
 		func(values []interface{}, columns []dbEngine.Column) error {
 			row := make(map[string]interface{})
@@ -178,10 +187,13 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 				row[col.Name()] = values[i]
 			}
 
-			if row["parent_id"].(int32) == 3 {
-				r = append(r, row)
-			} else {
-				m = append(m, row)
+			switch row["parent_id"] {
+			case 3:
+				res.Reject = append(res.Reject, row)
+			case nil:
+				res.Total = row["count"].(int32)
+			default:
+				res.Main = append(res.Main, row)
 			}
 			return nil
 		},
@@ -191,9 +203,5 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		return createErrResult(err)
 	}
 
-	return AmountsByTags{
-		Message: "Successfully",
-		Main:    m,
-		Reject:  r,
-	}, nil
+	return res, nil
 }
