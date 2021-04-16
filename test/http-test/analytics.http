@@ -12,10 +12,21 @@ Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "recruiter_id":33,
+  "recruiter_id":11,
   "start_date":"2021-04-01",
   "end_date":"2021-04-29",
-  "includes": [1,2]
+  "includes": [1,2,3]
+ }
+###
+POST https://{{host}}/api/reports/by_status
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "recruiter_id":32,
+  "start_date":"2021-04-01",
+  "end_date":"2021-04-29",
+  "includes": [1,2,3,4,5,9,10]
  }
 ###
 POST https://{{host}}/api/main/getCandidatesAmountByTags
