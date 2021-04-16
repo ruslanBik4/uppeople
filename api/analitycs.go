@@ -47,8 +47,17 @@ func (d *DTOAmounts) NewValue() interface{} {
 	return &DTOAmounts{}
 }
 
-type Amoint struct {
+func (d *DTOAmounts) GetParamsArgs() dbEngine.BuildSqlOptions {
+	return dbEngine.ArgsForSelect(
+		d.StartDate,
+		d.EndDate,
+		d.RecruiterId,
+		d.CompanyId,
+		d.VacancyId,
+		d.Includes,
+	)
 }
+
 type AmountsByTags struct {
 	Message string                   `json:"message"`
 	Data    interface{}              `json:"data,omitempty"`
@@ -132,7 +141,7 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 			m = append(m, row)
 			return nil
 		},
-		dbEngine.ArgsForSelect(params.StartDate, params.EndDate, params.RecruiterId, params.CompanyId, params.VacancyId),
+		params.GetParamsArgs(),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -169,14 +178,14 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 				row[col.Name()] = values[i]
 			}
 
-			if row["parent_id"].(int32) == 0 {
-				m = append(m, row)
-			} else {
+			if row["parent_id"].(int32) == 3 {
 				r = append(r, row)
+			} else {
+				m = append(m, row)
 			}
 			return nil
 		},
-		dbEngine.ArgsForSelect(params.StartDate, params.EndDate, params.RecruiterId, params.CompanyId, params.VacancyId),
+		params.GetParamsArgs(),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -187,29 +196,4 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 		Main:    m,
 		Reject:  r,
 	}, nil
-}
-
-func getParams(params *DTOAmounts) string {
-	where := ""
-	if p := params.CompanyId; p > 0 {
-		where += fmt.Sprintf(" and v.company_id = %d", p)
-	}
-
-	if p := params.VacancyId; p > 0 {
-		where += fmt.Sprintf(" and v.id = %d", p)
-	}
-
-	if p := params.RecruiterId; p > 0 {
-		where += fmt.Sprintf(" and c.recruter_id = %d", p)
-	}
-
-	if p := params.StartDate; p > "" {
-		where += fmt.Sprintf(" AND c.date >= '%s'", p)
-	}
-
-	if p := params.EndDate; p > "" {
-		where += fmt.Sprintf(" AND c.date <= '%s'", p)
-	}
-
-	return where
 }

@@ -33,7 +33,6 @@ BEGIN
                            as amount
                 FROM tags t
                          JOIN candidates c ON t.id = c.tag_id
-                    OR c.tag_id in (select t2.id from tags t2 where t2.parent_id = t.id)
                          JOIN vacancies_to_candidates vtc on c.id = vtc.candidate_id
                          JOIN vacancies v ON v.id = vtc.vacancy_id
                 WHERE c.date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now())
@@ -44,10 +43,21 @@ BEGIN
                   and (userID = 0 OR c.recruter_id = userID)
                   and (tags is null or t.id = ANY (tags))
                 GROUP BY grouping sets ((1, 2, 3, 4), ())
-                ORDER BY 1 nulls last
             )
-            select *, (amount * 100)::numeric / (select amount from rowsTags where rowsTags.id is null)
+            select r.id,
+                   r.name,
+                   r.color,
+                   r.parent_id,
+                   sum(amount)::integer,
+                   ((sum(amount) * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
+            from rowsTags r
+            where r.parent_id = 3
+            GROUP BY 1, 2, 3, 4
+            union
+            select *,
+                   ((amount * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
             from rowsTags
+            ORDER BY 1 nulls last
         ;
     else
         return query
@@ -60,15 +70,25 @@ BEGIN
                            as amount
                 FROM tags t
                          JOIN candidates c ON t.id = c.tag_id
-                    OR c.tag_id in (select t2.id from tags t2 where t2.parent_id = t.id)
                 WHERE c.date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now())
                   and (userID = 0 OR c.recruter_id = userID)
                   and (tags is null or t.id = ANY (tags))
                 GROUP BY grouping sets ((1, 2, 3, 4), ())
-                ORDER BY 1 nulls last
             )
-             select *, (amount * 100)::numeric / (select amount from rowsTags where rowsTags.id is null)
-             from rowsTags
+            select t.id,
+                   t.name,
+                   t.color,
+                   r.parent_id,
+                   sum(amount)::integer,
+                   ((sum(amount) * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
+            from rowsTags r JOIN tags t ON t.id = r.parent_id
+            where r.parent_id > 0
+            GROUP BY 1, 2, 3, 4
+            union
+            select *,
+                    ((amount * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
+            from rowsTags
+            ORDER BY 1 nulls last
          ;
     END IF;
 END;

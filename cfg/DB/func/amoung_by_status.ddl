@@ -28,7 +28,7 @@ BEGIN
           GROUP BY grouping sets ((1,2,3),())
           ORDER BY 1 nulls last
       )
-      select *, (amount * 100)::numeric / (select amount from rowsStatus where status is null)
+      select *, ((amount * 100)::numeric / (select amount from rowsStatus where status is null))::numeric(5,2)
       from rowsStatus;
 END;
 $$;
