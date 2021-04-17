@@ -26,9 +26,10 @@ BEGIN
             and (userID = 0 OR c.recruter_id = userID)
             and (statuses is null OR vtc.status = ANY (statuses))
           GROUP BY grouping sets ((1,2,3),())
-          ORDER BY 1 nulls last
-      )
+        )
       select *, ((amount * 100)::numeric / (select amount from rowsStatus where status is null))::numeric(5,2)
-      from rowsStatus;
+      from rowsStatus
+      ORDER BY 1 nulls last
+    ;
 END;
 $$;

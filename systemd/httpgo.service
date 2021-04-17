@@ -10,7 +10,7 @@ Environment=PGHOST=
 Environment=TBTOKEN=
 Environment=TBCHATID=
 
-ExecStart=/opt/uppeople/httpgo -port :443 -port_redirect :80 -web www/build -debug
+ExecStart=/opt/uppeople/httpgo -port :443 -web www
 WorkingDirectory=/opt/uppeople
 RootDirectoryStartOnly=true
 Type=simple
