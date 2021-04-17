@@ -51,7 +51,7 @@ BEGIN
                    sum(amount)::integer,
                    ((sum(amount) * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
             from rowsTags r JOIN tags t ON t.id = r.parent_id
-            where r.parent_id > 3
+            where r.parent_id > 0
             GROUP BY 1, 2, 3, 4
             union
             select *,
