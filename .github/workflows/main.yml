@@ -88,7 +88,7 @@ jobs:
       with:
         rm: true
         source: "cfg/DB/*"
-        target: "/opt/uppeople/cfg/dev/DB"
+        target: "/opt/uppeople/cfg/DB"
         strip_components: 2
 
     - name: Copy httpgo via scp
