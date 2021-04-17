@@ -1,14 +1,14 @@
 create table vacancies_to_candidates
 (
     candidate_id integer not null,
-    company_id integer
-        constraint vacancies_to_candidates_companies_id_fk
-            references companies
-            on update cascade on delete cascade,
-    vacancy_id integer not null
-        constraint vacancies_to_candidates_vacancies_id_fk
-            references vacancies
-            on update cascade on delete cascade,
+    company_id integer,
+--         constraint vacancies_to_candidates_companies_id_fk
+--             references companies
+--             on update cascade on delete cascade,
+    vacancy_id integer not null,
+--         constraint vacancies_to_candidates_vacancies_id_fk
+--             references vacancies
+--             on update cascade on delete cascade,
     status integer,
     user_id integer,
     date_create timestamp default CURRENT_TIMESTAMP,
