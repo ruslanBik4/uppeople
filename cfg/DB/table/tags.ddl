@@ -1,8 +1,8 @@
 create table tags
 (
     id serial not null,
-    name varchar(255) not null,
-    color varchar(10) not null,
+    name character varying not null,
+    color character varying not null,
     parent_id integer not null,
     order_num integer not null,
     PRIMARY KEY (id)

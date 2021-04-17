@@ -44,10 +44,10 @@ BEGIN
                   and (tags is null or t.id = ANY (tags))
                 GROUP BY grouping sets ((1, 2, 3, 4), ())
             )
-            select r.id,
-                   r.name,
-                   r.color,
-                   r.parent_id,
+            select t.id,
+                   t.name,
+                   t.color,
+                   t.parent_id,
                    sum(amount)::integer,
                    ((sum(amount) * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
             from rowsTags r JOIN tags t ON t.id = r.parent_id
@@ -78,7 +78,7 @@ BEGIN
             select t.id,
                    t.name,
                    t.color,
-                   r.parent_id,
+                   t.parent_id,
                    sum(amount)::integer,
                    ((sum(amount) * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
             from rowsTags r JOIN tags t ON t.id = r.parent_id
