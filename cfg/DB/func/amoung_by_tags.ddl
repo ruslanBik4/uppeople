@@ -25,11 +25,11 @@ BEGIN
     if vacancyId > 0 OR companyId > 0 then
         return query
             with rowsTags as (
-                SELECT t.id::integer,
+                SELECT t.id,
                        t.name,
                        t.color,
-                       t.parent_id::integer,
-                       (count(c.id) + CASE WHEN t.id::integer = 1 or t.name is null THEN reContact ELSE 0 END)::integer
+                       t.parent_id,
+                       (count(c.id) + CASE WHEN t.id = 1 or t.name is null THEN reContact ELSE 0 END)::integer
                            as amount
                 FROM tags t
                          JOIN candidates c ON t.id = c.tag_id
@@ -62,11 +62,11 @@ BEGIN
     else
         return query
             with rowsTags as (
-                SELECT t.id::integer,
+                SELECT t.id,
                        t.name,
                        t.color,
-                       t.parent_id::integer,
-                       (count(c.id) + CASE WHEN t.id::integer = 1 or t.name is null THEN reContact ELSE 0 END)::integer
+                       t.parent_id,
+                       (count(c.id) + CASE WHEN t.id = 1 or t.name is null THEN reContact ELSE 0 END)::integer
                            as amount
                 FROM tags t
                          JOIN candidates c ON t.id = c.tag_id

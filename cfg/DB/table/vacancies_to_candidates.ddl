@@ -13,7 +13,7 @@ create table vacancies_to_candidates
     user_id integer,
     date_create timestamp default CURRENT_TIMESTAMP,
     date_last_change date,
-    rej_text text default ''::text not null,
+    rej_text text not null default ''::text,
     rating integer,
     notice text,
     constraint vacancies_to_candidates_pk

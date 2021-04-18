@@ -8,7 +8,7 @@ create table logs
     text text not null,
     kod_deystviya integer not null,
     date_create date not null,
-    create_at timestamp with time zone default CURRENT_TIMESTAMP not null,
+    create_at timestamp with time zone not null default CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
