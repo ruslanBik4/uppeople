@@ -156,6 +156,11 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 		return createErrResult(err)
 	}
 
+	if len(res.Data) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
+	}
+
 	return res, nil
 }
 
@@ -201,6 +206,11 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	)
 	if err != nil {
 		return createErrResult(err)
+	}
+
+	if len(res.Main) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
 	}
 
 	return res, nil

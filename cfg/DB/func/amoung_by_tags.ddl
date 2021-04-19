@@ -57,6 +57,7 @@ BEGIN
             select *,
                    ((amount * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
             from rowsTags
+            where amount > 0
             ORDER BY 1 nulls last
         ;
     else
@@ -88,6 +89,7 @@ BEGIN
             select *,
                     ((amount * 100)::numeric(8,2) / (select amount from rowsTags where rowsTags.id is null))::numeric(5,2)
             from rowsTags
+            where amount > 0
             ORDER BY 1 nulls last
          ;
     END IF;

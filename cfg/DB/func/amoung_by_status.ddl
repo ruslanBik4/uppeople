@@ -29,6 +29,7 @@ BEGIN
         )
       select *, ((amount * 100)::numeric / (select amount from rowsStatus where status is null))::numeric(5,2)
       from rowsStatus
+      where amount > 0
       ORDER BY 1 nulls last
     ;
 END;
