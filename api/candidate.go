@@ -666,11 +666,6 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 	}
 
-	if u.Tag_id == 3 || u.Tag_id == 4 {
-		columns = append(columns, "recruter_id")
-		args = append(args, auth.GetUserData(ctx).Id)
-	}
-
 	if len(columns) == 0 {
 		return "no new data on record", apis.ErrWrongParamsList
 	}
