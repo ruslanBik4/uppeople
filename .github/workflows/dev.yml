@@ -59,7 +59,7 @@ jobs:
         TBTOKEN: ${{secrets.TBTOKEN }}
         TBCHATID: ${{secrets.TBCHATID }}
       run: |
-        for sd_unit in systemd/*_dev.service; do
+        for sd_unit in systemd/dev/*.service; do
 
           sed -i "s|PGHOST=|PGHOST=localhost|g" $sd_unit
           sed -i "s|PGDATABASE_DEV=|PGDATABASE=$PROD_PGDATABASE_DEV|g" $sd_unit
@@ -77,7 +77,7 @@ jobs:
         # Artifact name
         name: systemd
         # A file, directory or wildcard pattern that describes what to upload
-        path: systemd/
+        path: systemd/dev
 
     - name: Copy cfg of DB via scp
       uses: appleboy/scp-action@master
@@ -111,7 +111,7 @@ jobs:
         PORT: 22
         KEY: ${{ secrets.SSH_KEY }}
       with:
-        source: "systemd/*_dev.service"
+        source: "systemd/dev/*.service"
         target: "/opt/uppeople/"
 
     - name: stop services on pm-db.net
@@ -124,7 +124,7 @@ jobs:
           # Next lines it's workaround for the error scp: ... Text file busy
           # And we need stop service before replacing golang binaries
 
-          for sd_unit in /opt/uppeople/systemd/*_dev.service; do
+          for sd_unit in /opt/uppeople/systemd/dev/*.service; do
 
             sudo systemctl stop $(basename "$sd_unit")
             sudo cp $sd_unit /etc/systemd/system/
@@ -138,7 +138,7 @@ jobs:
         KEY:      ${{ secrets.SSH_KEY }}
         SCRIPT: |
           sudo systemctl daemon-reload
-          for sd_unit in /opt/uppeople/systemd/*_dev.service; do
+          for sd_unit in /opt/uppeople/systemd/dev/*.service; do
             #sd_unit = $(echo "$sd_unit" | cut -f 1 -d '.')
 
             sudo systemctl enable $(basename "$sd_unit")
