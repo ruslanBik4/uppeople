@@ -18,7 +18,7 @@ BEGIN
      where kod_deystviya = 104
        and create_at between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
        and (companyID = 0 OR company_id = companyID)
-       and (VacancyId = 0 OR vacancy_id = VacancyId)
+       and (vacancyId = 0 OR vacancy_id = vacancyId)
        and (userID = 0 OR user_id = userID)
     into reContact;
 

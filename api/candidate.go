@@ -105,7 +105,7 @@ func HandleReContactCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	toLogCandidate(ctx, DB, id, "recontacted", CODE_LOG_RE_CONTQCT)
+	toLogCandidate(ctx, DB, id, "recontacted", CODE_LOG_RE_CONTACT)
 
 	return nil, nil
 }

@@ -73,7 +73,7 @@ func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string, p *DTOAmoun
 
 func downloadCommand(ctx *fasthttp.RequestCtx, sqlCmd string) (interface{}, error) {
 	// todo add DB name from connection
-	cmd := exec.CommandContext(ctx, `sudo`, `-u`, `postgres`, `psql`, "-d", "postgres", "-c", sqlCmd)
+	cmd := exec.CommandContext(ctx, `sudo`, `-u`, `postgres`, `psql`, "-d", "uppeople", "-c", sqlCmd)
 	cmd.Stdout = ctx.Response.BodyWriter()
 	cmd.Stderr = ctx.Response.BodyWriter()
 	err := cmd.Run()
