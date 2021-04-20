@@ -33,12 +33,14 @@ BEGIN
                            as amount
                 FROM tags t
                          JOIN candidates c ON t.id = c.tag_id
-                         JOIN vacancies_to_candidates vtc on c.id = vtc.candidate_id
-                         JOIN vacancies v ON v.id = vtc.vacancy_id
+                         LEFT JOIN vacancies_to_candidates vtc on c.id = vtc.candidate_id
+                         JOIN vacancies v ON (v.id = vtc.vacancy_id
+                                                OR (vtc.vacancy_id is null AND v.id = ANY (C.vacancies))
+                                            )
                 WHERE c.date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now())
                   and (companyID = 0 OR v.company_id = companyID)
                   and (vacancyId = 0 OR v.id = vacancyId
-                    AND coalesce(vtc.date_last_change, vtc.date_create)
+                    AND coalesce(vtc.date_last_change, vtc.date_create, c.date)
                                             between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now()))
                   and (userID = 0 OR c.recruter_id = userID)
                   and (tags is null or t.id = ANY (tags))
