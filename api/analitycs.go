@@ -33,6 +33,7 @@ func HandleGetStatuses(ctx *fasthttp.RequestCtx) (interface{}, error) {
 type DTOAmounts struct {
 	RecruiterId int32  `json:"recruiter_id"`
 	CompanyId   int32  `json:"company_id"`
+	PlatformId  int32  `json:"platform_id"`
 	VacancyId   int32  `json:"vacancy_id"`
 	StartDate   string `json:"start_date"`
 	EndDate     string `json:"end_date"`
@@ -53,6 +54,7 @@ func (d *DTOAmounts) GetParamsArgs() dbEngine.BuildSqlOptions {
 		d.EndDate,
 		d.RecruiterId,
 		d.CompanyId,
+		d.PlatformId,
 		d.VacancyId,
 		d.Includes,
 	)

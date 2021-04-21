@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION amoung_by_tags(sDate date, eDate date, userID integer, companyID integer,
-            vacancyId integer, tags integer[])
+                                          platformId integer, vacancyId integer, tags integer[])
     RETURNS table(
                     id integer,
                     name character varying,
@@ -19,10 +19,11 @@ BEGIN
        and create_at between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
        and (companyID = 0 OR company_id = companyID)
        and (vacancyId = 0 OR vacancy_id = vacancyId)
+       and (platformId = 0 OR exists(select NULL from vacancies v where platform_id = platformId AND v.id=vacancy_id) )
        and (userID = 0 OR user_id = userID)
     into reContact;
 
-    if vacancyId > 0 OR companyId > 0 then
+    if vacancyId > 0 OR companyId > 0 OR platformId > 0 then
         return query
             with rowsTags as (
                 SELECT t.id,
@@ -42,6 +43,7 @@ BEGIN
                   and (vacancyId = 0 OR v.id = vacancyId
                     AND coalesce(vtc.date_last_change, vtc.date_create, c.date)
                                             between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now()))
+                  and (platformId = 0 OR v.platform_id = platformId)
                   and (userID = 0 OR c.recruter_id = userID)
                   and (tags is null or t.id = ANY (tags))
                 GROUP BY grouping sets ((1, 2, 3, 4), ())
