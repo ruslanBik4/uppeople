@@ -18,8 +18,8 @@ BEGIN
                    JOIN candidates c ON c.id = vtc.candidate_id
                    JOIN status_for_vacs sfv ON sfv.id = vtc.status
                    JOIN vacancies v ON v.id = vtc.vacancy_id
-          WHERE c.date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now())
-            AND coalesce(vtc.date_last_change, vtc.date_create)
+          WHERE c.date ::date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now())
+            AND coalesce(vtc.date_last_change, vtc.date_create) ::date
               between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now())
             and (companyID = 0 OR v.company_id = companyID)
             and (platformId = 0 OR v.platform_id = platformId)
