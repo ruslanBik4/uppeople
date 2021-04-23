@@ -442,7 +442,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Linkedin,
 		u.Str_companies,
 		u.Status,
-		u.Tag_id,
+		1,
 		u.Comments,
 		time.Now(),
 		auth.GetUserID(ctx),
