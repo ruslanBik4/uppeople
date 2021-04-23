@@ -16,12 +16,7 @@ import (
 )
 
 func HandleDownloadReportByTag(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	p, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
-	if !ok {
-		return "wrong json", apis.ErrWrongParamsList
-	}
-
-	s, err := createCommandWithSql(ctx, "amoung_by_tags", p)
+	s, err := createCommandWithSql(ctx, "amoung_by_tags")
 	if err != nil {
 		return createErrResult(err)
 	}
@@ -30,12 +25,7 @@ func HandleDownloadReportByTag(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleDownloadReportByStatus(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	p, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
-	if !ok {
-		return "wrong json", apis.ErrWrongParamsList
-	}
-
-	s, err := createCommandWithSql(ctx, "amoung_by_status", p)
+	s, err := createCommandWithSql(ctx, "amoung_by_status")
 	if err != nil {
 		return createErrResult(err)
 	}
@@ -43,7 +33,12 @@ func HandleDownloadReportByStatus(ctx *fasthttp.RequestCtx) (interface{}, error)
 	return s, nil
 }
 
-func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string, p *DTOAmounts) (interface{}, error) {
+func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string) (interface{}, error) {
+	p, ok := ctx.UserValue(apis.JSONParams).(*DTOAmounts)
+	if !ok {
+		return "wrong json", apis.ErrWrongParamsList
+	}
+
 	arr := "NULL"
 	if len(p.Includes) > 0 {
 		arr = "ARRAY["
@@ -57,7 +52,7 @@ func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string, p *DTOAmoun
 	}
 	sqlCmd := fmt.Sprintf(`\copy (
 							select *
-							from %s('%s', '%s', %d, %d, %d, %s)
+							from %s('%s', '%s', %d, %d, %d, %d, %s)
 						)
 						to stdout csv header;`,
 		funcName,
@@ -65,6 +60,7 @@ func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string, p *DTOAmoun
 		p.EndDate,
 		p.RecruiterId,
 		p.CompanyId,
+		p.PlatformId,
 		p.VacancyId,
 		arr)
 

@@ -33,6 +33,7 @@ func HandleGetStatuses(ctx *fasthttp.RequestCtx) (interface{}, error) {
 type DTOAmounts struct {
 	RecruiterId int32  `json:"recruiter_id"`
 	CompanyId   int32  `json:"company_id"`
+	PlatformId  int32  `json:"platform_id"`
 	VacancyId   int32  `json:"vacancy_id"`
 	StartDate   string `json:"start_date"`
 	EndDate     string `json:"end_date"`
@@ -53,6 +54,7 @@ func (d *DTOAmounts) GetParamsArgs() dbEngine.BuildSqlOptions {
 		d.EndDate,
 		d.RecruiterId,
 		d.CompanyId,
+		d.PlatformId,
 		d.VacancyId,
 		d.Includes,
 	)
@@ -156,6 +158,11 @@ func HandleGetCandidatesAmountByStatuses(ctx *fasthttp.RequestCtx) (interface{},
 		return createErrResult(err)
 	}
 
+	if len(res.Data) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
+	}
+
 	return res, nil
 }
 
@@ -201,6 +208,11 @@ func HandleGetCandidatesAmountByTags(ctx *fasthttp.RequestCtx) (interface{}, err
 	)
 	if err != nil {
 		return createErrResult(err)
+	}
+
+	if len(res.Main) == 0 {
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
+		return nil, nil
 	}
 
 	return res, nil

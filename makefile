@@ -28,7 +28,7 @@ httpgo_all:
 	journalctl -u httpgo --since="30 second ago" -o cat
 # Builds the project
 build:
-	go build ${LDFLAGS} -o ${BINARY}
+	go build -race ${LDFLAGS} -o ${BINARY}
 # Builds dev server
 dev:
 	go build -race ${LDFLAGS} -o ${BINARY}_dev

@@ -442,7 +442,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Linkedin,
 		u.Str_companies,
 		u.Status,
-		u.Tag_id,
+		1,
 		u.Comments,
 		time.Now(),
 		auth.GetUserID(ctx),
@@ -664,11 +664,6 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Date_follow_up,
 			u.Vacancies,
 		}
-	}
-
-	if u.Tag_id == 3 || u.Tag_id == 4 {
-		columns = append(columns, "recruter_id")
-		args = append(args, auth.GetUserData(ctx).Id)
 	}
 
 	if len(columns) == 0 {

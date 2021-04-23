@@ -6,18 +6,16 @@ package api
 
 import (
 	"fmt"
+	"github.com/ruslanBik4/logs"
 	"strconv"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/services"
-	"github.com/ruslanBik4/logs"
-	"github.com/valyala/fasthttp"
-	"golang.org/x/net/context"
-
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
+	"github.com/valyala/fasthttp"
 )
 
 type DTOSendCV struct {
@@ -101,13 +99,16 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				return createErrResult(err)
 			}
 
-			_, err = candidates.Update(ctx,
-				dbEngine.ColumnsForSelect("date"),
+			i, err := candidates.Update(ctx,
+				dbEngine.ColumnsForSelect("date", "tag_id", "recruter_id"),
 				dbEngine.WhereForSelect("id"),
-				dbEngine.ArgsForSelect(timeNow, id),
+				dbEngine.ArgsForSelect(timeNow, 2, user.Id, id),
 			)
 			if err != nil {
 				return createErrResult(err)
+			}
+			if i == 0 {
+				logs.ErrorLog(TagIdDateNotUpdatedOnSendCV, " for candidate id %d", id)
 			}
 
 			toLogCandidateVacancy(ctx, DB, id, int32(u.CompId), int32(vacID), " отправил CV кандидата  ", CODE_LOG_UPDATE)
@@ -142,19 +143,6 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				return createErrResult(err)
 			}
 		}
-	}
-
-	tableCandidate, _ := db.NewCandidates(DB)
-	i, err := tableCandidate.Update(context.TODO(),
-		dbEngine.ColumnsForSelect("tag_id"),
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(2, id),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-	if i == 0 {
-		logs.DebugLog("Tag_id not updated for candidate id %d on SendCV", id)
 	}
 
 	return u, nil

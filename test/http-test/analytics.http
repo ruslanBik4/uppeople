@@ -13,9 +13,20 @@ Content-Type: application/json
 
 {
   "recruiter_id":11,
-  "start_date":"2021-04-01",
-  "end_date":"2021-04-29",
+  "start_date":"2021-04-23",
+  "end_date":"2021-04-23",
   "includes": [1,2,3]
+ }
+###
+POST https://{{host}}/api/main/getCandidatesAmountByTags
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "recruiter_id":0,
+  "start_date":"2021-04-23T07:24:14.149Z",
+  "end_date":"2021-04-23T07:24:14.149Z",
+  "includes": null
  }
 ###
 POST https://{{host}}/api/reports/by_status
