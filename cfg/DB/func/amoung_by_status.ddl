@@ -13,7 +13,7 @@ $$
 BEGIN
     return query
       with rowsStatus as (
-          SELECT vtc.status, sfv.status as name, sfv.color, count(vtc.id)::integer as amount
+          SELECT sfv.order_num, vtc.status, sfv.status as name, sfv.color, count(vtc.id)::integer as amount
           FROM vacancies_to_candidates vtc
                    JOIN candidates c ON c.id = vtc.candidate_id
                    JOIN status_for_vacs sfv ON sfv.id = vtc.status
@@ -26,12 +26,16 @@ BEGIN
             and (vacancyId = 0 OR v.id = vacancyId)
             and (userID = 0 OR c.recruter_id = userID)
             and (statuses is null OR vtc.status = ANY (statuses))
-          GROUP BY grouping sets ((1,2,3),())
+          GROUP BY grouping sets ((1,2,3,4),())
         )
-      select *, ((amount * 100)::numeric / (select amount from rowsStatus where status is null))::numeric(5,2)
-      from rowsStatus
+      select status,
+             r.name,
+             r.color,
+             amount,
+             ((amount * 100)::numeric / (select amount from rowsStatus where status is null))::numeric(5,2)
+      from rowsStatus r
       where amount > 0
-      ORDER BY 1 nulls last
+      ORDER BY r.order_num nulls last
     ;
 END;
 $$;

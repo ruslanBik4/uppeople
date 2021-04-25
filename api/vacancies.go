@@ -72,7 +72,9 @@ func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		where += comma + " v.status = ANY(array[0, 1])"
 	}
 
-	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.nazva, ')') as name`
+	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.nazva, ') ',
+		(select s.status from statuses s where s.id = v.status)
+) as name`
 	if dto.WithRecruiters {
 		sql += `, (SELECT array_agg(distinct user_id) as recruiter_id
                             FROM vacancies_to_candidates
@@ -81,8 +83,7 @@ func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	sql += ` from vacancies v left join platforms on v.platform_id=platforms.id
 	left join companies c on v.company_id = c.id
 `
-	return DB.Conn.SelectToMaps(ctx,
-		sql+where)
+	return DB.Conn.SelectToMaps(ctx, sql+where)
 }
 
 func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
