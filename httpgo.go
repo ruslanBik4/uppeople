@@ -55,6 +55,8 @@ var (
 
 var httpServer *httpgo.HttpGo
 
+var TagIds *TagIdMap
+
 func init() {
 	flag.Parse()
 	listener, err := net.Listen("tcp", *fPort)
@@ -70,6 +72,17 @@ func init() {
 	if DB == nil {
 		panic("cannot init DB")
 	}
+
+	TagIds = &TagIdMap{}
+	tagRow := &TagStruct{}
+	err = DB.Conn.SelectAndScanEach(context.TODO(),
+		func() error {
+			(*TagIds)[TagsNames[tagRow.Name]] = *tagRow
+			return nil
+		},
+		tagRow,
+		fmt.Sprintf("SELECT * FROM %s ORDER BY Id ASC;",
+			TagsTable))
 
 	ctxApis.AddValue("DB", DB)
 	ctxApis.AddValue(api.CFG_PATH, *fCfgPath)
