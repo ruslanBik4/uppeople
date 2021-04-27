@@ -54,9 +54,9 @@ func (r *User_to_platformsFields) ColValue(name string) interface{} {
 }
 
 func NewUser_to_platforms(db *dbEngine.DB) (*User_to_platforms, error) {
-	table, ok := db.Tables["user_to_platforms"]
+	table, ok := db.Tables[TableUserToPlatforms]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "user_to_platforms"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableUserToPlatforms}
 	}
 
 	return &User_to_platforms{

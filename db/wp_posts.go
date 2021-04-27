@@ -195,9 +195,9 @@ func (r *Wp_postsFields) ColValue(name string) interface{} {
 }
 
 func NewWp_posts(db *dbEngine.DB) (*Wp_posts, error) {
-	table, ok := db.Tables["wp_posts"]
+	table, ok := db.Tables[TableWPPosts]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "wp_posts"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableWPPosts}
 	}
 
 	return &Wp_posts{

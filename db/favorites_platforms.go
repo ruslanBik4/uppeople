@@ -54,9 +54,9 @@ func (r *Favorites_platformsFields) ColValue(name string) interface{} {
 }
 
 func NewFavorites_platforms(db *dbEngine.DB) (*Favorites_platforms, error) {
-	table, ok := db.Tables["favorites_platforms"]
+	table, ok := db.Tables[TableFavoritesPlatforms]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "favorites_platforms"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableFavoritesPlatforms}
 	}
 
 	return &Favorites_platforms{

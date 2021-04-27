@@ -102,7 +102,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			i, err := candidates.Update(ctx,
 				dbEngine.ColumnsForSelect("date", "tag_id", "recruter_id"),
 				dbEngine.WhereForSelect("id"),
-				dbEngine.ArgsForSelect(timeNow, 2, user.Id, id),
+				dbEngine.ArgsForSelect(timeNow, (*db.TagIds)["Interested"].Id, user.Id, id),
 			)
 			if err != nil {
 				return createErrResult(err)

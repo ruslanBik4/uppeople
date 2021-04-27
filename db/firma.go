@@ -138,9 +138,9 @@ func (r *FirmaFields) ColValue(name string) interface{} {
 }
 
 func NewFirma(db *dbEngine.DB) (*Firma, error) {
-	table, ok := db.Tables["firma"]
+	table, ok := db.Tables[TableFirma]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "firma"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableFirma}
 	}
 
 	return &Firma{

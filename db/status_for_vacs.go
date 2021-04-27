@@ -61,9 +61,9 @@ func (r *Status_for_vacsFields) ColValue(name string) interface{} {
 }
 
 func NewStatus_for_vacs(db *dbEngine.DB) (*Status_for_vacs, error) {
-	table, ok := db.Tables["status_for_vacs"]
+	table, ok := db.Tables[TableStatusForVacs]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "status_for_vacs"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableStatusForVacs}
 	}
 
 	return &Status_for_vacs{

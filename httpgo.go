@@ -55,7 +55,7 @@ var (
 
 var httpServer *httpgo.HttpGo
 
-var TagIds *TagIdMap
+var TagIds *db.TagIdMap
 
 func init() {
 	flag.Parse()
@@ -73,16 +73,20 @@ func init() {
 		panic("cannot init DB")
 	}
 
-	TagIds = &TagIdMap{}
-	tagRow := &TagStruct{}
+	TagIds = &db.TagIdMap{}
+	tagRow := &db.TagsFields{}
 	err = DB.Conn.SelectAndScanEach(context.TODO(),
 		func() error {
-			(*TagIds)[TagsNames[tagRow.Name]] = *tagRow
+			(*TagIds)[db.TagsNames[tagRow.Name]] = *tagRow
 			return nil
 		},
 		tagRow,
 		fmt.Sprintf("SELECT * FROM %s ORDER BY Id ASC;",
-			TagsTable))
+			db.TableTags))
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading tags from db to TagIds(db.TagIdMap)")
+	}
 
 	ctxApis.AddValue("DB", DB)
 	ctxApis.AddValue(api.CFG_PATH, *fCfgPath)

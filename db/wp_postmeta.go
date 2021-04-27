@@ -61,9 +61,9 @@ func (r *Wp_postmetaFields) ColValue(name string) interface{} {
 }
 
 func NewWp_postmeta(db *dbEngine.DB) (*Wp_postmeta, error) {
-	table, ok := db.Tables["wp_postmeta"]
+	table, ok := db.Tables[TableWPPostMeta]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "wp_postmeta"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableWPPostMeta}
 	}
 
 	return &Wp_postmeta{

@@ -16,12 +16,28 @@ type Tags struct {
 }
 
 type TagsFields struct {
-	Id        int64  `json:"id"`
-	Name      string `json:"name"`
-	Color     string `json:"color"`
-	Parent_id int64  `json:"parent_id"`
-	Order_num int64  `json:"order_num"`
+	Id       int32  `json:"id"`
+	Name     string `json:"name"`
+	Color    string `json:"color"`
+	ParentId int32  `json:"parent_id"`
+	OrderNum int32  `json:"order_num"`
 }
+
+var TagsNames = map[string]string{
+	"first contact":             "FirstContact",
+	"interested":                "Interested",
+	"reject":                    "Reject",
+	"no answer":                 "NoAnswer",
+	"closed to offers":          "ClosedToOffers",
+	"low salary rate":           "LowSalary",
+	"was contacted earlier":     "WasContactedEarlier",
+	"does not like the project": "DoesNotLikeProject",
+	"terms don’t fit":           "TermsDoNotFit",
+	"remote only":               "RemoteOnly",
+	"does not fit":              "DoesNotFit",
+}
+
+type TagIdMap map[string]TagsFields
 
 func (r *TagsFields) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
@@ -29,8 +45,8 @@ func (r *TagsFields) GetFields(columns []dbEngine.Column) []interface{} {
 			&r.Id,
 			&r.Name,
 			&r.Color,
-			&r.Parent_id,
-			&r.Order_num,
+			&r.ParentId,
+			&r.OrderNum,
 		}
 	}
 
@@ -54,10 +70,10 @@ func (r *TagsFields) RefColValue(name string) interface{} {
 		return &r.Color
 
 	case "parent_id":
-		return &r.Parent_id
+		return &r.ParentId
 
 	case "order_num":
-		return &r.Order_num
+		return &r.OrderNum
 
 	default:
 		return nil
@@ -76,10 +92,10 @@ func (r *TagsFields) ColValue(name string) interface{} {
 		return r.Color
 
 	case "parent_id":
-		return r.Parent_id
+		return r.ParentId
 
 	case "order_num":
-		return r.Order_num
+		return r.OrderNum
 
 	default:
 		return nil
@@ -87,9 +103,9 @@ func (r *TagsFields) ColValue(name string) interface{} {
 }
 
 func NewTags(db *dbEngine.DB) (*Tags, error) {
-	table, ok := db.Tables["tags"]
+	table, ok := db.Tables[TableTags]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "tags"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableTags}
 	}
 
 	return &Tags{

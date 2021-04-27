@@ -160,9 +160,9 @@ func (r *Linkedin_candidatesFields) ColValue(name string) interface{} {
 }
 
 func NewLinkedin_candidates(db *dbEngine.DB) (*Linkedin_candidates, error) {
-	table, ok := db.Tables["linkedin_candidates"]
+	table, ok := db.Tables[TableLinkedinCandidates]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "linkedin_candidates"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableLinkedinCandidates}
 	}
 
 	return &Linkedin_candidates{

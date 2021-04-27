@@ -47,9 +47,9 @@ func (r *LanguagesFields) ColValue(name string) interface{} {
 }
 
 func NewLanguages(db *dbEngine.DB) (*Languages, error) {
-	table, ok := db.Tables["languages"]
+	table, ok := db.Tables[TableLanguages]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "languages"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableLanguages}
 	}
 
 	return &Languages{

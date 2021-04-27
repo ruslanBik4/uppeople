@@ -54,9 +54,9 @@ func (r *LinksFields) ColValue(name string) interface{} {
 }
 
 func NewLinks(db *dbEngine.DB) (*Links, error) {
-	table, ok := db.Tables["links"]
+	table, ok := db.Tables[TableLinks]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "links"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableLinks}
 	}
 
 	return &Links{

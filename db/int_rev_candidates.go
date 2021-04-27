@@ -83,9 +83,9 @@ func (r *Int_rev_candidatesFields) ColValue(name string) interface{} {
 }
 
 func NewInt_rev_candidates(db *dbEngine.DB) (*Int_rev_candidates, error) {
-	table, ok := db.Tables["int_rev_candidates"]
+	table, ok := db.Tables[TableIntRevCandidates]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "int_rev_candidates"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableIntRevCandidates}
 	}
 
 	return &Int_rev_candidates{

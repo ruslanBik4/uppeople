@@ -43,6 +43,7 @@ type statusCandidate struct {
 	CompName     string     `json:"compName"`
 	CommentVac   string     `json:"commentVac"`
 }
+
 type ViewCandidate struct {
 	*db.CandidatesFields
 	Platform          *SelectedUnit            `json:"platforms,omitempty"`
@@ -426,11 +427,6 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"Vacancies",
 	}
 
-	if u.Tag_id == 0 {
-		return map[string]interface{}{
-			"tag_id": "required value",
-		}, apis.ErrWrongParamsList
-	}
 	args := []interface{}{
 		u.Name,
 		u.Platform_id,
@@ -442,7 +438,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		u.Linkedin,
 		u.Str_companies,
 		u.Status,
-		1,
+		(*db.TagIds)["FirstContact"].Id,
 		u.Comments,
 		time.Now(),
 		auth.GetUserID(ctx),

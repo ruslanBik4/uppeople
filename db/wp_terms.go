@@ -61,9 +61,9 @@ func (r *Wp_termsFields) ColValue(name string) interface{} {
 }
 
 func NewWp_terms(db *dbEngine.DB) (*Wp_terms, error) {
-	table, ok := db.Tables["wp_terms"]
+	table, ok := db.Tables[TableWPTerms]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "wp_terms"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableWPTerms}
 	}
 
 	return &Wp_terms{

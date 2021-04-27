@@ -47,9 +47,9 @@ func (r *SenioritiesFields) ColValue(name string) interface{} {
 }
 
 func NewSeniorities(db *dbEngine.DB) (*Seniorities, error) {
-	table, ok := db.Tables["seniorities"]
+	table, ok := db.Tables[TableSeniorities]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "seniorities"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableSeniorities}
 	}
 
 	return &Seniorities{

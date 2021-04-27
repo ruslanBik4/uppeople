@@ -69,9 +69,9 @@ func (r *Faq_qustionsFields) ColValue(name string) interface{} {
 }
 
 func NewFaq_qustions(db *dbEngine.DB) (*Faq_qustions, error) {
-	table, ok := db.Tables["faq_qustions"]
+	table, ok := db.Tables[TableFAQQuestions]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "faq_qustions"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableFAQQuestions}
 	}
 
 	return &Faq_qustions{

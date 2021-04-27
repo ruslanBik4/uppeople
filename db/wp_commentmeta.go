@@ -61,9 +61,9 @@ func (r *Wp_commentmetaFields) ColValue(name string) interface{} {
 }
 
 func NewWp_commentmeta(db *dbEngine.DB) (*Wp_commentmeta, error) {
-	table, ok := db.Tables["wp_commentmeta"]
+	table, ok := db.Tables[TableWPCommentMeta]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "wp_commentmeta"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableWPCommentMeta}
 	}
 
 	return &Wp_commentmeta{

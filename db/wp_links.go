@@ -125,9 +125,9 @@ func (r *Wp_linksFields) ColValue(name string) interface{} {
 }
 
 func NewWp_links(db *dbEngine.DB) (*Wp_links, error) {
-	table, ok := db.Tables["wp_links"]
+	table, ok := db.Tables[TableWPLinks]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "wp_links"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableWPLinks}
 	}
 
 	return &Wp_links{

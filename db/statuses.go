@@ -47,9 +47,9 @@ func (r *StatusesFields) ColValue(name string) interface{} {
 }
 
 func NewStatuses(db *dbEngine.DB) (*Statuses, error) {
-	table, ok := db.Tables["statuses"]
+	table, ok := db.Tables[TableStatuses]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "statuses"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TableStatuses}
 	}
 
 	return &Statuses{
