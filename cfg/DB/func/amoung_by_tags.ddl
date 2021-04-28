@@ -45,7 +45,8 @@ BEGIN
                                             between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now()))
                   and (platformId = 0 OR v.platform_id = platformId)
                   and (userID = 0 OR c.recruter_id = userID)
-                  and (tags is null or t.id = ANY (tags))
+                  and (tags is null
+                    OR (t.parent_id = 0 AND t.id = ANY (tags) OR t.parent_id=ANY(tags)))
                 GROUP BY grouping sets ((1, 2, 3, 4), ())
             )
             select t.id,
@@ -77,7 +78,8 @@ BEGIN
                          JOIN candidates c ON t.id = c.tag_id
                 WHERE c.date ::date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE(eDate, now())
                   and (userID = 0 OR c.recruter_id = userID)
-                  and (tags is null or t.id = ANY (tags))
+                  and (tags is null
+                       OR (t.parent_id = 0 AND t.id = ANY (tags) OR t.parent_id=ANY(tags)))
                 GROUP BY grouping sets ((1, 2, 3, 4), ())
             )
             select t.id,

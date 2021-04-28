@@ -81,9 +81,9 @@ func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
                             WHERE vacancy_id = v.id) as recruiters`
 	}
 	sql += ` from vacancies v left join platforms on v.platform_id=platforms.id
-	left join companies c on v.company_id = c.id 
+	left join companies c on v.company_id = c.id
 `
-	return DB.Conn.SelectToMaps(ctx, sql+where + " order by v.status")
+	return DB.Conn.SelectToMaps(ctx, sql+where+" order by v.status")
 }
 
 func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
