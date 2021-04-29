@@ -7,6 +7,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 
@@ -400,58 +401,72 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	columns := []string{
-		"name",
-		"platform_id",
-		"salary",
-		"email",
-		"phone",
-		"skype",
-		"link",
-		"linkedin",
-		"str_companies",
-		"status",
-		"tag_id",
-		"comments",
-		"date",
-		"recruter_id",
-		"text_rezume",
-		"sfera",
-		"experience",
-		"education",
-		"language",
-		"zapoln_profile",
-		"file",
-		"seniority_id",
-		"date_follow_up",
-		"Vacancies",
-	}
+	uRefl := reflect.ValueOf(u)
+	uTypes := uRefl.Type()
 
-	args := []interface{}{
-		u.Name,
-		u.Platform_id,
-		u.Salary,
-		u.Email,
-		u.Phone,
-		u.Skype,
-		u.Link,
-		u.Linkedin,
-		u.Str_companies,
-		u.Status,
-		(*db.TagIds)["FirstContact"].Id,
-		u.Comments,
-		time.Now(),
-		auth.GetUserID(ctx),
-		u.Text_rezume,
-		u.Sfera,
-		u.Experience,
-		u.Education,
-		u.Language,
-		u.Zapoln_profile,
-		u.File,
-		u.Seniority_id,
-		u.Date_follow_up,
-		u.Vacancies,
+	var columns []string
+	var args []interface{}
+
+	for i := 0; i < uRefl.NumField(); i++ {
+		switch colName := uTypes.Field(i).Tag.Get("json"); colName {
+		case "name":
+			continue
+
+		case "tag_id":
+			columns = append(columns, colName)
+			args = append(args, (*db.TagIds)["FirstContact"].Id)
+			continue
+
+		case "date":
+			columns = append(columns, colName)
+			args = append(args, time.Now())
+			continue
+
+		case "recruter_id":
+			columns = append(columns, colName)
+			args = append(args, auth.GetUserID(ctx))
+			continue
+		}
+
+		switch uRefl.Field(i).Interface().(type) {
+
+		case int32, int64, int8, int16, float32, float64, time.Time:
+			if uRefl.Field(i).IsZero() {
+				continue
+			}
+
+		case string:
+			if uRefl.Field(i).Interface() == "" {
+				continue
+			}
+
+		case []int32:
+			if uRefl.Field(i).IsNil() {
+				continue
+			}
+
+		case sql.NullInt32:
+			if !uRefl.Field(i).Interface().(sql.NullInt32).Valid {
+				continue
+			}
+
+		case sql.NullString:
+			if !uRefl.Field(i).Interface().(sql.NullString).Valid {
+				continue
+			}
+
+		case *time.Time:
+			if uRefl.Field(i).IsNil() {
+				continue
+			}
+
+			if (*uRefl.Field(i).Interface().(*time.Time)).IsZero() {
+				continue
+			}
+		}
+
+		columns = append(columns, uTypes.Field(i).Tag.Get("json"))
+		args = append(args, uRefl.Field(i).Interface())
 	}
 
 	if u.Avatar > "" {
