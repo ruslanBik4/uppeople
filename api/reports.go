@@ -51,7 +51,7 @@ func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string) (interface{
 		arr += "]"
 	}
 	sqlCmd := fmt.Sprintf(`\copy (
-							select *
+							select id, name, "count", percent
 							from %s('%s', '%s', %d, %d, %d, %d, %s)
 						)
 						to stdout csv header;`,
