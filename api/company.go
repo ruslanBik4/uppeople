@@ -5,6 +5,7 @@
 package api
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"strings"
@@ -170,11 +171,26 @@ func EmptyValue(value interface{}) bool {
 		return len(val) == 0
 	case []string:
 		return len(val) == 0
-	case int32:
+	case int32, int64, float32, float64:
 		return val == 0
-
-	case int64:
-		return val == 0
+	case time.Time:
+		return val.IsZero()
+	case *time.Time:
+		if val == nil {
+			return true
+		} else {
+			return (*val).IsZero()
+		}
+	case sql.NullInt32:
+		return !val.Valid
+	case sql.NullInt64:
+		return !val.Valid
+	case sql.NullFloat64:
+		return !val.Valid
+	case sql.NullTime:
+		return !val.Valid
+	case sql.NullString:
+		return !val.Valid
 
 	case string:
 		return strings.TrimSpace(val) == ""

@@ -7,7 +7,6 @@ package api
 import (
 	"database/sql"
 	"fmt"
-	"reflect"
 	"strings"
 	"time"
 
@@ -401,79 +400,40 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	uRefl := reflect.ValueOf(u)
-	uTypes := uRefl.Type()
-
-	var columns []string
-	var args []interface{}
-
-	for i := 0; i < uRefl.NumField(); i++ {
-		switch colName := uTypes.Field(i).Tag.Get("json"); colName {
-		case "name":
-			continue
-
-		case "tag_id":
-			columns = append(columns, colName)
-			args = append(args, db.GetTagIdFirstContact())
-			continue
-
-		case "date":
-			columns = append(columns, colName)
-			args = append(args, time.Now())
-			continue
-
-		case "recruter_id":
-			columns = append(columns, colName)
-			args = append(args, auth.GetUserID(ctx))
-			continue
-		}
-
-		switch uRefl.Field(i).Interface().(type) {
-
-		case int32, int64, int8, int16, float32, float64, time.Time:
-			if uRefl.Field(i).IsZero() {
-				continue
-			}
-
-		case string:
-			if uRefl.Field(i).Interface() == "" {
-				continue
-			}
-
-		case []int32:
-			if uRefl.Field(i).IsNil() {
-				continue
-			}
-
-		case sql.NullInt32:
-			if !uRefl.Field(i).Interface().(sql.NullInt32).Valid {
-				continue
-			}
-
-		case sql.NullString:
-			if !uRefl.Field(i).Interface().(sql.NullString).Valid {
-				continue
-			}
-
-		case *time.Time:
-			if uRefl.Field(i).IsNil() {
-				continue
-			}
-
-			if (*uRefl.Field(i).Interface().(*time.Time)).IsZero() {
-				continue
-			}
-		}
-
-		columns = append(columns, uTypes.Field(i).Tag.Get("json"))
-		args = append(args, uRefl.Field(i).Interface())
+	table, err := db.NewCandidates(DB)
+	if err != nil {
+		return createErrResult(err)
 	}
 
-	if u.Avatar > "" {
-		columns = append(columns, "avatar")
-		args = append(args, u.Avatar)
+	columns := make([]string, 0)
+	args := make([]interface{}, 0)
+
+	stopColumns := map[string]interface{}{
+		"id":          nil,
+		"tag_id":      db.GetTagIdFirstContact(),
+		"date":        time.Now(),
+		"recruter_id": auth.GetUserID(ctx),
 	}
-	table, _ := db.NewCandidates(DB)
+
+	if u != nil {
+		for _, col := range table.Columns() {
+			name := col.Name()
+			if val, ok := stopColumns[name]; ok {
+				if val != nil {
+					columns = append(columns, name)
+					args = append(args, val)
+				}
+				continue
+			}
+
+			newValue := u.ColValue(name)
+			if !EmptyValue(newValue) {
+				columns = append(columns, name)
+				args = append(args, newValue)
+			}
+		}
+	}
+
 	id, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.ArgsForSelect(args...),
@@ -498,6 +458,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	//putVacancies(ctx, u, DB)
 
 	return id, nil
+
 }
 
 type FollowUpDTO struct {
