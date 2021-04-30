@@ -5,7 +5,9 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -21,20 +23,6 @@ type TagsFields struct {
 	Color    string `json:"color"`
 	ParentId int32  `json:"parent_id"`
 	OrderNum int32  `json:"order_num"`
-}
-
-var TagsNames = map[string]string{
-	"first contact":             "FirstContact",
-	"interested":                "Interested",
-	"reject":                    "Reject",
-	"no answer":                 "NoAnswer",
-	"closed to offers":          "ClosedToOffers",
-	"low salary rate":           "LowSalary",
-	"was contacted earlier":     "WasContactedEarlier",
-	"does not like the project": "DoesNotLikeProject",
-	"terms don’t fit":           "TermsDoNotFit",
-	"remote only":               "RemoteOnly",
-	"does not fit":              "DoesNotFit",
 }
 
 type TagIdMap map[string]TagsFields
@@ -185,4 +173,114 @@ func (t *Tags) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) 
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetTagIdFirstContact() int32 {
+	if tag, ok := (*tagIds)[TagFirstContact]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagFirstContact))
+	}
+
+	return 0
+}
+
+func GetTagIdInterested() int32 {
+	if tag, ok := (*tagIds)[TagInterested]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagInterested))
+	}
+
+	return 0
+}
+
+func GetTagIdReject() int32 {
+	if tag, ok := (*tagIds)[TagReject]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagReject))
+	}
+
+	return 0
+}
+
+func GetTagIdNoAnswer() int32 {
+	if tag, ok := (*tagIds)[TagNoAnswer]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagNoAnswer))
+	}
+
+	return 0
+}
+
+func GetTagIdClosedToOffers() int32 {
+	if tag, ok := (*tagIds)[TagClosedToOffers]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagClosedToOffers))
+	}
+
+	return 0
+}
+
+func GetTagIdLowSalary() int32 {
+	if tag, ok := (*tagIds)[TagLowSalary]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagLowSalary))
+	}
+
+	return 0
+}
+
+func GetTagIdWasContactedEarlier() int32 {
+	if tag, ok := (*tagIds)[TagWasContactedEarlier]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagWasContactedEarlier))
+	}
+
+	return 0
+}
+
+func GetTagIdDoesNotLikeProject() int32 {
+	if tag, ok := (*tagIds)[TagDoesNotLikeProject]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagDoesNotLikeProject))
+	}
+
+	return 0
+}
+
+func GetTagIdTermsDoNotFit() int32 {
+	if tag, ok := (*tagIds)[TagTermsDoNotFit]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagTermsDoNotFit))
+	}
+
+	return 0
+}
+
+func GetTagIdRemoteOnly() int32 {
+	if tag, ok := (*tagIds)[TagRemoteOnly]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagRemoteOnly))
+	}
+
+	return 0
+}
+
+func GetTagIdDoesNotFit() int32 {
+	if tag, ok := (*tagIds)[TagDoesNotFit]; ok {
+		return tag.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagDoesNotFit))
+	}
+
+	return 0
 }

@@ -73,21 +73,6 @@ func init() {
 		panic("cannot init DB")
 	}
 
-	TagIds = &db.TagIdMap{}
-	tagRow := &db.TagsFields{}
-	err = DB.Conn.SelectAndScanEach(context.TODO(),
-		func() error {
-			(*TagIds)[db.TagsNames[tagRow.Name]] = *tagRow
-			return nil
-		},
-		tagRow,
-		fmt.Sprintf("SELECT * FROM %s ORDER BY Id ASC;",
-			db.TableTags))
-
-	if err != nil {
-		logs.ErrorLog(err, "while reading tags from db to TagIds(db.TagIdMap)")
-	}
-
 	ctxApis.AddValue("DB", DB)
 	ctxApis.AddValue(api.CFG_PATH, *fCfgPath)
 	ctxApis.AddValue(api.SYSTEM_PATH, *fSystem)

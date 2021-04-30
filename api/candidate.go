@@ -414,7 +414,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		case "tag_id":
 			columns = append(columns, colName)
-			args = append(args, (*db.TagIds)["FirstContact"].Id)
+			args = append(args, db.GetTagIdFirstContact())
 			continue
 
 		case "date":

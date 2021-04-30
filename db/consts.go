@@ -1,5 +1,6 @@
 package db
 
+// Table names
 const TableTags = "tags"
 const TableCandidates = "candidates"
 const TableCandidatesOnVacanciesFreelancers = "candidates_on_vacancies_freelancers"
@@ -68,4 +69,17 @@ const TableWPTerms = "wp_terms"
 const TableWPUserMeta = "wp_usermeta"
 const TableWPUsers = "wp_users"
 
-var TagIds *TagIdMap
+//Tag values
+const TagFirstContact = "first contact"
+const TagInterested = "interested"
+const TagReject = "reject"
+const TagNoAnswer = "no answer"
+const TagClosedToOffers = "closed to offers"
+const TagLowSalary = "low salary rate"
+const TagWasContactedEarlier = "was contacted earlier"
+const TagDoesNotLikeProject = "does not like the project"
+const TagTermsDoNotFit = "terms don’t fit"
+const TagRemoteOnly = "remote only"
+const TagDoesNotFit = "does not fit"
+
+var tagIds *TagIdMap

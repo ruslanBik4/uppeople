@@ -33,6 +33,23 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 		return nil
 	}
 
+	tagIds = &TagIdMap{}
+	tagsTable, err := NewTags(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TableTags)
+		return db
+	}
+
+	err = tagsTable.SelectSelfScanEach(ctx,
+		func(record *TagsFields) error {
+			(*tagIds)[record.Name] = *record
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading tags from db to tagIds(db.TagIdMap)")
+	}
+
 	return db
 }
 
