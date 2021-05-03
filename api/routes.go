@@ -6,6 +6,7 @@ package api
 
 import (
 	"go/types"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -28,6 +29,22 @@ var (
 		DefValue: apis.ApisValues(apis.ChildRoutePath),
 		Req:      true,
 		Type:     apis.NewTypeInParam(types.Int),
+	}
+	ParamStartDate = apis.InParam{
+		Name:     "start_date",
+		Desc:     "first date of period",
+		DefValue: apis.ApisValues(apis.ChildRoutePath),
+		Req:      true,
+		Type:     apis.NewTypeInParam(types.String),
+	}
+	ParamEndDate = apis.InParam{
+		Name: "end_date",
+		Desc: "last date of period",
+		DefValue: func(ctx *fasthttp.RequestCtx) interface{} {
+			return time.Now()
+		},
+		Req:  false,
+		Type: apis.NewTypeInParam(types.String),
 	}
 )
 
@@ -365,6 +382,14 @@ var (
 			Desc: "show img of candidate",
 			Params: []apis.InParam{
 				ParamID,
+			},
+		},
+		"/api/reports/": {
+			Fnc:  HandleDownloadWholeReport,
+			Desc: "reports by tags of all companies, vacancies, recruiters",
+			Params: []apis.InParam{
+				ParamStartDate,
+				ParamEndDate,
 			},
 		},
 		"/api/main/dashBoardAdmin": {
