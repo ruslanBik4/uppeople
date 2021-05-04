@@ -33,7 +33,7 @@ jobs:
     - run: |
         git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
-    - run: git pull origin dev
+    - run: git pull
 
     - name: Build
       run: make dev
