@@ -43,8 +43,9 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	)
 	if err != nil && err != pgx.ErrNoRows {
 		logs.ErrorLog(err, "users.SelectOneAndScan")
+	} else {
+		ref.Status.Recruiter = ref.Recruiter
 	}
-	ref.Status.Recruiter = ref.Recruiter
 
 	tagTable, _ := db.NewTags(DB)
 
