@@ -22,6 +22,7 @@ import (
 )
 
 var LastErr *pgconn.PgError
+var initCustomTypes bool
 
 func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 	conn := psql.NewConn(AfterConnect, nil, printNotice)
@@ -69,10 +70,6 @@ func printNotice(c *pgconn.PgConn, n *pgconn.Notice) {
 		logs.DebugLog("%d: %+v %s", c.PID(), n.Severity, n.Message)
 	}
 }
-
-var initCustomTypes bool
-
-const sqlGetTypes = "SELECT typname, oid FROM pg_type WHERE typname::text=ANY($1)"
 
 type CitextArray struct {
 	pgtype.TextArray

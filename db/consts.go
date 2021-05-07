@@ -1,5 +1,7 @@
 package db
 
+const sqlGetTypes = "SELECT typname, oid FROM pg_type WHERE typname::text=ANY($1)"
+
 // Table names
 const TableTags = "tags"
 const TableCandidates = "candidates"
