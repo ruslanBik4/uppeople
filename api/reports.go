@@ -15,6 +15,14 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+func HandleDownloadWholeReport(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	sqlCmd := fmt.Sprintf("select * from whole_report('%s', '%s')",
+		ctx.UserValue(ParamStartDate.Name),
+		ctx.UserValue(ParamEndDate.Name),
+	)
+	return downloadCommand(ctx, sqlCmd)
+}
+
 func HandleDownloadReportByTag(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	s, err := createCommandWithSql(ctx, "amoung_by_tags")
 	if err != nil {
@@ -50,11 +58,8 @@ func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string) (interface{
 		}
 		arr += "]"
 	}
-	sqlCmd := fmt.Sprintf(`\copy (
-							select id, name, "count", percent
-							from %s('%s', '%s', %d, %d, %d, %d, %s)
-						)
-						to stdout csv header;`,
+	sqlCmd := fmt.Sprintf(`select id, name, "count", percent
+							from %s('%s', '%s', %d, %d, %d, %d, %s)`,
 		funcName,
 		p.StartDate,
 		p.EndDate,
@@ -68,6 +73,8 @@ func createCommandWithSql(ctx *fasthttp.RequestCtx, funcName string) (interface{
 }
 
 func downloadCommand(ctx *fasthttp.RequestCtx, sqlCmd string) (interface{}, error) {
+	sqlCmd = fmt.Sprintf(`\copy ( %s )
+						to stdout csv header;`, sqlCmd)
 	// todo add DB name from connection
 	cmd := exec.CommandContext(ctx, `sudo`, `-u`, `postgres`, `psql`, "-d", "uppeople", "-c", sqlCmd)
 	cmd.Stdout = ctx.Response.BodyWriter()

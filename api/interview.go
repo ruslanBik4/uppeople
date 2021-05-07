@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ruslanBik4/logs"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/services"
@@ -131,6 +133,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			if !ok {
 				return "wrong DTO", apis.ErrWrongParamsList
 			}
+			logs.DebugLog("send mail")
 			err := services.Send(ctx, "mail", services.Mail{
 				From:        "cv@uppeople.co",
 				To:          email,
@@ -139,6 +142,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				Body:        u.EmailTemplate,
 				Attachments: nil,
 			})
+			logs.DebugLog("end send mail")
 			if err != nil {
 				return createErrResult(err)
 			}
@@ -273,6 +277,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	}
 
 	for _, val := range u.SelectedContacts {
+		logs.DebugLog("send mail")
 		err := services.Send(ctx, "mail", services.Mail{
 			From:        "cv@uppeople.co",
 			To:          val.Email,
@@ -281,6 +286,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			Body:        emailTemplate,
 			Attachments: nil,
 		})
+		logs.DebugLog("end send mail")
 		if err != nil {
 			return createErrResult(err)
 		}
