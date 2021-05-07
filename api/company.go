@@ -179,7 +179,7 @@ func EmptyValue(value interface{}) bool {
 		if val == nil {
 			return true
 		} else {
-			return (*val).IsZero()
+			return val.IsZero()
 		}
 	case sql.NullInt32:
 		return !val.Valid

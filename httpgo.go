@@ -55,8 +55,6 @@ var (
 
 var httpServer *httpgo.HttpGo
 
-var TagIds *db.TagIdMap
-
 func init() {
 	flag.Parse()
 	listener, err := net.Listen("tcp", *fPort)
