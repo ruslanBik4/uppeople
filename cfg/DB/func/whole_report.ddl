@@ -38,9 +38,9 @@ BEGIN
         GROUP BY CUBE  ((1,2), 3, 4, (5, 6))
     )
     select v.id, v.name,
-           coalesce((select name from companies co where co.id= v.company_id), 'total') as company,
-           v.vacancy,
-           (select name from users u where u.id = recruter_id) as recruter,
+           coalesce((select co.name from companies co where co.id= v.company_id), 'total') as company,
+           v.vacancy :: character varying,
+           (select u.name from users u where u.id = recruter_id) as recruter,
            v.amount,
            CASE WHEN v.id = 1 THEN
                     (select count(*)
@@ -50,8 +50,9 @@ BEGIN
                        and (v.company_id is null OR company_id = v.company_id)
                        and (v.vacancy_id is null OR vacancy_id = v.vacancy_id)
                        and (v.recruter_id is null OR user_id = v.recruter_id))
+               ELSE 0
                END
-                                                                                        as reContact
+               :: numeric(8,2)                                                                    as reContact
     from v
     ORDER BY 1,2,3,4,5 nulls last;
 
