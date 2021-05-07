@@ -33,6 +33,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		},
 	}
 
+	logs.DebugLog("create view")
 	users, _ := db.NewUsers(DB)
 
 	err := users.SelectOneAndScan(ctx,
@@ -74,6 +75,8 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		}
 	}
 
+	logs.DebugLog("read vacancies")
+
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		`select v.id, 
 		concat(companies.name, ' ("', platforms.nazva, '")') as name, 
@@ -96,6 +99,8 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	if err != nil {
 		logs.ErrorLog(err, "")
 	}
+
+	logs.DebugLog("vacancies")
 
 	if len(ref.ViewCandidate.Vacancies) > 0 {
 		vacancy := ref.ViewCandidate.Vacancies[0]
