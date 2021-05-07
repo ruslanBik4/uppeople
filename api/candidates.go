@@ -242,7 +242,7 @@ fetch first 1 row only
 		candidates, _ := db.NewCandidates(DB)
 		err = candidates.SelectSelfScanEach(ctx,
 			func(record *db.CandidatesFields) error {
-
+		state = "read " + record.Name
 				cV := NewCandidateView(ctx, record, DB, res.Platforms, res.Seniority)
 				res.Candidates = append(res.Candidates, cV)
 
@@ -251,6 +251,7 @@ fetch first 1 row only
 			options...,
 		)
 		if err != nil {
+				state = err.Error()
 			return
 		}
 
