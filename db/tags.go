@@ -284,3 +284,13 @@ func GetTagIdDoesNotFit() int32 {
 
 	return 0
 }
+
+func GetTagFromID(id int32) *TagsFields {
+	for _, tag := range *tagIds {
+		if tag.Id == id {
+			return &tag
+		}
+	}
+
+	return nil
+}

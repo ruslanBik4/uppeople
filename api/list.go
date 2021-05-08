@@ -49,18 +49,10 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	}
 
 	logs.DebugLog("read tags")
-	tagTable, _ := db.NewTags(DB)
-
-	err = tagTable.SelectOneAndScan(ctx,
-		ref.Tags,
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(record.Tag_id),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "tagTable id=%d %s", record.Tag_id, record.Name)
-	} else {
-		ref.TagName = ref.Tags.Name
-		ref.TagColor = ref.Tags.Color
+	tag := db.GetTagFromID(record.Tag_id)
+	if tag != nil {
+		ref.TagName = tag.Name
+		ref.TagColor = tag.Color
 	}
 
 	for _, s := range seniors {
