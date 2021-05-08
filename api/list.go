@@ -88,8 +88,6 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 		logs.ErrorLog(err, "")
 	}
 
-	logs.DebugLog("vacancies")
-
 	if len(ref.ViewCandidate.Vacancies) > 0 {
 		vacancy := ref.ViewCandidate.Vacancies[0]
 		ref.Status.CompId, _ = vacancy["company_id"].(int32)
