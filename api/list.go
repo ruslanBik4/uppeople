@@ -24,7 +24,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref := &CandidateView{
 		ViewCandidate: &ViewCandidate{
 			CandidatesFields: record,
-			Tags:             &db.TagsFields{},
 		},
 		Status: statusCandidate{
 			Date:         record.Date,
@@ -33,7 +32,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		},
 	}
 
-	logs.DebugLog("create view")
 	users, _ := db.NewUsers(DB)
 
 	err := users.SelectOneAndScan(ctx,
@@ -48,11 +46,10 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.Status.Recruiter = ref.Recruiter
 	}
 
-	logs.DebugLog("read tags")
-	tag := db.GetTagFromID(record.Tag_id)
-	if tag != nil {
-		ref.TagName = tag.Name
-		ref.TagColor = tag.Color
+	ref.Tags = db.GetTagFromID(record.Tag_id)
+	if ref.Tags != nil {
+		ref.TagName = ref.Tags.Name
+		ref.TagColor = ref.Tags.Color
 	}
 
 	for _, s := range seniors {
@@ -67,8 +64,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 			ref.ViewCandidate.Platform = p
 		}
 	}
-
-	logs.DebugLog("read vacancies")
 
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		`select v.id, 
