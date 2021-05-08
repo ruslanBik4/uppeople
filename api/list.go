@@ -48,6 +48,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.Status.Recruiter = ref.Recruiter
 	}
 
+	logs.DebugLog("read tags")
 	tagTable, _ := db.NewTags(DB)
 
 	err = tagTable.SelectOneAndScan(ctx,

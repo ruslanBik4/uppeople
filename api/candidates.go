@@ -287,7 +287,7 @@ fetch first 1 row only
 		}
 
 	case <-time.After(time.Minute * 3):
-		ctx.SetStatusCode(fasthttp.StatusGatewayTimeout)
+		ctx.SetStatusCode(fasthttp.StatusNoContent)
 		logs.DebugLog(state)
 		return nil, nil
 	}
