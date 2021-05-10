@@ -548,6 +548,17 @@ var (
 			// Method: apis.POST,
 			// Resp:   search.RespGroups(),
 		},
+		"/api/system/stat_conn/": {
+			Fnc: HandleStatConn,
+			Params: []apis.InParam{
+				{
+					Name: "cmd",
+					Desc: "command for pgx",
+					Req:  false,
+					Type: apis.NewTypeInParam(types.String),
+				},
+			},
+		},
 	}
 )
 var hosts = []string{

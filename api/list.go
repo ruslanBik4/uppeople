@@ -24,7 +24,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	ref := &CandidateView{
 		ViewCandidate: &ViewCandidate{
 			CandidatesFields: record,
-			Tags:             &db.TagsFields{},
 		},
 		Status: statusCandidate{
 			Date:         record.Date,
@@ -47,16 +46,8 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.Status.Recruiter = ref.Recruiter
 	}
 
-	tagTable, _ := db.NewTags(DB)
-
-	err = tagTable.SelectOneAndScan(ctx,
-		ref.Tags,
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(record.Tag_id),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "tagTable id=%d %s", record.Tag_id, record.Name)
-	} else {
+	ref.Tags = db.GetTagFromID(record.Tag_id)
+	if ref.Tags != nil {
 		ref.TagName = ref.Tags.Name
 		ref.TagColor = ref.Tags.Color
 	}
