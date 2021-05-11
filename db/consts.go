@@ -84,5 +84,32 @@ const TagTermsDoNotFit = "terms don’t fit"
 const TagRemoteOnly = "remote only"
 const TagDoesNotFit = "does not fit"
 
+//Status values
+const StatusHot = "Hot"
+const StatusOpen = "Open"
+const StatusClosed = "Closed"
+const StatusPaused = "Paused"
+
+//Status for vacancies values
+const StatusForVacInterview = "Interview"
+const StatusForVacTest = "Test"
+const StatusForVacFinalInterview = "Final Interview"
+const StatusForVacOffer = "OFFER"
+const StatusForVacHired = "Hired"
+const StatusForVacWR = "WR"
+const StatusForVacReview = "Review"
+const StatusForVacRejected = "Rejected"
+const StatusForVacOnHold = "On hold"
+
+//Seniorities values
+const SeniorityJun = "Jun"
+const SeniorityMid = "Mid"
+const SenioritySen = "Sen"
+const SeniorityLead = "Lead"
+const SeniorityArchitect = "Architect"
+const SeniorityJunMid = "Jun-Mid"
+const SeniorityMidSen = "Mid-Sen"
+const SenioritySenLead = "Sen-Lead"
+
 var tagIds TagIdMap
 var statusesIds StatusIdMap
