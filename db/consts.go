@@ -84,4 +84,4 @@ const TagTermsDoNotFit = "terms don’t fit"
 const TagRemoteOnly = "remote only"
 const TagDoesNotFit = "does not fit"
 
-var tagIds *TagIdMap
+var tagIds TagIdMap

@@ -34,7 +34,7 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 		return nil
 	}
 
-	tagIds = &TagIdMap{}
+	tagIds = TagIdMap{}
 	tagsTable, err := NewTags(db)
 	if err != nil {
 		logs.ErrorLog(err, "cannot get %s table", TableTags)
@@ -43,7 +43,7 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 
 	err = tagsTable.SelectSelfScanEach(ctx,
 		func(record *TagsFields) error {
-			(*tagIds)[record.Name] = *record
+			tagIds[record.Name] = *record
 			return nil
 		})
 
