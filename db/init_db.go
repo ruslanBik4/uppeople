@@ -24,6 +24,21 @@ import (
 var LastErr *pgconn.PgError
 var initCustomTypes bool
 
+type CitextArray struct {
+	pgtype.TextArray
+}
+
+var customTypes = map[string]*pgtype.DataType{
+	"citext": {
+		Value: &pgtype.Text{},
+		Name:  "citext",
+	},
+	"_citext": {
+		Value: &CitextArray{pgtype.TextArray{}}, // (*pgtype.ArrayType)(nil),
+		Name:  "[]string",
+	},
+}
+
 func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 	conn := psql.NewConn(AfterConnect, nil, printNotice)
 	ctx := context.WithValue(ctxApis, "dbURL", "")
@@ -34,45 +49,39 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 		return nil
 	}
 
-	tagIds = TagIdMap{}
-	tagsTable, err := NewTags(db)
+	err = initTagIds(ctx, db)
 	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TableTags)
-		return db
+		logs.ErrorLog(err, "on init TagIds")
 	}
 
-	err = tagsTable.SelectSelfScanEach(ctx,
-		func(record *TagsFields) error {
-			tagIds[record.Name] = *record
-			return nil
-		})
-
+	err = initStatusesIds(ctx, db)
 	if err != nil {
-		logs.ErrorLog(err, "while reading tags from db to tagIds(db.TagIdMap)")
+		logs.ErrorLog(err, "on init StatusesIds")
 	}
 
 	return db
 }
 
-func printNotice(c *pgconn.PgConn, n *pgconn.Notice) {
+func AfterConnect(ctx context.Context, conn *pgx.Conn) error {
+	// Override registered handler for point
+	if !initCustomTypes {
+		err := getOidCustomTypes(ctx, conn)
+		if err != nil {
+			return err
+		}
 
-	if n.Code == "42P07" || strings.Contains(n.Message, "skipping") {
-		logs.DebugLog("skip operation: %s", n.Message)
-	} else if n.Severity == "INFO" {
-		logs.StatusLog(n.Message)
-	} else if n.Code > "00000" {
-		err := (*pgconn.PgError)(n)
-		LastErr = err
-		logs.ErrorLog(err, n.Hint, err.SQLState(), err.File, err.Line, err.Routine)
-	} else if strings.HasPrefix(n.Message, "[[ERROR]]") {
-		logs.ErrorLog(errors.New(strings.TrimPrefix(n.Message, "[[ERROR]]") + n.Severity))
-	} else { // DEBUG
-		logs.DebugLog("%d: %+v %s", c.PID(), n.Severity, n.Message)
+		initCustomTypes = true
 	}
-}
 
-type CitextArray struct {
-	pgtype.TextArray
+	mess := "DB registered type (name, oid): "
+	for name, val := range customTypes {
+		conn.ConnInfo().RegisterDataType(*val)
+		mess += fmt.Sprintf("(%s,%v, %T) ", name, val.OID, val.Value)
+	}
+
+	logs.StatusLog(conn.PgConn().Conn().LocalAddr().String(), mess)
+
+	return nil
 }
 
 func (dst CitextArray) MarshalJSON() ([]byte, error) {
@@ -190,38 +199,6 @@ func (src CitextArray) EncodeBinary(ci *pgtype.ConnInfo, buf []byte) ([]byte, er
 	}
 }
 
-var customTypes = map[string]*pgtype.DataType{
-	"citext": {
-		Value: &pgtype.Text{},
-		Name:  "citext",
-	},
-	"_citext": {
-		Value: &CitextArray{pgtype.TextArray{}}, // (*pgtype.ArrayType)(nil),
-		Name:  "[]string",
-	},
-}
-
-func AfterConnect(ctx context.Context, conn *pgx.Conn) error {
-	// Override registered handler for point
-	if !initCustomTypes {
-		err := getOidCustomTypes(ctx, conn)
-		if err != nil {
-			return err
-		}
-
-		initCustomTypes = true
-	}
-
-	mess := "DB registered type (name, oid): "
-	for name, val := range customTypes {
-		conn.ConnInfo().RegisterDataType(*val)
-		mess += fmt.Sprintf("(%s,%v, %T) ", name, val.OID, val.Value)
-	}
-
-	logs.StatusLog(conn.PgConn().Conn().LocalAddr().String(), mess)
-
-	return nil
-}
 func getOidCustomTypes(ctx context.Context, conn *pgx.Conn) error {
 	params := make([]string, 0, len(customTypes))
 	for name := range customTypes {
@@ -256,4 +233,63 @@ func getOidCustomTypes(ctx context.Context, conn *pgx.Conn) error {
 	}
 
 	return err
+}
+
+func printNotice(c *pgconn.PgConn, n *pgconn.Notice) {
+
+	if n.Code == "42P07" || strings.Contains(n.Message, "skipping") {
+		logs.DebugLog("skip operation: %s", n.Message)
+	} else if n.Severity == "INFO" {
+		logs.StatusLog(n.Message)
+	} else if n.Code > "00000" {
+		err := (*pgconn.PgError)(n)
+		LastErr = err
+		logs.ErrorLog(err, n.Hint, err.SQLState(), err.File, err.Line, err.Routine)
+	} else if strings.HasPrefix(n.Message, "[[ERROR]]") {
+		logs.ErrorLog(errors.New(strings.TrimPrefix(n.Message, "[[ERROR]]") + n.Severity))
+	} else { // DEBUG
+		logs.DebugLog("%d: %+v %s", c.PID(), n.Severity, n.Message)
+	}
+}
+
+func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	tagIds = TagIdMap{}
+	tagsTable, err := NewTags(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TableTags)
+		return err
+	}
+
+	err = tagsTable.SelectSelfScanEach(ctx,
+		func(record *TagsFields) error {
+			tagIds[record.Name] = *record
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading tags from db to tagIds(db.TagIdMap)")
+	}
+
+	return
+}
+
+func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	statusesIds = StatusIdMap{}
+	statusesTable, err := NewStatuses(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TableStatuses)
+		return err
+	}
+
+	err = statusesTable.SelectSelfScanEach(ctx,
+		func(record *StatusesFields) error {
+			statusesIds[record.Status.String] = *record
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading tags from db to statusesIds(db.StatusIdMap)")
+	}
+
+	return
 }

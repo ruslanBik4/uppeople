@@ -85,3 +85,4 @@ const TagRemoteOnly = "remote only"
 const TagDoesNotFit = "does not fit"
 
 var tagIds TagIdMap
+var statusesIds StatusIdMap

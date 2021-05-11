@@ -20,6 +20,8 @@ type StatusesFields struct {
 	Status sql.NullString `json:"status"`
 }
 
+type StatusIdMap map[string]StatusesFields
+
 func (r *StatusesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":

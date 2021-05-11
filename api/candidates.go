@@ -67,7 +67,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Candidates: make([]*CandidateView, 0),
 		Company:    getCompanies(ctx, DB),
 		Reasons:    getRejectReason(ctx, DB),
-		Recruiter:  getRecruters(ctx, DB),
+		Recruiter:  getRecruiters(ctx, DB),
 		Statuses:   getStatusVac(ctx, DB),
 		Tags:       getTags(ctx, DB),
 	}
