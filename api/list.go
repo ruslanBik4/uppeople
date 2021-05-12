@@ -288,7 +288,7 @@ func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 	return res
 }
 
-func getRecruters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
+func getRecruiters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
 	users, _ := db.NewUsers(DB)
 
 	err := users.SelectAndScanEach(ctx,

@@ -1,5 +1,7 @@
 package db
 
+const sqlGetTypes = "SELECT typname, oid FROM pg_type WHERE typname::text=ANY($1)"
+
 // Table names
 const TableTags = "tags"
 const TableCandidates = "candidates"
@@ -82,4 +84,5 @@ const TagTermsDoNotFit = "terms don’t fit"
 const TagRemoteOnly = "remote only"
 const TagDoesNotFit = "does not fit"
 
-var tagIds *TagIdMap
+var tagIds TagIdMap
+var statusesIds StatusIdMap

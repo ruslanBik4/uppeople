@@ -176,7 +176,7 @@ func (t *Tags) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) 
 }
 
 func GetTagIdFirstContact() int32 {
-	if tag, ok := (*tagIds)[TagFirstContact]; ok {
+	if tag, ok := tagIds[TagFirstContact]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagFirstContact))
@@ -186,7 +186,7 @@ func GetTagIdFirstContact() int32 {
 }
 
 func GetTagIdInterested() int32 {
-	if tag, ok := (*tagIds)[TagInterested]; ok {
+	if tag, ok := tagIds[TagInterested]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagInterested))
@@ -196,7 +196,7 @@ func GetTagIdInterested() int32 {
 }
 
 func GetTagIdReject() int32 {
-	if tag, ok := (*tagIds)[TagReject]; ok {
+	if tag, ok := tagIds[TagReject]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagReject))
@@ -206,7 +206,7 @@ func GetTagIdReject() int32 {
 }
 
 func GetTagIdNoAnswer() int32 {
-	if tag, ok := (*tagIds)[TagNoAnswer]; ok {
+	if tag, ok := tagIds[TagNoAnswer]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagNoAnswer))
@@ -216,7 +216,7 @@ func GetTagIdNoAnswer() int32 {
 }
 
 func GetTagIdClosedToOffers() int32 {
-	if tag, ok := (*tagIds)[TagClosedToOffers]; ok {
+	if tag, ok := tagIds[TagClosedToOffers]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagClosedToOffers))
@@ -226,7 +226,7 @@ func GetTagIdClosedToOffers() int32 {
 }
 
 func GetTagIdLowSalary() int32 {
-	if tag, ok := (*tagIds)[TagLowSalary]; ok {
+	if tag, ok := tagIds[TagLowSalary]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagLowSalary))
@@ -236,7 +236,7 @@ func GetTagIdLowSalary() int32 {
 }
 
 func GetTagIdWasContactedEarlier() int32 {
-	if tag, ok := (*tagIds)[TagWasContactedEarlier]; ok {
+	if tag, ok := tagIds[TagWasContactedEarlier]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagWasContactedEarlier))
@@ -246,7 +246,7 @@ func GetTagIdWasContactedEarlier() int32 {
 }
 
 func GetTagIdDoesNotLikeProject() int32 {
-	if tag, ok := (*tagIds)[TagDoesNotLikeProject]; ok {
+	if tag, ok := tagIds[TagDoesNotLikeProject]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagDoesNotLikeProject))
@@ -256,7 +256,7 @@ func GetTagIdDoesNotLikeProject() int32 {
 }
 
 func GetTagIdTermsDoNotFit() int32 {
-	if tag, ok := (*tagIds)[TagTermsDoNotFit]; ok {
+	if tag, ok := tagIds[TagTermsDoNotFit]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagTermsDoNotFit))
@@ -266,7 +266,7 @@ func GetTagIdTermsDoNotFit() int32 {
 }
 
 func GetTagIdRemoteOnly() int32 {
-	if tag, ok := (*tagIds)[TagRemoteOnly]; ok {
+	if tag, ok := tagIds[TagRemoteOnly]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagRemoteOnly))
@@ -276,7 +276,7 @@ func GetTagIdRemoteOnly() int32 {
 }
 
 func GetTagIdDoesNotFit() int32 {
-	if tag, ok := (*tagIds)[TagDoesNotFit]; ok {
+	if tag, ok := tagIds[TagDoesNotFit]; ok {
 		return tag.Id
 	} else {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagDoesNotFit))
@@ -286,7 +286,7 @@ func GetTagIdDoesNotFit() int32 {
 }
 
 func GetTagFromID(id int32) *TagsFields {
-	for _, tag := range *tagIds {
+	for _, tag := range tagIds {
 		if tag.Id == id {
 			return &tag
 		}

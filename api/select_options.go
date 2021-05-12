@@ -39,7 +39,7 @@ func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {
 	s := selectOpt{
 		Companies:     getCompanies(ctx, DB),
 		Platforms:     getPlatforms(ctx, DB),
-		Recruiters:    getRecruters(ctx, DB),
+		Recruiters:    getRecruiters(ctx, DB),
 		Statuses:      getStatusVac(ctx, DB),
 		Location:      getLocations(ctx, DB),
 		RejectReasons: getRejectReason(ctx, DB),
