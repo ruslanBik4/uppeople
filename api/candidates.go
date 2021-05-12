@@ -94,8 +94,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if dto.SelectTag != nil {
-			// TODO: replace with tag function
-			if dto.SelectTag.Id == 3 {
+			if dto.SelectTag.Id == db.GetTagIdReject() {
 				if dto.SelectReason != nil {
 					where = append(where, "tag_id")
 					args = append(args, dto.SelectReason.Id)

@@ -296,6 +296,10 @@ func GetTagFromId(id int32) *TagsFields {
 }
 
 func GetTagsAsSelectedUnits() (res SelectedUnits) {
+	if len(tagIds) == 0 {
+		return nil
+	}
+
 	for _, tag := range tagIds {
 		res = append(res,
 			&SelectedUnit{

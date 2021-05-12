@@ -251,6 +251,10 @@ func GetStatusForVacFromId(id int32) *StatusForVacsFields {
 }
 
 func GetStatusForVacAsSelectedUnits() (res SelectedUnits) {
+	if len(statusesForVacIds) == 0 {
+		return nil
+	}
+
 	for _, statForVac := range statusesForVacIds {
 		res = append(res,
 			&SelectedUnit{
