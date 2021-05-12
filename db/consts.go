@@ -113,3 +113,5 @@ const SenioritySenLead = "Sen-Lead"
 
 var tagIds TagIdMap
 var statusesIds StatusIdMap
+var statusesForVacIds StatusForVacIdMap
+var seniorityIds SeniorityIdMap

@@ -59,6 +59,16 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 		logs.ErrorLog(err, "on init StatusesIds")
 	}
 
+	err = initStatusesForVacIds(ctx, db)
+	if err != nil {
+		logs.ErrorLog(err, "on init StatusesForVacsIds")
+	}
+
+	err = initSeniorityIds(ctx, db)
+	if err != nil {
+		logs.ErrorLog(err, "on init SeniorityIds")
+	}
+
 	return db
 }
 
@@ -288,7 +298,49 @@ func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
 		})
 
 	if err != nil {
-		logs.ErrorLog(err, "while reading tags from db to statusesIds(db.StatusIdMap)")
+		logs.ErrorLog(err, "while reading statuses from db to statusesIds(db.StatusIdMap)")
+	}
+
+	return
+}
+
+func initStatusesForVacIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	statusesForVacIds = StatusForVacIdMap{}
+	statusesForVacsTable, err := NewStatusForVacs(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TableStatusForVacs)
+		return err
+	}
+
+	err = statusesForVacsTable.SelectSelfScanEach(ctx,
+		func(record *StatusForVacsFields) error {
+			statusesForVacIds[record.Status.String] = *record
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading statuses for vacancies from db to statusesForVacIds(db.StatusForVacIdMap)")
+	}
+
+	return
+}
+
+func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	seniorityIds = SeniorityIdMap{}
+	seniorityTable, err := NewSeniorities(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TableSeniorities)
+		return err
+	}
+
+	err = seniorityTable.SelectSelfScanEach(ctx,
+		func(record *SenioritiesFields) error {
+			seniorityIds[record.Nazva.String] = *record
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading seniorities from db to seniorityIds(db.SeniorityIdMap)")
 	}
 
 	return

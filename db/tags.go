@@ -182,7 +182,7 @@ func GetTagIdFirstContact() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagFirstContact))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdInterested() int32 {
@@ -192,7 +192,7 @@ func GetTagIdInterested() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagInterested))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdReject() int32 {
@@ -202,7 +202,7 @@ func GetTagIdReject() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagReject))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdNoAnswer() int32 {
@@ -212,7 +212,7 @@ func GetTagIdNoAnswer() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagNoAnswer))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdClosedToOffers() int32 {
@@ -222,7 +222,7 @@ func GetTagIdClosedToOffers() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagClosedToOffers))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdLowSalary() int32 {
@@ -232,7 +232,7 @@ func GetTagIdLowSalary() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagLowSalary))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdWasContactedEarlier() int32 {
@@ -242,7 +242,7 @@ func GetTagIdWasContactedEarlier() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagWasContactedEarlier))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdDoesNotLikeProject() int32 {
@@ -252,7 +252,7 @@ func GetTagIdDoesNotLikeProject() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagDoesNotLikeProject))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdTermsDoNotFit() int32 {
@@ -262,7 +262,7 @@ func GetTagIdTermsDoNotFit() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagTermsDoNotFit))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdRemoteOnly() int32 {
@@ -272,7 +272,7 @@ func GetTagIdRemoteOnly() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagRemoteOnly))
 	}
 
-	return 0
+	return -1
 }
 
 func GetTagIdDoesNotFit() int32 {
@@ -282,10 +282,10 @@ func GetTagIdDoesNotFit() int32 {
 		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TagDoesNotFit))
 	}
 
-	return 0
+	return -1
 }
 
-func GetTagFromID(id int32) *TagsFields {
+func GetTagFromId(id int32) *TagsFields {
 	for _, tag := range tagIds {
 		if tag.Id == id {
 			return &tag

@@ -46,7 +46,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.Status.Recruiter = ref.Recruiter
 	}
 
-	ref.Tags = db.GetTagFromID(record.Tag_id)
+	ref.Tags = db.GetTagFromId(record.Tag_id)
 	if ref.Tags != nil {
 		ref.TagName = ref.Tags.Name
 		ref.TagColor = ref.Tags.Color
@@ -176,7 +176,7 @@ func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits)
 }
 
 func getStatusVac(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	statUses, _ := db.NewStatus_for_vacs(DB)
+	statUses, _ := db.NewStatusForVacs(DB)
 
 	err := statUses.SelectAndScanEach(ctx,
 		nil,

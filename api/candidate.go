@@ -70,20 +70,20 @@ type VacanciesDTO struct {
 	DateLastChange time.Time           `json:"date_last_change"`
 }
 type StatusesCandidate struct {
-	Candidate_id     int32                     `json:"candidate_id"`
-	Company          *db.CompaniesFields       `json:"company"`
-	Company_id       int32                     `json:"company_id"`
-	Date_create      time.Time                 `json:"date_create"`
-	Date_last_change time.Time                 `json:"date_last_change"`
-	Id               int32                     `json:"id"`
-	Notice           string                    `json:"notice"`
-	Rating           string                    `json:"rating"`
-	Rej_text         string                    `json:"rej_text"`
-	Status           int32                     `json:"status"`
-	Status_vac       *db.Status_for_vacsFields `json:"vacancyStatus"`
-	User_id          int32                     `json:"user_id"`
-	Vacancy          VacanciesDTO              `json:"vacancy"`
-	Vacancy_id       int32                     `json:"vacancy_id"`
+	Candidate_id     int32                   `json:"candidate_id"`
+	Company          *db.CompaniesFields     `json:"company"`
+	Company_id       int32                   `json:"company_id"`
+	Date_create      time.Time               `json:"date_create"`
+	Date_last_change time.Time               `json:"date_last_change"`
+	Id               int32                   `json:"id"`
+	Notice           string                  `json:"notice"`
+	Rating           string                  `json:"rating"`
+	Rej_text         string                  `json:"rej_text"`
+	Status           int32                   `json:"status"`
+	Status_vac       *db.StatusForVacsFields `json:"vacancyStatus"`
+	User_id          int32                   `json:"user_id"`
+	Vacancy          VacanciesDTO            `json:"vacancy"`
+	Vacancy_id       int32                   `json:"vacancy_id"`
 }
 type ViewCandidates struct {
 	Candidate *ViewCandidate      `json:"0"`
@@ -364,8 +364,8 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				},
 			},
 			Id: vacancy["id"].(int32),
-			Status_vac: &db.Status_for_vacsFields{
-				Id: vacancy["status_id"].(int64),
+			Status_vac: &db.StatusForVacsFields{
+				Id: vacancy["status_id"].(int32),
 				Status: sql.NullString{
 					String: vacancy["status"].(string),
 					Valid:  true,

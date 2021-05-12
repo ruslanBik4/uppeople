@@ -5,7 +5,9 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -16,9 +18,11 @@ type Seniorities struct {
 }
 
 type SenioritiesFields struct {
-	Id    int64          `json:"id"`
+	Id    int32          `json:"id"`
 	Nazva sql.NullString `json:"nazva"`
 }
+
+type SeniorityIdMap map[string]SenioritiesFields
 
 func (r *SenioritiesFields) RefColValue(name string) interface{} {
 	switch name {
@@ -129,4 +133,93 @@ func (t *Seniorities) Update(ctx context.Context, Options ...dbEngine.BuildSqlOp
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetSeniorityIdJun() int32 {
+	if sen, ok := seniorityIds[SeniorityJun]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SeniorityJun))
+	}
+
+	return -1
+}
+
+func GetSeniorityIdMid() int32 {
+	if sen, ok := seniorityIds[SeniorityMid]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SeniorityMid))
+	}
+
+	return -1
+}
+
+func GetSeniorityIdSen() int32 {
+	if sen, ok := seniorityIds[SenioritySen]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SenioritySen))
+	}
+
+	return -1
+}
+
+func GetSeniorityIdLead() int32 {
+	if sen, ok := seniorityIds[SeniorityLead]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SeniorityLead))
+	}
+
+	return -1
+}
+
+func GetSeniorityArchitect() int32 {
+	if sen, ok := seniorityIds[SeniorityArchitect]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SeniorityArchitect))
+	}
+
+	return -1
+}
+
+func GetSeniorityIdJunMid() int32 {
+	if sen, ok := seniorityIds[SeniorityJunMid]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SeniorityJunMid))
+	}
+
+	return -1
+}
+
+func GetSeniorityIdMidSen() int32 {
+	if sen, ok := seniorityIds[SeniorityMidSen]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SeniorityMidSen))
+	}
+
+	return -1
+}
+
+func GetSeniorityIdSenLead() int32 {
+	if sen, ok := seniorityIds[SenioritySenLead]; ok {
+		return sen.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SenioritySenLead))
+	}
+
+	return -1
+}
+
+func GetSeniorityFromId(id int32) *SenioritiesFields {
+	for _, sen := range seniorityIds {
+		if sen.Id == id {
+			return &sen
+		}
+	}
+	return nil
 }

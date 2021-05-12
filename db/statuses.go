@@ -5,7 +5,9 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -16,7 +18,7 @@ type Statuses struct {
 }
 
 type StatusesFields struct {
-	Id     int64          `json:"id"`
+	Id     int32          `json:"id"`
 	Status sql.NullString `json:"status"`
 }
 
@@ -131,4 +133,54 @@ func (t *Statuses) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptio
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetStatusIdHot() int32 {
+	if status, ok := statusesIds[StatusHot]; ok {
+		return status.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusHot))
+	}
+
+	return -1
+}
+
+func GetStatusIdOpen() int32 {
+	if status, ok := statusesIds[StatusOpen]; ok {
+		return status.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusOpen))
+	}
+
+	return -1
+}
+
+func GetStatusIdClosed() int32 {
+	if status, ok := statusesIds[StatusClosed]; ok {
+		return status.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusClosed))
+	}
+
+	return -1
+}
+
+func GetStatusIdPaused() int32 {
+	if status, ok := statusesIds[StatusPaused]; ok {
+		return status.Id
+	} else {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusPaused))
+	}
+
+	return -1
+}
+
+func GetStatusFromId(id int32) *StatusesFields {
+	for _, status := range statusesIds {
+		if status.Id == id {
+			return &status
+		}
+	}
+
+	return nil
 }
