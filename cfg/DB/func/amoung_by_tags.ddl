@@ -16,7 +16,7 @@ BEGIN
     select count(*)
      from logs
      where kod_deystviya = 104
-       and create_at between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
+       and create_at ::date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
        and (companyID = 0 OR company_id = companyID)
        and (vacancyId = 0 OR vacancy_id = vacancyId)
        and (platformId = 0 OR exists(select NULL from vacancies v where platform_id = platformId AND v.id=vacancy_id) )
