@@ -46,13 +46,13 @@ type statusCandidate struct {
 
 type ViewCandidate struct {
 	*db.CandidatesFields
-	Platform          *SelectedUnit            `json:"platforms,omitempty"`
-	Companies         SelectedUnits            `json:"companies,omitempty"`
+	Platform          *db.SelectedUnit         `json:"platforms,omitempty"`
+	Companies         db.SelectedUnits         `json:"companies,omitempty"`
 	Seniority         string                   `json:"seniority"`
 	Tags              *db.TagsFields           `json:"tags,omitempty"`
 	Recruiter         string                   `json:"recruiter"`
 	Vacancies         []map[string]interface{} `json:"vacancies"`
-	SelectedVacancies SelectedUnits            `json:"selectedVacancies"`
+	SelectedVacancies db.SelectedUnits         `json:"selectedVacancies"`
 }
 
 type CandidateView struct {
@@ -253,18 +253,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	platformName := platform.Record.Nazva.String
-
-	seniTable, _ := db.NewSeniorities(DB)
-	err = seniTable.SelectOneAndScan(ctx,
-		seniTable,
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(table.Record.Seniority_id),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-
-	seniority := seniTable.Record.Nazva.String
+	seniority := db.GetSeniorityFromId(table.Record.Seniority_id)
 
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,

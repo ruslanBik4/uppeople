@@ -13,9 +13,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/valyala/fasthttp"
 
+	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
@@ -217,13 +217,8 @@ where $1=ANY(user_ids)`,
 }
 
 func HandleGetTagsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getTags(ctx, DB),
+		"status": db.GetTagsAsSelectedUnits(),
 	}
 
 	return m, nil

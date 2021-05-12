@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -247,4 +248,16 @@ func GetStatusForVacFromId(id int32) *StatusForVacsFields {
 	}
 
 	return nil
+}
+
+func GetStatusForVacAsSelectedUnits() (res SelectedUnits) {
+	for _, statForVac := range statusesForVacIds {
+		res = append(res,
+			&SelectedUnit{
+				Id:    statForVac.Id,
+				Label: statForVac.Status.String,
+				Value: strings.ToLower(statForVac.Status.String),
+			})
+	}
+	return
 }

@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -183,4 +184,16 @@ func GetStatusFromId(id int32) *StatusesFields {
 	}
 
 	return nil
+}
+
+func GetStatusAsSelectedUnits() (res SelectedUnits) {
+	for _, status := range statusesIds {
+		res = append(res,
+			&SelectedUnit{
+				Id:    status.Id,
+				Label: status.Status.String,
+				Value: strings.ToLower(status.Status.String),
+			})
+	}
+	return
 }

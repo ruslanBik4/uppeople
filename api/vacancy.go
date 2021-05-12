@@ -21,13 +21,13 @@ import (
 
 type VacancyDTO struct {
 	*db.VacanciesFields
-	Comment               string         `json:"comment"`
-	SelectCompany         SelectedUnit   `json:"selectCompany"`
-	SelectLocation        SelectedUnit   `json:"selectLocation"`
-	SelectPlatform        SelectedUnit   `json:"selectPlatform"`
-	SelectSeniority       SelectedUnit   `json:"selectSeniority"`
-	SelectRecruiter       []SelectedUnit `json:"selectRecruiter"`
-	SelectedVacancyStatus int32          `json:"selectedVacancyStatus"`
+	Comment               string            `json:"comment"`
+	SelectCompany         db.SelectedUnit   `json:"selectCompany"`
+	SelectLocation        db.SelectedUnit   `json:"selectLocation"`
+	SelectPlatform        db.SelectedUnit   `json:"selectPlatform"`
+	SelectSeniority       db.SelectedUnit   `json:"selectSeniority"`
+	SelectRecruiter       []db.SelectedUnit `json:"selectRecruiter"`
+	SelectedVacancyStatus int32             `json:"selectedVacancyStatus"`
 }
 
 func (v *VacancyDTO) GetValue() interface{} {
@@ -41,13 +41,13 @@ func (v *VacancyDTO) NewValue() interface{} {
 }
 
 type vacDTO struct {
-	CompanyId             int32          `json:"company_id"`
-	Sort                  int32          `json:"sort"`
-	CurrentColumn         string         `json:"currentColumn"`
-	SelectPlatforms       []SelectedUnit `json:"selectPlatforms"`
-	SelectSeniorities     []SelectedUnit `json:"selectSeniorities"`
-	SelectCandidateStatus []SelectedUnit `json:"selectCandidate_status"`
-	SelectStatuses        []SelectedUnit `json:"selectStatuses"`
+	CompanyId             int32             `json:"company_id"`
+	Sort                  int32             `json:"sort"`
+	CurrentColumn         string            `json:"currentColumn"`
+	SelectPlatforms       []db.SelectedUnit `json:"selectPlatforms"`
+	SelectSeniorities     []db.SelectedUnit `json:"selectSeniorities"`
+	SelectCandidateStatus []db.SelectedUnit `json:"selectCandidate_status"`
+	SelectStatuses        []db.SelectedUnit `json:"selectStatuses"`
 }
 
 func (v *vacDTO) GetValue() interface{} {

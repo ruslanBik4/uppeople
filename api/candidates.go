@@ -17,28 +17,28 @@ import (
 type ResCandidates struct {
 	*ResList
 	Candidates []*CandidateView `json:"candidates"`
-	Company    SelectedUnits    `json:"company"`
-	Recruiter  SelectedUnits    `json:"recruiter"`
-	Reasons    SelectedUnits    `json:"reasons"`
-	Statuses   SelectedUnits    `json:"statuses"`
-	Tags       SelectedUnits    `json:"tags"`
+	Company    db.SelectedUnits `json:"company"`
+	Recruiter  db.SelectedUnits `json:"recruiter"`
+	Reasons    db.SelectedUnits `json:"reasons"`
+	Statuses   db.SelectedUnits `json:"statuses"`
+	Tags       db.SelectedUnits `json:"tags"`
 }
 
 type SearchCandidates struct {
-	Name            string        `json:"search"`
-	CompanyID       int32         `json:"company_id"`
-	MySent          bool          `json:"mySent"`
-	Sort            int32         `json:"sort"`
-	CurrentColumn   string        `json:"currentColumn"`
-	DateFrom        string        `json:"dateFrom"`
-	DateTo          string        `json:"dateTo"`
-	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
-	SelectCompanies SelectedUnits `json:"selectCompanies"`
-	SelectReason    *SelectedUnit `json:"selectReason"`
-	SelectTag       *SelectedUnit `json:"selectTag"`
-	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
-	SelectSeniority SelectedUnits `json:"selectSeniority"`
-	SelectStatuses  SelectedUnits `json:"selectStatuses"`
+	Name            string           `json:"search"`
+	CompanyID       int32            `json:"company_id"`
+	MySent          bool             `json:"mySent"`
+	Sort            int32            `json:"sort"`
+	CurrentColumn   string           `json:"currentColumn"`
+	DateFrom        string           `json:"dateFrom"`
+	DateTo          string           `json:"dateTo"`
+	SelectRecruiter *db.SelectedUnit `json:"selectRecruiter"`
+	SelectCompanies db.SelectedUnits `json:"selectCompanies"`
+	SelectReason    *db.SelectedUnit `json:"selectReason"`
+	SelectTag       *db.SelectedUnit `json:"selectTag"`
+	SelectPlatforms db.SelectedUnits `json:"selectPlatforms"`
+	SelectSeniority db.SelectedUnits `json:"selectSeniority"`
+	SelectStatuses  db.SelectedUnits `json:"selectStatuses"`
 }
 
 func (s *SearchCandidates) GetValue() interface{} {
@@ -68,8 +68,8 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Company:    getCompanies(ctx, DB),
 		Reasons:    getRejectReason(ctx, DB),
 		Recruiter:  getRecruiters(ctx, DB),
-		Statuses:   getStatusVac(ctx, DB),
-		Tags:       getTags(ctx, DB),
+		Statuses:   db.GetStatusForVacAsSelectedUnits(),
+		Tags:       db.GetTagsAsSelectedUnits(),
 	}
 	optionsCount := []dbEngine.BuildSqlOptions{
 		dbEngine.ColumnsForSelect("count(*)"),
@@ -94,6 +94,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if dto.SelectTag != nil {
+			// TODO: replace with tag function
 			if dto.SelectTag.Id == 3 {
 				if dto.SelectReason != nil {
 					where = append(where, "tag_id")

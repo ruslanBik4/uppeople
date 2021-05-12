@@ -15,14 +15,19 @@ import (
 	"github.com/ruslanBik4/uppeople/db"
 )
 
+type ViewContact struct {
+	*db.ContactsFields
+	SelectPlatforms db.SelectedUnits `json:"selectedPlatforms"`
+}
+
 type DTOContact struct {
-	Id              int32         `json:"id"`
-	Name            string        `json:"name"`
-	Email           string        `json:"email"`
-	Phone           string        `json:"phone"`
-	Skype           string        `json:"skype"`
-	SelectPlatforms SelectedUnits `json:"selectedPlatforms"`
-	IsChecked       bool          `json:"isChecked"`
+	Id              int32            `json:"id"`
+	Name            string           `json:"name"`
+	Email           string           `json:"email"`
+	Phone           string           `json:"phone"`
+	Skype           string           `json:"skype"`
+	SelectPlatforms db.SelectedUnits `json:"selectedPlatforms"`
+	IsChecked       bool             `json:"isChecked"`
 }
 
 func (d *DTOContact) GetValue() interface{} {
@@ -164,11 +169,6 @@ func HandleDeleteContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	return nil, nil
 }
 
-type ViewContact struct {
-	*db.ContactsFields
-	SelectPlatforms SelectedUnits `json:"selectedPlatforms"`
-}
-
 func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -194,7 +194,7 @@ func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 
 	v := &ViewContact{
 		contacts.Record,
-		SelectedUnits{},
+		db.SelectedUnits{},
 	}
 	err = DB.Conn.SelectAndScanEach(ctx,
 		nil,

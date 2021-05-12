@@ -9,14 +9,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ruslanBik4/logs"
-
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/services"
+	"github.com/ruslanBik4/logs"
+	"github.com/valyala/fasthttp"
+
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
-	"github.com/valyala/fasthttp"
 )
 
 type DTOSendCV struct {
@@ -76,7 +76,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			_, err = tableVTC.Upsert(ctx,
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date_last_change"),
-				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, user.Id, timeNow),
+				dbEngine.ArgsForSelect(u.CompId, id, vacID, db.GetStatusForVacIdReview(), user.Id, timeNow),
 			)
 			if err != nil {
 				return createErrResult(err)
@@ -85,7 +85,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			_, err = IntRevCandidate.Insert(ctx,
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date"),
-				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, user.Id, timeNow),
+				dbEngine.ArgsForSelect(u.CompId, id, vacID, db.GetStatusForVacIdReview(), user.Id, timeNow),
 			)
 			if err != nil {
 				return createErrResult(err)
@@ -152,8 +152,8 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 type DTOSendInterview struct {
-	SelectedCompany  SelectedUnit `json:"selectedCompany"`
-	SelectedVacancy  SelectedUnit `json:"selectedVacancy"`
+	SelectedCompany  db.SelectedUnit `json:"selectedCompany"`
+	SelectedVacancy  db.SelectedUnit `json:"selectedVacancy"`
 	SelectedContacts []struct {
 		Email string `json:"email"`
 	} `json:"selectedContacts"`
@@ -214,7 +214,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	_, err = tableVTC.Upsert(ctx,
 		dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 			"status", "user_id", "date_last_change"),
-		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, 2, user.Id, timeNow),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, db.GetStatusForVacIdInterview(), user.Id, timeNow),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -223,7 +223,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	_, err = IntRevCandidate.Upsert(ctx,
 		dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 			"status", "user_id", "date"),
-		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, 2, user.Id, timeNow),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, db.GetStatusForVacIdInterview(), user.Id, timeNow),
 	)
 	if err != nil {
 		return createErrResult(err)

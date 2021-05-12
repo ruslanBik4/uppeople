@@ -4,11 +4,11 @@ package db
 
 import (
 	"database/sql"
-
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
+	"strings"
 )
 
 type Tags struct {
@@ -293,4 +293,16 @@ func GetTagFromId(id int32) *TagsFields {
 	}
 
 	return nil
+}
+
+func GetTagsAsSelectedUnits() (res SelectedUnits) {
+	for _, tag := range tagIds {
+		res = append(res,
+			&SelectedUnit{
+				Id:    tag.Id,
+				Label: tag.Name,
+				Value: strings.ToLower(tag.Name),
+			})
+	}
+	return
 }

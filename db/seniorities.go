@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -222,4 +223,16 @@ func GetSeniorityFromId(id int32) *SenioritiesFields {
 		}
 	}
 	return nil
+}
+
+func GetSenioritiesAsSelectedUnits() (res SelectedUnits) {
+	for _, sen := range seniorityIds {
+		res = append(res,
+			&SelectedUnit{
+				Id:    sen.Id,
+				Label: sen.Nazva.String,
+				Value: strings.ToLower(sen.Nazva.String),
+			})
+	}
+	return
 }

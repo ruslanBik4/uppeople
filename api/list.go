@@ -15,11 +15,19 @@ import (
 	"github.com/ruslanBik4/uppeople/db"
 )
 
+type ResList struct {
+	Count, Page, TotalPage int
+	CurrentPage            int              `json:"currentPage"`
+	PerPage                int              `json:"perPage"`
+	Platforms              db.SelectedUnits `json:"platforms"`
+	Seniority              db.SelectedUnits `json:"seniority"`
+}
+
 func NewCandidateView(ctx *fasthttp.RequestCtx,
 	record *db.CandidatesFields,
 	DB *dbEngine.DB,
-	platforms SelectedUnits,
-	seniors SelectedUnits,
+	platforms db.SelectedUnits,
+	seniors db.SelectedUnits,
 ) *CandidateView {
 	ref := &CandidateView{
 		ViewCandidate: &ViewCandidate{
@@ -52,11 +60,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.TagColor = ref.Tags.Color
 	}
 
-	for _, s := range seniors {
-		if s.Id == ref.Seniority_id {
-			ref.Seniority = s.Label
-		}
-	}
+	ref.Seniority = db.GetSeniorityFromId(record.Seniority_id).Nazva.String
 
 	for _, p := range platforms {
 		if p.Id == record.Platform_id {
@@ -111,43 +115,6 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	return ref
 }
 
-type SelectedUnit struct {
-	Id    int32  `json:"id"`
-	Label string `json:"label"`
-	Value string `json:"value"`
-}
-
-type SelectedUnits []*SelectedUnit
-
-func (s *SelectedUnits) GetFields(columns []dbEngine.Column) []interface{} {
-	p := &SelectedUnit{}
-	r := make([]interface{}, 0)
-	for _, col := range columns {
-		switch col.Name() {
-		case "id":
-			r = append(r, &p.Id)
-		case "label":
-			r = append(r, &p.Label)
-		case "value":
-			r = append(r, &p.Value)
-		default:
-			logs.ErrorLog(dbEngine.ErrNotFoundColumn{Column: col.Name()}, "SelectedUnits. GetFields")
-		}
-	}
-
-	*s = append(*s, p)
-
-	return r
-}
-
-type ResList struct {
-	Count, Page, TotalPage int
-	CurrentPage            int           `json:"currentPage"`
-	PerPage                int           `json:"perPage"`
-	Platforms              SelectedUnits `json:"platforms"`
-	Seniority              SelectedUnits `json:"seniority"`
-}
-
 func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, pageNum int) *ResList {
 	return &ResList{
 		Page:        pageNum,
@@ -158,164 +125,4 @@ func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, pageNum int) *ResList
 		Platforms:   getPlatforms(ctx, DB),
 		Seniority:   getSeniorities(ctx, DB),
 	}
-}
-
-func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	err := DB.Conn.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		`select v.status as id, s.status  as label, lower(s.status) as value
-        from vacancies_to_candidates v join status_for_vacs s on (s.id = v.status)
-`,
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getStatusVac(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	statUses, _ := db.NewStatusForVacs(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "status as label", "LOWER(status) as value"),
-		dbEngine.OrderBy("order_num"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getStatuses(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	statUses, _ := db.NewStatuses(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "status as label", "LOWER(status) as value"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getTags(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	statUses, _ := db.NewTags(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.WhereForSelect("parent_id"),
-		dbEngine.ArgsForSelect(0),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getRejectReason(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	statUses, _ := db.NewTags(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.WhereForSelect("parent_id"),
-		dbEngine.ArgsForSelect(3),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	statUses, _ := db.NewLocation_for_vacancies(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.OrderBy("name"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getSeniorities(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	statUses, _ := db.NewSeniorities(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "nazva as label", "LOWER(nazva) as value"),
-		// dbEngine.OrderBy("nazva"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	platforms, _ := db.NewPlatforms(DB)
-
-	err := platforms.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "nazva as label", "LOWER(nazva) as value"),
-		dbEngine.OrderBy("nazva"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getRecruiters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res SelectedUnits) {
-	users, _ := db.NewUsers(DB)
-
-	err := users.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.OrderBy("name"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, opt ...dbEngine.BuildSqlOptions) (res SelectedUnits) {
-	company, _ := db.NewCompanies(DB)
-
-	err := company.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.OrderBy("name"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	SelectSelfScanEach")
-	}
-
-	return
 }

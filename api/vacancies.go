@@ -6,13 +6,14 @@ package api
 
 import (
 	"fmt"
-
 	"github.com/pkg/errors"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
-	"github.com/ruslanBik4/uppeople/db"
 	"github.com/valyala/fasthttp"
+
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 type VacanciesView struct {
@@ -46,9 +47,9 @@ func (v *VacanciesView) GetFields(columns []dbEngine.Column) []interface{} {
 
 type ResVacancies struct {
 	*ResList
-	CandidateStatus SelectedUnits   `json:"candidateStatus"`
-	VacancyStatus   SelectedUnits   `json:"vacancyStatus"`
-	Vacancies       []VacanciesView `json:"vacancies"`
+	CandidateStatus db.SelectedUnits `json:"candidateStatus"`
+	VacancyStatus   db.SelectedUnits `json:"vacancyStatus"`
+	Vacancies       []VacanciesView  `json:"vacancies"`
 }
 
 func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -173,8 +174,8 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	res := ResVacancies{
 		ResList:         NewResList(ctx, DB, id),
 		Vacancies:       make([]VacanciesView, 0),
-		CandidateStatus: getStatusVac(ctx, DB),
-		VacancyStatus:   getStatuses(ctx, DB),
+		CandidateStatus: db.GetStatusForVacAsSelectedUnits(),
+		VacancyStatus:   db.GetStatusAsSelectedUnits(),
 	}
 
 	options := []dbEngine.BuildSqlOptions{
