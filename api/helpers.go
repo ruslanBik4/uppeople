@@ -44,22 +44,6 @@ func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUni
 	return res
 }
 
-func getSeniorities(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
-	statUses, _ := db.NewSeniorities(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "nazva as label", "LOWER(nazva) as value"),
-		// dbEngine.OrderBy("nazva"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
 func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
 	platforms, _ := db.NewPlatforms(DB)
 

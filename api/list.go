@@ -123,6 +123,6 @@ func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, pageNum int) *ResList
 		TotalPage:   10,
 		PerPage:     pageItem,
 		Platforms:   getPlatforms(ctx, DB),
-		Seniority:   getSeniorities(ctx, DB),
+		Seniority:   db.GetSenioritiesAsSelectedUnits(),
 	}
 }

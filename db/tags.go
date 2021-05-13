@@ -306,6 +306,11 @@ func GetTagsAsSelectedUnits() (res SelectedUnits) {
 				})
 		}
 	}
+
+	if len(res) == 0 {
+		return nil
+	}
+
 	return
 }
 
@@ -320,5 +325,10 @@ func GetRejectReasonAsSelectedUnits() (res SelectedUnits) {
 				})
 		}
 	}
+
+	if len(res) == 0 {
+		return nil
+	}
+
 	return
 }

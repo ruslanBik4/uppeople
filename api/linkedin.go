@@ -220,13 +220,8 @@ func HandleGetTagsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleGetSenioritiesLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getSeniorities(ctx, DB),
+		"status": db.GetSenioritiesAsSelectedUnits(),
 	}
 
 	return m, nil

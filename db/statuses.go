@@ -187,6 +187,10 @@ func GetStatusFromId(id int32) *StatusesFields {
 }
 
 func GetStatusAsSelectedUnits() (res SelectedUnits) {
+	if len(seniorityIds) == 0 {
+		return nil
+	}
+
 	for _, status := range statusesIds {
 		res = append(res,
 			&SelectedUnit{
