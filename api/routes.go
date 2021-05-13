@@ -6,10 +6,12 @@ package api
 
 import (
 	"go/types"
+	"runtime/trace"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -586,8 +588,23 @@ func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func init() {
-	for _, route := range PostRoutes {
+	for path, route := range PostRoutes {
 		route.Method = apis.POST
+		route.Fnc = func(handler apis.ApiRouteHandler) apis.ApiRouteHandler {
+			return func(ctx *fasthttp.RequestCtx) (resp interface{}, err error) {
+				ctx1, task := trace.NewTask(ctx, route.Desc)
+				defer task.End()
+				reg := trace.StartRegion(ctx1, path)
+				defer reg.End()
+				logs.DebugLog(reg, task)
+				trace.WithRegion(ctx, path,
+					func() {
+						resp, err = handler(ctx)
+					})
+
+				return
+			}
+		}(route.Fnc)
 	}
 	Routes.AddRoutes(PostRoutes)
 	Routes.AddRoutes(GetRoutes)

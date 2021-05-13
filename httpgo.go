@@ -104,25 +104,13 @@ func init() {
 			return
 		}
 		logs.SetWriters(t, logs.FgErr, logs.FgDebug)
+		if Branch > "" {
+			t.SendMessage(getAppTitle(), true)
+		}
 	}()
 }
 
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
-
-// func (dst *CitextArray) MarshalJSON() ([]byte, error) {
-// 	buf := bytes.NewBufferString("[")
-// 	for i, text := range dst.Elements {
-// 		if i > 0 {
-// 			buf.WriteString(",")
-// 		}
-//
-// 		buf.WriteString(text.String)
-// 	}
-//
-// 	buf.WriteString("]")
-//
-// 	return buf.Bytes(), nil
-// }
 
 // version
 var (
@@ -144,7 +132,7 @@ func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func main() {
-	title := fmt.Sprintf("polymer (%s) Version: %s, Build Time: %s", Branch, Version, Build)
+	title := getAppTitle()
 
 	t := "https"
 	if *fNoSecure {
@@ -160,12 +148,30 @@ func main() {
 		}
 	}()
 
-	if f, err := os.Open("trace.opt"); err != nil {
+	if f, err := os.Create(Branch + ".out"); err != nil {
 		logs.ErrorLog(err, "trace")
 	} else {
-		trace.Start(f)
+		err = trace.Start(f)
+		if err != nil {
+			logs.ErrorLog(err, "trace")
+			runServer()
+		} else {
+			ctx, task := trace.NewTask(context.TODO(), "test")
+			defer task.End()
+			reg := trace.StartRegion(ctx, "httpgo")
+			defer reg.End()
+			logs.DebugLog(reg, task)
+			trace.WithRegion(ctx, "httpgo", runServer)
+		}
 	}
 
+}
+
+func getAppTitle() string {
+	return fmt.Sprintf("UPPeople (%s) Version: %s, Build Time: %s", Branch, Version, Build)
+}
+
+func runServer() {
 	err := httpServer.Run(
 		!(*fNoSecure),
 		path.Join(*fSystem, *fCfgPath, "server.crt"),
@@ -174,5 +180,6 @@ func main() {
 		logs.ErrorStack(err)
 	} else {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
+		logs.DebugLog("shutdown")
 	}
 }
