@@ -42,11 +42,6 @@ var (
 			Fnc:  HandleVersion,
 			Desc: "view version server",
 		},
-		// "/test/": &apis.ApiRoute{
-		// 	Desc:   "default endpoint",
-		// 	Fnc:    HandleTest,
-		// 	Method: apis.POST,
-		// }, //
 	}
 	fPort     = flag.String("port", ":443", "host address to listen on")
 	fNoSecure = flag.Bool("insecure", false, "flag to force https")
@@ -55,7 +50,11 @@ var (
 	fWeb      = flag.String("web", "./", "path to web files")
 )
 
-var httpServer *httpgo.HttpGo
+// instances
+var (
+	httpServer *httpgo.HttpGo
+	teleBot    *telegrambot.TelegramBot
+)
 
 func init() {
 	flag.Parse()
@@ -104,9 +103,7 @@ func init() {
 			return
 		}
 		logs.SetWriters(t, logs.FgErr, logs.FgDebug)
-		if Branch > "" {
-			t.SendMessage(getAppTitle(), true)
-		}
+		teleBot = t
 	}()
 }
 
@@ -148,6 +145,10 @@ func main() {
 		}
 	}()
 
+	if Branch > "" {
+		teleBot.SendMessage(title+"#starting", true)
+	}
+
 	if f, err := os.Create(Branch + ".out"); err != nil {
 		logs.ErrorLog(err, "trace")
 	} else {
@@ -156,6 +157,7 @@ func main() {
 			logs.ErrorLog(err, "trace")
 			runServer()
 		} else {
+			defer trace.Stop()
 			ctx, task := trace.NewTask(context.TODO(), "test")
 			defer task.End()
 			reg := trace.StartRegion(ctx, "httpgo")
@@ -180,6 +182,6 @@ func runServer() {
 		logs.ErrorStack(err)
 	} else {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
-		logs.DebugLog("shutdown")
+		teleBot.SendMessage("#shutdown at %v", true, time.Now())
 	}
 }

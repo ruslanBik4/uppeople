@@ -561,6 +561,17 @@ var (
 				},
 			},
 		},
+		"/api/system/trace/": {
+			Fnc: HandleTrace,
+			Params: []apis.InParam{
+				{
+					Name: "cmd",
+					Desc: "command for pgx",
+					Req:  false,
+					Type: apis.NewTypeInParam(types.String),
+				},
+			},
+		},
 	}
 )
 var hosts = []string{
@@ -590,21 +601,23 @@ func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func init() {
 	for path, route := range PostRoutes {
 		route.Method = apis.POST
-		route.Fnc = func(handler apis.ApiRouteHandler) apis.ApiRouteHandler {
-			return func(ctx *fasthttp.RequestCtx) (resp interface{}, err error) {
-				ctx1, task := trace.NewTask(ctx, route.Desc)
-				defer task.End()
-				reg := trace.StartRegion(ctx1, path)
-				defer reg.End()
-				logs.DebugLog(reg, task)
-				trace.WithRegion(ctx, path,
-					func() {
-						resp, err = handler(ctx)
-					})
+		if trace.IsEnabled() {
+			route.Fnc = func(handler apis.ApiRouteHandler) apis.ApiRouteHandler {
+				return func(ctx *fasthttp.RequestCtx) (resp interface{}, err error) {
+					ctx1, task := trace.NewTask(ctx, route.Desc)
+					defer task.End()
+					reg := trace.StartRegion(ctx1, path)
+					defer reg.End()
+					logs.DebugLog(reg, task)
+					trace.WithRegion(ctx1, path,
+						func() {
+							resp, err = handler(ctx)
+						})
 
-				return
-			}
-		}(route.Fnc)
+					return
+				}
+			}(route.Fnc)
+		}
 	}
 	Routes.AddRoutes(PostRoutes)
 	Routes.AddRoutes(GetRoutes)

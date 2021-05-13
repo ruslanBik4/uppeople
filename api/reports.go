@@ -77,6 +77,10 @@ func downloadCommand(ctx *fasthttp.RequestCtx, sqlCmd string) (interface{}, erro
 						to stdout csv header;`, sqlCmd)
 	// todo add DB name from connection
 	cmd := exec.CommandContext(ctx, `sudo`, `-u`, `postgres`, `psql`, "-d", "uppeople", "-c", sqlCmd)
+	return cmdResponseAsFile(ctx, cmd)
+}
+
+func cmdResponseAsFile(ctx *fasthttp.RequestCtx, cmd *exec.Cmd) (interface{}, error) {
 	cmd.Stdout = ctx.Response.BodyWriter()
 	cmd.Stderr = ctx.Response.BodyWriter()
 	err := cmd.Run()
