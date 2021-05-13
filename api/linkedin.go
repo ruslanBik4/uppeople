@@ -176,13 +176,8 @@ func GetCandidateURL(ctx *fasthttp.RequestCtx, id int32) string {
 }
 
 func HandleGetReasonsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getRejectReason(ctx, DB),
+		"status": db.GetRejectReasonAsSelectedUnits(),
 	}
 
 	return m, nil

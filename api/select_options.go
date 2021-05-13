@@ -44,7 +44,7 @@ func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {
 		Recruiters:    getRecruiters(ctx, DB),
 		Statuses:      db.GetStatusForVacAsSelectedUnits(),
 		Location:      getLocations(ctx, DB),
-		RejectReasons: getRejectReason(ctx, DB),
+		RejectReasons: db.GetRejectReasonAsSelectedUnits(),
 		Seniorities:   getSeniorities(ctx, DB),
 		Tags:          db.GetTagsAsSelectedUnits(),
 		VacancyStatus: db.GetStatusAsSelectedUnits(),

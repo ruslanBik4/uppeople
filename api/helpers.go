@@ -28,23 +28,6 @@ func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUni
 	return res
 }
 
-func getRejectReason(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
-	statUses, _ := db.NewTags(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.WhereForSelect("parent_id"),
-		dbEngine.ArgsForSelect(3),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
 func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
 	statUses, _ := db.NewLocation_for_vacancies(DB)
 

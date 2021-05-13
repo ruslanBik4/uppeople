@@ -296,17 +296,29 @@ func GetTagFromId(id int32) *TagsFields {
 }
 
 func GetTagsAsSelectedUnits() (res SelectedUnits) {
-	if len(tagIds) == 0 {
-		return nil
-	}
-
 	for _, tag := range tagIds {
-		res = append(res,
-			&SelectedUnit{
-				Id:    tag.Id,
-				Label: tag.Name,
-				Value: strings.ToLower(tag.Name),
-			})
+		if tag.ParentId == 0 {
+			res = append(res,
+				&SelectedUnit{
+					Id:    tag.Id,
+					Label: tag.Name,
+					Value: strings.ToLower(tag.Name),
+				})
+		}
+	}
+	return
+}
+
+func GetRejectReasonAsSelectedUnits() (res SelectedUnits) {
+	for _, tag := range tagIds {
+		if tag.ParentId == GetTagIdReject() {
+			res = append(res,
+				&SelectedUnit{
+					Id:    tag.Id,
+					Label: tag.Name,
+					Value: strings.ToLower(tag.Name),
+				})
+		}
 	}
 	return
 }

@@ -66,7 +66,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		ResList:    NewResList(ctx, DB, id),
 		Candidates: make([]*CandidateView, 0),
 		Company:    getCompanies(ctx, DB),
-		Reasons:    getRejectReason(ctx, DB),
+		Reasons:    db.GetRejectReasonAsSelectedUnits(),
 		Recruiter:  getRecruiters(ctx, DB),
 		Statuses:   db.GetStatusForVacAsSelectedUnits(),
 		Tags:       db.GetTagsAsSelectedUnits(),

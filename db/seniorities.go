@@ -226,10 +226,6 @@ func GetSeniorityFromId(id int32) *SenioritiesFields {
 }
 
 func GetSenioritiesAsSelectedUnits() (res SelectedUnits) {
-	if len(seniorityIds) == 0 {
-		return nil
-	}
-
 	for _, sen := range seniorityIds {
 		res = append(res,
 			&SelectedUnit{
