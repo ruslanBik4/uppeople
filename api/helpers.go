@@ -44,22 +44,6 @@ func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUni
 	return res
 }
 
-func getPlatforms(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
-	platforms, _ := db.NewPlatforms(DB)
-
-	err := platforms.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "nazva as label", "LOWER(nazva) as value"),
-		dbEngine.OrderBy("nazva"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
 func getRecruiters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
 	users, _ := db.NewUsers(DB)
 

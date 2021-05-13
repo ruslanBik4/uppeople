@@ -106,13 +106,8 @@ func HandleAuthLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleGetPlatformsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getPlatforms(ctx, DB),
+		"status": db.GetPlatformsAsSelectedUnits(),
 	}
 
 	return m, nil

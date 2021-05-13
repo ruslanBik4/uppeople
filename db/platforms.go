@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
@@ -16,9 +17,11 @@ type Platforms struct {
 }
 
 type PlatformsFields struct {
-	Id    int64          `json:"id"`
+	Id    int32          `json:"id"`
 	Nazva sql.NullString `json:"nazva"`
 }
+
+type PlatformsIdMap map[string]PlatformsFields
 
 func (r *PlatformsFields) RefColValue(name string) interface{} {
 	switch name {
@@ -129,4 +132,30 @@ func (t *Platforms) Update(ctx context.Context, Options ...dbEngine.BuildSqlOpti
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetPlatformFromId(id int32) *PlatformsFields {
+	for _, platform := range platformIds {
+		if platform.Id == id {
+			return &platform
+		}
+	}
+
+	return nil
+}
+
+func GetPlatformsAsSelectedUnits() (res SelectedUnits) {
+	if len(platformIds) == 0 {
+		return nil
+	}
+
+	for _, platform := range platformIds {
+		res = append(res,
+			&SelectedUnit{
+				Id:    platform.Id,
+				Label: platform.Nazva.String,
+				Value: strings.ToLower(platform.Nazva.String),
+			})
+	}
+	return
 }

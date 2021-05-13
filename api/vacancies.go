@@ -172,7 +172,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 	vacancies, _ := db.NewVacancies(DB)
 	res := ResVacancies{
-		ResList:         NewResList(ctx, DB, id),
+		ResList:         NewResList(id),
 		Vacancies:       make([]VacanciesView, 0),
 		CandidateStatus: db.GetStatusForVacAsSelectedUnits(),
 		VacancyStatus:   db.GetStatusAsSelectedUnits(),

@@ -30,7 +30,7 @@ func HandleAllPlatforms(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	platforms, _ := db.NewPlatforms(DB)
 	res := ResPlatforms{
-		ResList: NewResList(ctx, DB, id),
+		ResList: NewResList(id),
 	}
 
 	optionsCount := []dbEngine.BuildSqlOptions{

@@ -23,6 +23,18 @@ type ResList struct {
 	Seniority              db.SelectedUnits `json:"seniority"`
 }
 
+func NewResList(pageNum int) *ResList {
+	return &ResList{
+		Page:        pageNum,
+		CurrentPage: pageNum,
+		Count:       10 * pageItem,
+		TotalPage:   10,
+		PerPage:     pageItem,
+		Platforms:   db.GetPlatformsAsSelectedUnits(),
+		Seniority:   db.GetSenioritiesAsSelectedUnits(),
+	}
+}
+
 func NewCandidateView(ctx *fasthttp.RequestCtx,
 	record *db.CandidatesFields,
 	DB *dbEngine.DB,
@@ -113,16 +125,4 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	}
 
 	return ref
-}
-
-func NewResList(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, pageNum int) *ResList {
-	return &ResList{
-		Page:        pageNum,
-		CurrentPage: pageNum,
-		Count:       10 * pageItem,
-		TotalPage:   10,
-		PerPage:     pageItem,
-		Platforms:   getPlatforms(ctx, DB),
-		Seniority:   db.GetSenioritiesAsSelectedUnits(),
-	}
 }

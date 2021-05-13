@@ -63,7 +63,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	res := ResCandidates{
-		ResList:    NewResList(ctx, DB, id),
+		ResList:    NewResList(id),
 		Candidates: make([]*CandidateView, 0),
 		Company:    getCompanies(ctx, DB),
 		Reasons:    db.GetRejectReasonAsSelectedUnits(),

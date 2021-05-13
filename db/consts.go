@@ -115,24 +115,4 @@ var tagIds TagIdMap
 var statusesIds StatusIdMap
 var statusesForVacIds StatusForVacIdMap
 var seniorityIds SeniorityIdMap
-
-//Ыутщкшешуы values
-//1,Jun
-//2,Mid
-//3,Sen
-//4,Lead
-//5,Architect
-//6,Jun-Mid
-//7,Mid-Sen
-//8,Sen-Lead
-
-//
-//2,Interview
-//3,Test
-//4,Final Interview
-//5,OFFER
-//6,Hired
-//8,WR
-//9,Review
-//10,Rejected
-//11,On hold
+var platformIds PlatformsIdMap

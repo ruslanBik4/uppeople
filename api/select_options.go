@@ -40,7 +40,7 @@ type selectOpt struct {
 func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {
 	s := selectOpt{
 		Companies:     getCompanies(ctx, DB),
-		Platforms:     getPlatforms(ctx, DB),
+		Platforms:     db.GetPlatformsAsSelectedUnits(),
 		Recruiters:    getRecruiters(ctx, DB),
 		Statuses:      db.GetStatusForVacAsSelectedUnits(),
 		Location:      getLocations(ctx, DB),

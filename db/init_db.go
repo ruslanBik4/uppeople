@@ -69,6 +69,11 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 		logs.ErrorLog(err, "on init SeniorityIds")
 	}
 
+	err = initPlatformIds(ctx, db)
+	if err != nil {
+		logs.ErrorLog(err, "on init PlatformIds")
+	}
+
 	return db
 }
 
@@ -341,6 +346,27 @@ func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
 
 	if err != nil {
 		logs.ErrorLog(err, "while reading seniorities from db to seniorityIds(db.SeniorityIdMap)")
+	}
+
+	return
+}
+
+func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	platformIds = PlatformsIdMap{}
+	platformsTable, err := NewPlatforms(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TablePlatforms)
+		return err
+	}
+
+	err = platformsTable.SelectSelfScanEach(ctx,
+		func(record *PlatformsFields) error {
+			platformIds[record.Nazva.String] = *record
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading platforms from db to platformIds(db.PlatformsIdMap)")
 	}
 
 	return
