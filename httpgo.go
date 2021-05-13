@@ -8,8 +8,10 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"os"
 	"path"
 	"regexp"
+	"runtime/trace"
 	"time"
 
 	"github.com/ruslanBik4/httpgo/apis"
@@ -157,6 +159,12 @@ func main() {
 			logs.ErrorStack(err)
 		}
 	}()
+
+	if f, err := os.Open("trace.opt"); err != nil {
+		logs.ErrorLog(err, "trace")
+	} else {
+		trace.Start(f)
+	}
 
 	err := httpServer.Run(
 		!(*fNoSecure),
