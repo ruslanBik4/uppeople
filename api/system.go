@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime/trace"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -31,8 +32,8 @@ func HandleTrace(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return s, errors.Wrap(err, cmd.String()+s)
 	}
 
-	// parts := strings.Split(s, ":")
-	url := fmt.Sprintf("%s://%s%s/", ctx.URI().Scheme(), string(ctx.Host()), port)
+	host := strings.Split(string(ctx.Host()), ":")
+	url := fmt.Sprintf("%s://%s%s/", ctx.URI().Scheme(), host[0], port)
 	// parts[len(parts)-1])
 	logs.DebugLog("redirect:", url)
 	ctx.Redirect(url, fasthttp.StatusMovedPermanently)
