@@ -33,7 +33,7 @@ func HandleTrace(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	host := strings.Split(string(ctx.Host()), ":")
-	url := fmt.Sprintf("%s://%s%s/", ctx.URI().Scheme(), host[0], port)
+	url := fmt.Sprintf("http://%s%s/", host[0], port)
 	// parts[len(parts)-1])
 	logs.DebugLog("redirect:", url)
 	ctx.Redirect(url, fasthttp.StatusMovedPermanently)

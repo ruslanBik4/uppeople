@@ -17,11 +17,11 @@ import (
 type ResCandidates struct {
 	*ResList
 	Candidates []*CandidateView `json:"candidates"`
-	Company    db.SelectedUnits `json:"company"`
-	Recruiter  db.SelectedUnits `json:"recruiter"`
-	Reasons    db.SelectedUnits `json:"reasons"`
-	Statuses   db.SelectedUnits `json:"statuses"`
-	Tags       db.SelectedUnits `json:"tags"`
+	// Company    db.SelectedUnits `json:"company"`
+	// Recruiter  db.SelectedUnits `json:"recruiter"`
+	// Reasons    db.SelectedUnits `json:"reasons"`
+	// Statuses   db.SelectedUnits `json:"statuses"`
+	// Tags       db.SelectedUnits `json:"tags"`
 }
 
 type SearchCandidates struct {
@@ -65,11 +65,11 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	res := ResCandidates{
 		ResList:    NewResList(id),
 		Candidates: make([]*CandidateView, 0),
-		Company:    getCompanies(ctx, DB),
-		Reasons:    db.GetRejectReasonAsSelectedUnits(),
-		Recruiter:  getRecruiters(ctx, DB),
-		Statuses:   db.GetStatusForVacAsSelectedUnits(),
-		Tags:       db.GetTagsAsSelectedUnits(),
+		// Company:    getCompanies(ctx, DB),
+		// Reasons:    db.GetRejectReasonAsSelectedUnits(),
+		// Recruiter:  getRecruiters(ctx, DB),
+		// Statuses:   db.GetStatusForVacAsSelectedUnits(),
+		// Tags:       db.GetTagsAsSelectedUnits(),
 	}
 	optionsCount := []dbEngine.BuildSqlOptions{
 		dbEngine.ColumnsForSelect("count(*)"),

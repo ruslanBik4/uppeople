@@ -604,7 +604,7 @@ func init() {
 		if trace.IsEnabled() {
 			route.Fnc = func(handler apis.ApiRouteHandler) apis.ApiRouteHandler {
 				return func(ctx *fasthttp.RequestCtx) (resp interface{}, err error) {
-					ctx1, task := trace.NewTask(ctx, route.Desc)
+					ctx1, task := trace.NewTask(ctx, path)
 					defer task.End()
 					reg := trace.StartRegion(ctx1, path)
 					defer reg.End()
@@ -620,5 +620,26 @@ func init() {
 		}
 	}
 	Routes.AddRoutes(PostRoutes)
+
+	for path, route := range GetRoutes {
+		if trace.IsEnabled() {
+			route.Fnc = func(handler apis.ApiRouteHandler) apis.ApiRouteHandler {
+				return func(ctx *fasthttp.RequestCtx) (resp interface{}, err error) {
+					ctx1, task := trace.NewTask(ctx, path)
+					defer task.End()
+					reg := trace.StartRegion(ctx1, path)
+					defer reg.End()
+					logs.DebugLog(reg, task)
+					trace.WithRegion(ctx1, path,
+						func() {
+							resp, err = handler(ctx)
+						})
+
+					return
+				}
+			}(route.Fnc)
+		}
+	}
+
 	Routes.AddRoutes(GetRoutes)
 }
