@@ -47,9 +47,9 @@ func (r *Location_for_vacanciesFields) ColValue(name string) interface{} {
 }
 
 func NewLocation_for_vacancies(db *dbEngine.DB) (*Location_for_vacancies, error) {
-	table, ok := db.Tables[TableLocationForVacancies]
+	table, ok := db.Tables[TABLE_LocationForVacancies]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableLocationForVacancies}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_LocationForVacancies}
 	}
 
 	return &Location_for_vacancies{

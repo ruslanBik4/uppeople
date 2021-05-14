@@ -76,9 +76,9 @@ func (r *Comments_for_candidatesFields) ColValue(name string) interface{} {
 }
 
 func NewComments_for_candidates(db *dbEngine.DB) (*Comments_for_candidates, error) {
-	table, ok := db.Tables[TableCommentsForCandidates]
+	table, ok := db.Tables[TABLE_CommentsForCandidates]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableCommentsForCandidates}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_CommentsForCandidates}
 	}
 
 	return &Comments_for_candidates{

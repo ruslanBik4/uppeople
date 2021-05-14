@@ -96,9 +96,9 @@ func (r *ContactsFields) ColValue(name string) interface{} {
 }
 
 func NewContacts(db *dbEngine.DB) (*Contacts, error) {
-	table, ok := db.Tables[TableContacts]
+	table, ok := db.Tables[TABLE_Contacts]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableContacts}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Contacts}
 	}
 
 	return &Contacts{

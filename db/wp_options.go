@@ -61,9 +61,9 @@ func (r *Wp_optionsFields) ColValue(name string) interface{} {
 }
 
 func NewWp_options(db *dbEngine.DB) (*Wp_options, error) {
-	table, ok := db.Tables[TableWPOptions]
+	table, ok := db.Tables[TABLE_WPOptions]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableWPOptions}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WPOptions}
 	}
 
 	return &Wp_options{

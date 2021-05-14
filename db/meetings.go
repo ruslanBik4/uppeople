@@ -104,9 +104,9 @@ func (r *MeetingsFields) ColValue(name string) interface{} {
 }
 
 func NewMeetings(db *dbEngine.DB) (*Meetings, error) {
-	table, ok := db.Tables[TableMeetings]
+	table, ok := db.Tables[TABLE_Meetings]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableMeetings}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Meetings}
 	}
 
 	return &Meetings{

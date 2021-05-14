@@ -54,9 +54,9 @@ func (r *Wp_term_relationshipsFields) ColValue(name string) interface{} {
 }
 
 func NewWp_term_relationships(db *dbEngine.DB) (*Wp_term_relationships, error) {
-	table, ok := db.Tables[TableWPTermRelationships]
+	table, ok := db.Tables[TABLE_WPTermRelationships]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableWPTermRelationships}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WPTermRelationships}
 	}
 
 	return &Wp_term_relationships{

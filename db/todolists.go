@@ -69,9 +69,9 @@ func (r *TodolistsFields) ColValue(name string) interface{} {
 }
 
 func NewTodolists(db *dbEngine.DB) (*Todolists, error) {
-	table, ok := db.Tables[TableTodoLists]
+	table, ok := db.Tables[TABLE_TodoLists]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableTodoLists}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_TodoLists}
 	}
 
 	return &Todolists{

@@ -61,9 +61,9 @@ func (r *DictionaryFields) ColValue(name string) interface{} {
 }
 
 func NewDictionary(db *dbEngine.DB) (*Dictionary, error) {
-	table, ok := db.Tables[TableDictionary]
+	table, ok := db.Tables[TABLE_Dictionary]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableDictionary}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Dictionary}
 	}
 
 	return &Dictionary{

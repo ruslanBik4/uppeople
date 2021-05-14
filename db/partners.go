@@ -54,9 +54,9 @@ func (r *PartnersFields) ColValue(name string) interface{} {
 }
 
 func NewPartners(db *dbEngine.DB) (*Partners, error) {
-	table, ok := db.Tables[TablePartners]
+	table, ok := db.Tables[TABLE_Partners]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TablePartners}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Partners}
 	}
 
 	return &Partners{

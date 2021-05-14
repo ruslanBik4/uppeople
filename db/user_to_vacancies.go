@@ -69,9 +69,9 @@ func (r *User_to_vacanciesFields) ColValue(name string) interface{} {
 }
 
 func NewUser_to_vacancies(db *dbEngine.DB) (*User_to_vacancies, error) {
-	table, ok := db.Tables[TableUserToVacancies]
+	table, ok := db.Tables[TABLE_UserToVacancies]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableUserToVacancies}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_UserToVacancies}
 	}
 
 	return &User_to_vacancies{

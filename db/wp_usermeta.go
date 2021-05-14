@@ -61,9 +61,9 @@ func (r *Wp_usermetaFields) ColValue(name string) interface{} {
 }
 
 func NewWp_usermeta(db *dbEngine.DB) (*Wp_usermeta, error) {
-	table, ok := db.Tables[TableWPUserMeta]
+	table, ok := db.Tables[TABLE_WPUserMeta]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableWPUserMeta}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WPUserMeta}
 	}
 
 	return &Wp_usermeta{

@@ -61,9 +61,9 @@ func (r *Patterns_listFields) ColValue(name string) interface{} {
 }
 
 func NewPatterns_list(db *dbEngine.DB) (*Patterns_list, error) {
-	table, ok := db.Tables[TablePatternsList]
+	table, ok := db.Tables[TABLE_PatternsList]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TablePatternsList}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_PatternsList}
 	}
 
 	return &Patterns_list{

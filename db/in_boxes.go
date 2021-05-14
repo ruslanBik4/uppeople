@@ -69,9 +69,9 @@ func (r *In_boxesFields) ColValue(name string) interface{} {
 }
 
 func NewIn_boxes(db *dbEngine.DB) (*In_boxes, error) {
-	table, ok := db.Tables[TableInBoxes]
+	table, ok := db.Tables[TABLE_InBoxes]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableInBoxes}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_InBoxes}
 	}
 
 	return &In_boxes{

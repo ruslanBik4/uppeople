@@ -83,9 +83,9 @@ func (r *CommentsFields) ColValue(name string) interface{} {
 }
 
 func NewComments(db *dbEngine.DB) (*Comments, error) {
-	table, ok := db.Tables[TableComments]
+	table, ok := db.Tables[TABLE_Comments]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableComments}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Comments}
 	}
 
 	return &Comments{

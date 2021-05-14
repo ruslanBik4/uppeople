@@ -140,9 +140,9 @@ func (r *Wp_simply_static_pagesFields) ColValue(name string) interface{} {
 }
 
 func NewWp_simply_static_pages(db *dbEngine.DB) (*Wp_simply_static_pages, error) {
-	table, ok := db.Tables[TableWPSimplyStaticPages]
+	table, ok := db.Tables[TABLE_WPSimplyStaticPages]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableWPSimplyStaticPages}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WPSimplyStaticPages}
 	}
 
 	return &Wp_simply_static_pages{

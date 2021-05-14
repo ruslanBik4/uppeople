@@ -62,9 +62,9 @@ func (r *Oauth_refresh_tokensFields) ColValue(name string) interface{} {
 }
 
 func NewOauth_refresh_tokens(db *dbEngine.DB) (*Oauth_refresh_tokens, error) {
-	table, ok := db.Tables[TableOauthRefreshTokens]
+	table, ok := db.Tables[TABLE_OauthRefreshTokens]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableOauthRefreshTokens}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OauthRefreshTokens}
 	}
 
 	return &Oauth_refresh_tokens{

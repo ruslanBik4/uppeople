@@ -82,9 +82,9 @@ func (r *Form_blocksFields) ColValue(name string) interface{} {
 }
 
 func NewForm_blocks(db *dbEngine.DB) (*Form_blocks, error) {
-	table, ok := db.Tables[TableFormBlocks]
+	table, ok := db.Tables[TABLE_FormBlocks]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableFormBlocks}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_FormBlocks}
 	}
 
 	return &Form_blocks{

@@ -54,9 +54,9 @@ func (r *Email_templatesFields) ColValue(name string) interface{} {
 }
 
 func NewEmail_templates(db *dbEngine.DB) (*Email_templates, error) {
-	table, ok := db.Tables[TableEmailTemplates]
+	table, ok := db.Tables[TABLE_EmailTemplates]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableEmailTemplates}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_EmailTemplates}
 	}
 
 	return &Email_templates{

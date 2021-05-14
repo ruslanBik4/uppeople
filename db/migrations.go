@@ -54,9 +54,9 @@ func (r *MigrationsFields) ColValue(name string) interface{} {
 }
 
 func NewMigrations(db *dbEngine.DB) (*Migrations, error) {
-	table, ok := db.Tables[TableMigrations]
+	table, ok := db.Tables[TABLE_Migrations]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableMigrations}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Migrations}
 	}
 
 	return &Migrations{

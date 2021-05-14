@@ -52,9 +52,9 @@ func (r *StatusesFields) ColValue(name string) interface{} {
 }
 
 func NewStatuses(db *dbEngine.DB) (*Statuses, error) {
-	table, ok := db.Tables[TableStatuses]
+	table, ok := db.Tables[TABLE_Statuses]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableStatuses}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Statuses}
 	}
 
 	return &Statuses{
@@ -137,40 +137,40 @@ func (t *Statuses) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptio
 }
 
 func GetStatusIdHot() int32 {
-	if status, ok := statusesIds[StatusHot]; ok {
+	if status, ok := statusesIds[STATUS_Hot]; ok {
 		return status.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusHot))
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_Hot))
 	}
 
 	return -1
 }
 
 func GetStatusIdOpen() int32 {
-	if status, ok := statusesIds[StatusOpen]; ok {
+	if status, ok := statusesIds[STATUS_Open]; ok {
 		return status.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusOpen))
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_Open))
 	}
 
 	return -1
 }
 
 func GetStatusIdClosed() int32 {
-	if status, ok := statusesIds[StatusClosed]; ok {
+	if status, ok := statusesIds[STATUS_Closed]; ok {
 		return status.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusClosed))
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_Closed))
 	}
 
 	return -1
 }
 
 func GetStatusIdPaused() int32 {
-	if status, ok := statusesIds[StatusPaused]; ok {
+	if status, ok := statusesIds[STATUS_Paused]; ok {
 		return status.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", StatusPaused))
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_Paused))
 	}
 
 	return -1

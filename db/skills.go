@@ -47,9 +47,9 @@ func (r *SkillsFields) ColValue(name string) interface{} {
 }
 
 func NewSkills(db *dbEngine.DB) (*Skills, error) {
-	table, ok := db.Tables[TableSkills]
+	table, ok := db.Tables[TABLE_Skills]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableSkills}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Skills}
 	}
 
 	return &Skills{

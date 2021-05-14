@@ -132,9 +132,9 @@ func (r *UsersFields) ColValue(name string) interface{} {
 }
 
 func NewUsers(db *dbEngine.DB) (*Users, error) {
-	table, ok := db.Tables[TableUsers]
+	table, ok := db.Tables[TABLE_Users]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableUsers}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Users}
 	}
 
 	return &Users{

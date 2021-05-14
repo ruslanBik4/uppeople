@@ -66,9 +66,9 @@ func (r *StatusForVacsFields) ColValue(name string) interface{} {
 }
 
 func NewStatusForVacs(db *dbEngine.DB) (*StatusForVacs, error) {
-	table, ok := db.Tables[TableStatusForVacs]
+	table, ok := db.Tables[TABLE_StatusForVacs]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TableStatusForVacs}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_StatusForVacs}
 	}
 
 	return &StatusForVacs{
@@ -151,90 +151,90 @@ func (t *StatusForVacs) Update(ctx context.Context, Options ...dbEngine.BuildSql
 }
 
 func GetStatusForVacIdInterview() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacInterview]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Interview]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacInterview))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Interview))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdTest() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacTest]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Test]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacTest))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Test))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdFinalInterview() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacFinalInterview]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_FinalInterview]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacFinalInterview))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_FinalInterview))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdOffer() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacOffer]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Offer]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacOffer))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Offer))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdHired() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacHired]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Hired]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacHired))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Hired))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdWR() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacWR]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_WR]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacWR))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_WR))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdReview() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacReview]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Review]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacReview))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Review))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdRejected() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacRejected]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Rejected]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacRejected))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Rejected))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdOnHold() int32 {
-	if statForVac, ok := statusesForVacIds[StatusForVacOnHold]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_OnHold]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", StatusForVacOnHold))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_OnHold))
 	}
 
 	return -1
