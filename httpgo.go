@@ -137,21 +137,23 @@ func main() {
 
 	ch := make(chan string)
 	go func() {
-		teleBot, err := telegrambot.NewTelegramBotFromEnv()
+		tBot, err := telegrambot.NewTelegramBotFromEnv()
 		if err != nil {
 			logs.ErrorLog(err, "NewTelegramBotFromEnv")
 			return
 		}
-		logs.SetWriters(teleBot, logs.FgErr, logs.FgDebug)
+		logs.SetWriters(tBot, logs.FgErr, logs.FgDebug)
 		if Branch > "" {
-			err, resp := teleBot.SendMessage(title+"#starting", true)
+			logs.DebugLog(title)
+			err, resp := tBot.SendMessage(title+"#starting", true)
 			if err != nil {
 				logs.ErrorLog(err, resp)
 			}
 		}
 
 		msg := <-ch
-		err, resp := teleBot.SendMessage(
+		logs.DebugLog(msg)
+		err, resp := tBot.SendMessage(
 			fmt.Sprintf("#shutdown at %v %s", time.Now(), msg),
 			true)
 		if err != nil {
