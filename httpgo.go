@@ -102,8 +102,8 @@ func init() {
 			logs.ErrorLog(err, "NewTelegramBotFromEnv")
 			return
 		}
-		logs.SetWriters(t, logs.FgErr, logs.FgDebug)
 		teleBot = t
+		logs.SetWriters(teleBot, logs.FgErr, logs.FgDebug)
 	}()
 }
 
@@ -116,7 +116,7 @@ var (
 	Branch  string
 )
 
-// HandleLogServer show status httpgo
+// HandleVersion show status httpgo
 // @/api/version/
 func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
@@ -187,11 +187,13 @@ func runServer() {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
 	}
 
-	err, resp := teleBot.SendMessage(
-		fmt.Sprintf("#shutdown at %v %v", time.Now(), err),
-		false)
-	if err != nil {
-		logs.ErrorLog(err, resp)
+	if teleBot != nil {
+		err, resp := teleBot.SendMessage(
+			fmt.Sprintf("#shutdown at %v %v", time.Now(), err),
+			false)
+		if err != nil {
+			logs.ErrorLog(err, resp)
+		}
+		<-time.After(time.Second)
 	}
-	<-time.After(time.Second)
 }
