@@ -185,10 +185,13 @@ func runServer() {
 		logs.ErrorStack(err)
 	} else {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
-		err, resp := teleBot.SendMessage("#shutdown at %v", true, time.Now())
-		if err != nil {
-			logs.ErrorLog(err, resp)
-		}
-		<-time.After(time.Second)
 	}
+
+	err, resp := teleBot.SendMessage(
+		fmt.Sprintf("#shutdown at %v %v", time.Now(), err),
+		false)
+	if err != nil {
+		logs.ErrorLog(err, resp)
+	}
+	<-time.After(time.Second)
 }
