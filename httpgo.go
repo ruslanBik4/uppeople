@@ -53,7 +53,6 @@ var (
 // instances
 var (
 	httpServer *httpgo.HttpGo
-	teleBot    *telegrambot.TelegramBot
 )
 
 func init() {
@@ -96,15 +95,6 @@ func init() {
 	ctx := context.WithValue(context.TODO(), "mapRouting", api.Routes)
 	services.InitServices(ctx, "mail", "showLogs")
 
-	// go func() {
-	t, err := telegrambot.NewTelegramBotFromEnv()
-	if err != nil {
-		logs.ErrorLog(err, "NewTelegramBotFromEnv")
-		return
-	}
-	teleBot = t
-	logs.SetWriters(teleBot, logs.FgErr, logs.FgDebug)
-	// }()
 }
 
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
@@ -145,12 +135,30 @@ func main() {
 		}
 	}()
 
-	if Branch > "" && teleBot != nil {
-		err, resp := teleBot.SendMessage(title+"#starting", true)
+	ch := make(chan string)
+	go func() {
+		teleBot, err := telegrambot.NewTelegramBotFromEnv()
+		if err != nil {
+			logs.ErrorLog(err, "NewTelegramBotFromEnv")
+			return
+		}
+		logs.SetWriters(teleBot, logs.FgErr, logs.FgDebug)
+		if Branch > "" {
+			err, resp := teleBot.SendMessage(title+"#starting", true)
+			if err != nil {
+				logs.ErrorLog(err, resp)
+			}
+		}
+
+		msg := <-ch
+		err, resp := teleBot.SendMessage(
+			fmt.Sprintf("#shutdown at %v %s", time.Now(), msg),
+			false)
 		if err != nil {
 			logs.ErrorLog(err, resp)
 		}
-	}
+		ch <- ""
+	}()
 
 	if f, err := os.Create(Branch + ".out"); err != nil {
 		logs.ErrorLog(err, "trace")
@@ -170,6 +178,8 @@ func main() {
 		}
 	}
 
+	ch <- "finish"
+	<-ch
 }
 
 func getAppTitle() string {
@@ -187,13 +197,4 @@ func runServer() {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
 	}
 
-	if teleBot != nil {
-		err, resp := teleBot.SendMessage(
-			fmt.Sprintf("#shutdown at %v %v", time.Now(), err),
-			false)
-		if err != nil {
-			logs.ErrorLog(err, resp)
-		}
-		<-time.After(time.Second)
-	}
 }
