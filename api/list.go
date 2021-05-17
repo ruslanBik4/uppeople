@@ -76,6 +76,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		`select v.id,
+		j.name, 
 		j.name as label, 
 		LOWER(j.name) as value, 
 		user_ids, 
