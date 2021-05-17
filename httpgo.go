@@ -153,11 +153,10 @@ func main() {
 		msg := <-ch
 		err, resp := teleBot.SendMessage(
 			fmt.Sprintf("#shutdown at %v %s", time.Now(), msg),
-			false)
+			true)
 		if err != nil {
 			logs.ErrorLog(err, resp)
 		}
-		ch <- ""
 	}()
 
 	if f, err := os.Create(Branch + ".out"); err != nil {
@@ -179,7 +178,7 @@ func main() {
 	}
 
 	ch <- "finish"
-	<-ch
+	time.After(time.Second)
 }
 
 func getAppTitle() string {
