@@ -142,7 +142,6 @@ func main() {
 			logs.ErrorLog(err, "NewTelegramBotFromEnv")
 			return
 		}
-		logs.SetWriters(tBot, logs.FgErr, logs.FgDebug)
 		if Branch > "" {
 			logs.DebugLog(title)
 			err, resp := tBot.SendMessage(title+"#starting", true)
@@ -150,6 +149,8 @@ func main() {
 				logs.ErrorLog(err, resp)
 			}
 		}
+
+		logs.SetWriters(tBot, logs.FgErr, logs.FgDebug)
 
 		msg := <-ch
 		logs.DebugLog(msg)

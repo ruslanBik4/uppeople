@@ -1,7 +1,8 @@
 create table platforms
 (
-    id   bigserial not null primary key,
-    name varchar(255) not null
+    id   serial not null,
+    name varchar(255) not null,
+    primary key (id)
 );
 
 COMMENT ON TABLE platforms IS 'platforms of candidates';
