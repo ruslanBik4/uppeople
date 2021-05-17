@@ -19,10 +19,10 @@ type StatusForVacs struct {
 }
 
 type StatusForVacsFields struct {
-	Id       int32          `json:"id"`
-	Status   sql.NullString `json:"status"`
-	Color    string         `json:"color"`
-	OrderNum int64          `json:"order_num"`
+	Id       int32  `json:"id"`
+	Status   string `json:"status"`
+	Color    string `json:"color"`
+	OrderNum int64  `json:"order_num"`
 }
 
 type StatusForVacIdMap map[string]StatusForVacsFields
@@ -259,8 +259,8 @@ func GetStatusForVacAsSelectedUnits() (res SelectedUnits) {
 		res = append(res,
 			&SelectedUnit{
 				Id:    statForVac.Id,
-				Label: statForVac.Status.String,
-				Value: strings.ToLower(statForVac.Status.String),
+				Label: statForVac.Status,
+				Value: strings.ToLower(statForVac.Status),
 			})
 	}
 	return

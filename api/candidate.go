@@ -252,7 +252,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	platformName := platform.Record.Nazva.String
+	platformName := platform.Record.Name
 	seniority := db.GetSeniorityFromId(table.Record.Seniority_id)
 
 	maps := make(map[string]interface{}, 0)
@@ -354,21 +354,15 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			},
 			Id: vacancy["id"].(int32),
 			Status_vac: &db.StatusForVacsFields{
-				Id: vacancy["status_id"].(int32),
-				Status: sql.NullString{
-					String: vacancy["status"].(string),
-					Valid:  true,
-				},
+				Id:     vacancy["status_id"].(int32),
+				Status: vacancy["status"].(string),
 			},
 			Vacancy: VacanciesDTO{
 				&db.VacanciesFields{
 					Id:     vacancy["id"].(int32),
 					Salary: vacancy["salary"].(int32),
 				},
-				&db.PlatformsFields{Nazva: sql.NullString{
-					String: vacancy["platform"].(string),
-					Valid:  true,
-				}},
+				&db.PlatformsFields{Name: vacancy["platform"].(string)},
 				vacancy["date_last_change"].(time.Time),
 			},
 			Date_last_change: vacancy["date_last_change"].(time.Time),

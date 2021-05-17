@@ -228,9 +228,9 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 			}
 
-			view.Seniority = db.GetSeniorityFromId(record.SeniorityId).Nazva.String
+			view.Seniority = db.GetSeniorityFromId(record.SeniorityId).Name
 
-			view.Platform = db.GetPlatformFromId(record.PlatformId).Nazva.String
+			view.Platform = db.GetPlatformFromId(record.PlatformId).Name
 
 			res.Vacancies = append(res.Vacancies, view)
 

@@ -19,8 +19,8 @@ type Statuses struct {
 }
 
 type StatusesFields struct {
-	Id     int32          `json:"id"`
-	Status sql.NullString `json:"status"`
+	Id     int32  `json:"id"`
+	Status string `json:"status"`
 }
 
 type StatusIdMap map[string]StatusesFields
@@ -195,8 +195,8 @@ func GetStatusAsSelectedUnits() (res SelectedUnits) {
 		res = append(res,
 			&SelectedUnit{
 				Id:    status.Id,
-				Label: status.Status.String,
-				Value: strings.ToLower(status.Status.String),
+				Label: status.Status,
+				Value: strings.ToLower(status.Status),
 			})
 	}
 	return

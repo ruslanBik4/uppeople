@@ -298,7 +298,7 @@ func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
 
 	err = statusesTable.SelectSelfScanEach(ctx,
 		func(record *StatusesFields) error {
-			statusesIds[record.Status.String] = *record
+			statusesIds[record.Status] = *record
 			return nil
 		})
 
@@ -319,7 +319,7 @@ func initStatusesForVacIds(ctx context.Context, db *dbEngine.DB) (err error) {
 
 	err = statusesForVacsTable.SelectSelfScanEach(ctx,
 		func(record *StatusForVacsFields) error {
-			statusesForVacIds[record.Status.String] = *record
+			statusesForVacIds[record.Status] = *record
 			return nil
 		})
 
@@ -340,7 +340,7 @@ func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
 
 	err = seniorityTable.SelectSelfScanEach(ctx,
 		func(record *SenioritiesFields) error {
-			seniorityIds[record.Nazva.String] = *record
+			seniorityIds[record.Name] = *record
 			return nil
 		})
 
@@ -361,7 +361,7 @@ func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
 
 	err = platformsTable.SelectSelfScanEach(ctx,
 		func(record *PlatformsFields) error {
-			platformIds[record.Nazva.String] = *record
+			platformIds[record.Name] = *record
 			return nil
 		})
 

@@ -17,8 +17,8 @@ type Platforms struct {
 }
 
 type PlatformsFields struct {
-	Id    int32          `json:"id"`
-	Nazva sql.NullString `json:"nazva"`
+	Id   int32  `json:"id"`
+	Name string `json:"nazva"`
 }
 
 type PlatformsIdMap map[string]PlatformsFields
@@ -29,7 +29,7 @@ func (r *PlatformsFields) RefColValue(name string) interface{} {
 		return &r.Id
 
 	case "nazva":
-		return &r.Nazva
+		return &r.Name
 
 	default:
 		return nil
@@ -42,7 +42,7 @@ func (r *PlatformsFields) ColValue(name string) interface{} {
 		return r.Id
 
 	case "nazva":
-		return r.Nazva
+		return r.Name
 
 	default:
 		return nil
@@ -153,8 +153,8 @@ func GetPlatformsAsSelectedUnits() (res SelectedUnits) {
 		res = append(res,
 			&SelectedUnit{
 				Id:    platform.Id,
-				Label: platform.Nazva.String,
-				Value: strings.ToLower(platform.Nazva.String),
+				Label: platform.Name,
+				Value: strings.ToLower(platform.Name),
 			})
 	}
 	return

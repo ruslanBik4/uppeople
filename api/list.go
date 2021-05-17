@@ -64,36 +64,18 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.TagColor = ref.Tags.Color
 	}
 
-	ref.Seniority = db.GetSeniorityFromId(record.Seniority_id).Nazva.String
+	ref.Seniority = db.GetSeniorityFromId(record.Seniority_id).Name
 
 	platform := db.GetPlatformFromId(record.Platform_id)
-	ref.Platform = platform.Nazva.String
+	ref.Platform = platform.Name
 	ref.ViewCandidate.Platform = &db.SelectedUnit{
 		Id:    platform.Id,
-		Label: platform.Nazva.String,
-		Value: strings.ToLower(platform.Nazva.String),
+		Label: platform.Name,
+		Value: strings.ToLower(platform.Name),
 	}
 
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
-		`select v.id,
-		j.name, 
-		j.name as label, 
-		LOWER(j.name) as value, 
-		user_ids, 
-		platform_id,
-        coalesce( (select u.name from users u where u.id = vc.user_id), '') as recruiter,
-		CONCAT(platforms.nazva, ' ("', 
-			(select nazva from seniorities where id=seniority_id), '")') as platform,
-		companies, sv.id as status_id, v.company_id, sv.status, salary, 
-		coalesce(vc.date_last_change, vc.date_create) as date_last_change, vc.rej_text, sv.color
-FROM vacancies v JOIN companies on (v.company_id=companies.id)
-	JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id )
-	JOIN platforms ON (v.platform_id = platforms.id)
-	JOIN status_for_vacs sv on (vc.status = sv.id)
-    JOIN LATERAL (select concat(companies.name, ' ("', platforms.nazva, '")') as name) j on true
-	WHERE vc.candidate_id=$1 AND vc.status!=1
-    order by date_last_change desc
-`,
+		SQL_VIEW_CANDIDATE_VACANCIES,
 		ref.ViewCandidate.Id,
 	)
 	if err != nil {

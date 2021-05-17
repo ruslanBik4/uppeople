@@ -19,8 +19,8 @@ type Seniorities struct {
 }
 
 type SenioritiesFields struct {
-	Id    int32          `json:"id"`
-	Nazva sql.NullString `json:"nazva"`
+	Id   int32  `json:"id"`
+	Name string `json:"nazva"`
 }
 
 type SeniorityIdMap map[string]SenioritiesFields
@@ -31,7 +31,7 @@ func (r *SenioritiesFields) RefColValue(name string) interface{} {
 		return &r.Id
 
 	case "nazva":
-		return &r.Nazva
+		return &r.Name
 
 	default:
 		return nil
@@ -44,7 +44,7 @@ func (r *SenioritiesFields) ColValue(name string) interface{} {
 		return r.Id
 
 	case "nazva":
-		return r.Nazva
+		return r.Name
 
 	default:
 		return nil
@@ -234,8 +234,8 @@ func GetSenioritiesAsSelectedUnits() (res SelectedUnits) {
 		res = append(res,
 			&SelectedUnit{
 				Id:    sen.Id,
-				Label: sen.Nazva.String,
-				Value: strings.ToLower(sen.Nazva.String),
+				Label: sen.Name,
+				Value: strings.ToLower(sen.Name),
 			})
 	}
 	return

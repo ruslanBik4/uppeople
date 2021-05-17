@@ -240,7 +240,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	platformName := platform.Record.Nazva.String
+	platformName := platform.Record.Name
 
 	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", record.Name, platformName)
 
