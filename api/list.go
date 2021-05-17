@@ -88,7 +88,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id )
 	JOIN platforms ON (v.platform_id = platforms.id)
-	JOIN status_for_vacs sv on (vc.status = sv.id),
+	JOIN status_for_vacs sv on (vc.status = sv.id)
     JOIN LATERAL (select concat(companies.name, ' ("', platforms.nazva, '")') as name) j on true
 	WHERE vc.candidate_id=$1 AND vc.status!=1
     order by date_last_change desc
