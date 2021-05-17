@@ -5,6 +5,7 @@
 package api
 
 import (
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -17,10 +18,10 @@ import (
 
 type ResList struct {
 	Count, Page, TotalPage int
-	CurrentPage            int              `json:"currentPage"`
-	PerPage                int              `json:"perPage"`
-	Platforms              db.SelectedUnits `json:"platforms"`
-	Seniority              db.SelectedUnits `json:"seniority"`
+	CurrentPage            int `json:"currentPage"`
+	PerPage                int `json:"perPage"`
+	// Platforms              db.SelectedUnits `json:"platforms"`
+	// Seniority              db.SelectedUnits `json:"seniority"`
 }
 
 func NewResList(pageNum int) *ResList {
@@ -30,25 +31,18 @@ func NewResList(pageNum int) *ResList {
 		Count:       10 * pageItem,
 		TotalPage:   10,
 		PerPage:     pageItem,
-		Platforms:   db.GetPlatformsAsSelectedUnits(),
-		Seniority:   db.GetSenioritiesAsSelectedUnits(),
+		// Platforms:   db.GetPlatformsAsSelectedUnits(),
+		// Seniority:   db.GetSenioritiesAsSelectedUnits(),
 	}
 }
 
 func NewCandidateView(ctx *fasthttp.RequestCtx,
 	record *db.CandidatesFields,
 	DB *dbEngine.DB,
-	platforms db.SelectedUnits,
-	seniors db.SelectedUnits,
 ) *CandidateView {
 	ref := &CandidateView{
 		ViewCandidate: &ViewCandidate{
 			CandidatesFields: record,
-		},
-		Status: statusCandidate{
-			Date:         record.Date,
-			Comments:     record.Comments,
-			DateFollowUp: record.Date_follow_up,
 		},
 	}
 
@@ -62,8 +56,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	)
 	if err != nil && err != pgx.ErrNoRows {
 		logs.ErrorLog(err, "users.SelectOneAndScan")
-	} else {
-		ref.Status.Recruiter = ref.Recruiter
 	}
 
 	ref.Tags = db.GetTagFromId(record.Tag_id)
@@ -74,11 +66,12 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 
 	ref.Seniority = db.GetSeniorityFromId(record.Seniority_id).Nazva.String
 
-	for _, p := range platforms {
-		if p.Id == record.Platform_id {
-			ref.Platform = p.Label
-			ref.ViewCandidate.Platform = p
-		}
+	platform := db.GetPlatformFromId(record.Platform_id)
+	ref.Platform = platform.Nazva.String
+	ref.ViewCandidate.Platform = &db.SelectedUnit{
+		Id:    platform.Id,
+		Label: platform.Nazva.String,
+		Value: strings.ToLower(platform.Nazva.String),
 	}
 
 	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
@@ -88,6 +81,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value, 
 		user_ids, 
 		platform_id,
+        (select u.name from users u where u.id = vc.user_id) as recruiter,
 		CONCAT(platforms.nazva, ' ("', (select nazva from seniorities where id=seniority_id), '")') as platform,
 		companies, sv.id as status_id, v.company_id, sv.status, salary, 
 		coalesce(vc.date_last_change, vc.date_create) as date_last_change, vc.rej_text, sv.color
@@ -104,19 +98,21 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 		logs.ErrorLog(err, "")
 	}
 
-	if len(ref.ViewCandidate.Vacancies) > 0 {
-		vacancy := ref.ViewCandidate.Vacancies[0]
-		ref.Status.CompId, _ = vacancy["company_id"].(int32)
-		ref.Status.CompName, _ = vacancy["name"].(string)
-		ref.Status.Comments, _ = vacancy["rej_text"].(string)
-		ref.Status.VacStat, _ = vacancy["status"].(string)
-		ref.Status.Date, _ = vacancy["date_last_change"].(time.Time)
-		ref.Color, _ = vacancy["color"].(string)
-
-		args := make([]int32, len(ref.ViewCandidate.Vacancies))
-		for i, vac := range ref.ViewCandidate.Vacancies {
-			args[i] = vac["company_id"].(int32)
-		}
+	args := make([]int32, len(ref.ViewCandidate.Vacancies))
+	for i, vacancy := range ref.ViewCandidate.Vacancies {
+		args[i] = vacancy["company_id"].(int32)
+		ref.Statuses = append(ref.Statuses,
+			&statusCandidate{
+				CompId:    vacancy["company_id"].(int32),
+				CompName:  vacancy["name"].(string),
+				Comments:  vacancy["rej_text"].(string),
+				VacStat:   vacancy["status"].(string),
+				Date:      vacancy["date_last_change"].(time.Time),
+				Color:     vacancy["color"].(string),
+				Recruiter: vacancy["recruiter"].(string),
+			})
+	}
+	if len(args) > 0 {
 		ref.Companies = getCompanies(ctx,
 			DB,
 			dbEngine.WhereForSelect("id"),

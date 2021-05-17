@@ -35,6 +35,7 @@ func (c *CandidateDTO) NewValue() interface{} {
 
 type statusCandidate struct {
 	Date         time.Time  `json:"date"`
+	Color        string     `json:"color,omitempty"`
 	Comments     string     `json:"comments"`
 	CompId       int32      `json:"comp_id"`
 	Recruiter    string     `json:"recruiter"`
@@ -57,11 +58,10 @@ type ViewCandidate struct {
 
 type CandidateView struct {
 	*ViewCandidate
-	Platform string          `json:"platform,omitempty"`
-	TagName  string          `json:"tag_name,omitempty"`
-	TagColor string          `json:"tag_color,omitempty"`
-	Color    string          `json:"color,omitempty"`
-	Status   statusCandidate `json:"status"`
+	Platform string             `json:"platform,omitempty"`
+	TagName  string             `json:"tag_name,omitempty"`
+	TagColor string             `json:"tag_color,omitempty"`
+	Statuses []*statusCandidate `json:"statuses"`
 }
 
 type VacanciesDTO struct {
@@ -322,7 +322,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Statuses:  []StatusesCandidate{},
 	}
 
-	view := NewCandidateView(ctx, table.Record, DB, res.SelectOpt.Platforms, res.SelectOpt.Seniorities)
+	view := NewCandidateView(ctx, table.Record, DB)
 
 	err = DB.Conn.SelectAndScanEach(ctx,
 		nil,

@@ -66,8 +66,9 @@ func getCompanies(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, opt ...dbEngine.Bui
 	err := company.SelectAndScanEach(ctx,
 		nil,
 		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.OrderBy("name"),
+		append(opt,
+			dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
+			dbEngine.OrderBy("name"))...,
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	SelectSelfScanEach")

@@ -6,6 +6,7 @@ package api
 
 import (
 	"fmt"
+
 	"github.com/pkg/errors"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -227,19 +228,9 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 			}
 
-			for _, s := range res.Seniority {
-				if s.Id == int32(record.SeniorityId) {
-					view.Seniority = s.Label
-					break
-				}
-			}
+			view.Seniority = db.GetSeniorityFromId(record.SeniorityId).Nazva.String
 
-			for _, s := range res.Platforms {
-				if s.Id == record.PlatformId {
-					view.Platform = s.Label
-					break
-				}
-			}
+			view.Platform = db.GetPlatformFromId(record.PlatformId).Nazva.String
 
 			res.Vacancies = append(res.Vacancies, view)
 
