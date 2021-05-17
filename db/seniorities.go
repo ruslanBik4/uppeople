@@ -20,7 +20,7 @@ type Seniorities struct {
 
 type SenioritiesFields struct {
 	Id   int32  `json:"id"`
-	Name string `json:"nazva"`
+	Name string `json:"name"`
 }
 
 type SeniorityIdMap map[string]SenioritiesFields
@@ -30,7 +30,7 @@ func (r *SenioritiesFields) RefColValue(name string) interface{} {
 	case "id":
 		return &r.Id
 
-	case "nazva":
+	case "name":
 		return &r.Name
 
 	default:
@@ -43,7 +43,7 @@ func (r *SenioritiesFields) ColValue(name string) interface{} {
 	case "id":
 		return r.Id
 
-	case "nazva":
+	case "name":
 		return r.Name
 
 	default:

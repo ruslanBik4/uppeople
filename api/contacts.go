@@ -199,7 +199,7 @@ func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	err = DB.Conn.SelectAndScanEach(ctx,
 		nil,
 		&v.SelectPlatforms,
-		`select p.id, p.nazva as label, p.nazva as value 
+		`select p.id, p.name as label, p.name as value 
 			from contacts_to_platforms c join platforms p on p.id=platform_id
 			where contact_id=$1`,
 		id,

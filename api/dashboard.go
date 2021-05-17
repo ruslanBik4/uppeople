@@ -27,10 +27,10 @@ func HandleDashBoard(ctx *fasthttp.RequestCtx) (interface{}, error) {
             where status =ANY(ARRAY [2,9])
       )
 select json_build_object('countVac', count(id), 'countCom', count(distinct company_id)) "countVacanciesOpenAndHot",
-       (select json_object_agg(nazva, cId)
-           from (select nazva, count(v.id) cId
+       (select json_object_agg(name, cId)
+           from (select name, count(v.id) cId
                  from platforms p join vac v on p.id = v.platform_id
-           group by nazva) j
+           group by name) j
            ) "countVacanciesOpenAndHotForPlatform",
        (select json_object_agg(name, j.obj)
            from (select c.name, json_build_object('countAll', count(i.id), 'Review',
@@ -50,7 +50,7 @@ select json_build_object('countVac', count(id), 'countCom', count(distinct compa
                              join companies c on i.company_id = c.id
                             join seniorities on v.seniority_id = seniorities.id
                              join status_for_vacs s on i.status = s.id
-                             JOIN lateral CONCAT_WS(' - ',c.name, p.nazva, seniorities.nazva) vacancy on true
+                             JOIN lateral CONCAT_WS(' - ',c.name, p.name, seniorities.name) vacancy on true
               group by vacancy) j
        ) "countRevInterVac",
        (select json_agg(j.obj)
@@ -59,7 +59,7 @@ select json_build_object('countVac', count(id), 'countCom', count(distinct compa
               from vac v join platforms p on p.id = v.platform_id
                              join companies c on v.company_id = c.id
                             join seniorities on v.seniority_id = seniorities.id
-                             JOIN lateral CONCAT_WS(' - ',c.name, p.nazva, seniorities.nazva) vacancy on true
+                             JOIN lateral CONCAT_WS(' - ',c.name, p.name, seniorities.name) vacancy on true
               where age(v.date_create) < interval '10 day') j
        ) "listNotSendVacancies",
       (select json_object_agg(role, uId)

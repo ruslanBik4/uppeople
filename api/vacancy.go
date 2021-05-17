@@ -70,8 +70,8 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	err := DB.Conn.SelectOneAndScan(ctx,
 		v,
 		`select *, 
-			(select p.nazva from platforms p where v.platform_id=p.id) as platform,
-			(select s.nazva from seniorities s where v.seniority_id=s.id) as seniority,
+			(select p.name from platforms p where v.platform_id=p.id) as platform,
+			(select s.name from seniorities s where v.seniority_id=s.id) as seniority,
 			(select c.name from companies c where v.company_id=c.id) as company,
 			(select s.name from location_for_vacancies s where v.location_id=s.id) as location
 			from vacancies v

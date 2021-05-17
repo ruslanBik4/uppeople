@@ -263,9 +263,9 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
              from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
            WHERE t.company_id = c.id AND (all_platforms=1 OR platform_id=$1)) as contacts,
   (select json_agg(json_build_object('id', v.id,
-		   'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
+		   'platform', (select p.name  from platforms p where p.id = v.platform_id),
 		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
-           'seniority', (select s.nazva from seniorities s where s.id = v.seniority_id),
+           'seniority', (select s.name from seniorities s where s.id = v.seniority_id),
            'salary', v.salary, 
 			'name', v.name, 
 			'user_ids', v.user_ids)) as vacancy
@@ -328,8 +328,8 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		nil,
 		&view.SelectedVacancies,
 		`select v.id, 
-		concat(companies.name, ' ("', platforms.nazva, '")') as label, 
-		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value
+		concat(companies.name, ' ("', platforms.name, '")') as label, 
+		LOWER(CONCAT(companies.name, ' ("', platforms.name , '")')) as value
 	FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	JOIN platforms ON (v.platform_id = platforms.id)
 	WHERE v.id=ANY($1)

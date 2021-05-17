@@ -66,7 +66,7 @@ func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, erro
 	}
 
 	sql := `SELECT vacancy_id, vtc.company_id,
-				 p.nazva as platform_name,
+				 p.name as platform_name,
 				  c.name as company_name,
 				   u.name as user_name,
 				   user_id as recruiter_id, 

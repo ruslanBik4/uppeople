@@ -35,7 +35,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			' ', logs.text) as text, 
 		logs.create_at as date, 
 		companies.id as compId, companies.name as compName, vacancies.id as vacId, 
-		CONCAT_WS(' - ', platforms.nazva, seniorities.nazva) as vac
+		CONCAT_WS(' - ', platforms.name, seniorities.name) as vac
 		from logs left Join companies on (logs.company_id = companies.id)
 			left join vacancies ON (logs.vacancy_id = vacancies.id)
 			join users ON (logs.user_id = users.id)

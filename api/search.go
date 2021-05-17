@@ -63,14 +63,14 @@ func HandleGlobalSearch(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	res["vacancies"], err = DB.Conn.SelectToMaps(ctx,
 		`select vacancies.id, vacancies.name as details, date_create as date, salary, location_for_vacancies.name as location,
-       platforms.nazva as platform, platforms.id as platId, seniorities.nazva as seniority,
+       platforms.name as platform, platforms.id as platId, seniorities.name as seniority,
        companies.id as companyId, companies.name as company, statuses.status, statuses.id as statusId
 from vacancies left Join platforms on vacancies.platform_id=platforms.id
 				left Join seniorities on vacancies.seniority_id = seniorities.id
     left Join companies on vacancies.company_id = companies.id
     left Join statuses on vacancies.status = statuses.id
     left Join location_for_vacancies on vacancies.location_id = location_for_vacancies.id
-where vacancies.name ~ $1 OR location_for_vacancies.name ~ $1 OR platforms.nazva ~ $1 OR seniorities.nazva ~ $1
+where vacancies.name ~ $1 OR location_for_vacancies.name ~ $1 OR platforms.name ~ $1 OR seniorities.name ~ $1
    OR companies.name ~ $1
 `,
 		dto.Search,

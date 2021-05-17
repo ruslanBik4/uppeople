@@ -187,13 +187,13 @@ where candidates.id = candidate_id
 order by status desc
 fetch first 1 row only)`
 			case "Platform":
-				orderBy = `(select nazva from platforms where id = platform_id)`
+				orderBy = `(select name from platforms where id = platform_id)`
 			case "Recruiter":
 				orderBy = `(select name from users where id = recruter_id)`
 			case "Tag/Reason":
 				orderBy = `(select name from tags where id = tag_id)`
 			case "Seniority":
-				orderBy = `(select nazva from seniorities where id = seniority_id)`
+				orderBy = `(select name from seniorities where id = seniority_id)`
 			case "Status":
 				orderBy = `(select status from vacancies_to_candidates where candidates.id = candidate_id
 order by status desc

@@ -74,7 +74,7 @@ func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		where += comma + " v.status = ANY(array[0, 1])"
 	}
 
-	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.nazva, ') ',
+	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.name, ') ',
 		(select s.status from statuses s where s.id = v.status)
 ) as name`
 	if dto.WithRecruiters {
@@ -154,11 +154,11 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		case "Company":
 			orderBy = `(select name from companies where id = company_id)`
 		case "Platform":
-			orderBy = `(select nazva from platforms where id = platform_id)`
+			orderBy = `(select name from platforms where id = platform_id)`
 		case "Location":
 			orderBy = `(select name from location_for_vacancies where id = location_id)`
 		case "Seniority":
-			orderBy = `(select nazva from seniorities where id = seniority_id)`
+			orderBy = `(select name from seniorities where id = seniority_id)`
 		case "Contacts":
 			orderBy = `coalesce(email, phone, skype)`
 		case "Date":

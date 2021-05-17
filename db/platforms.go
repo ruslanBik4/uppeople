@@ -18,7 +18,7 @@ type Platforms struct {
 
 type PlatformsFields struct {
 	Id   int32  `json:"id"`
-	Name string `json:"nazva"`
+	Name string `json:"name"`
 }
 
 type PlatformsIdMap map[string]PlatformsFields
@@ -28,7 +28,7 @@ func (r *PlatformsFields) RefColValue(name string) interface{} {
 	case "id":
 		return &r.Id
 
-	case "nazva":
+	case "name":
 		return &r.Name
 
 	default:
@@ -41,7 +41,7 @@ func (r *PlatformsFields) ColValue(name string) interface{} {
 	case "id":
 		return r.Id
 
-	case "nazva":
+	case "name":
 		return r.Name
 
 	default:
