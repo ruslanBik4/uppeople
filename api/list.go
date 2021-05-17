@@ -81,7 +81,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value, 
 		user_ids, 
 		platform_id,
-        (select u.name from users u where u.id = vc.user_id) as recruiter,
+        coalesce( (select u.name from users u where u.id = vc.user_id), '') as recruiter,
 		CONCAT(platforms.nazva, ' ("', (select nazva from seniorities where id=seniority_id), '")') as platform,
 		companies, sv.id as status_id, v.company_id, sv.status, salary, 
 		coalesce(vc.date_last_change, vc.date_create) as date_last_change, vc.rej_text, sv.color
