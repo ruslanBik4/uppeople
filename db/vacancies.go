@@ -139,9 +139,9 @@ func (r *VacanciesFields) ColValue(name string) interface{} {
 }
 
 func NewVacancies(db *dbEngine.DB) (*Vacancies, error) {
-	table, ok := db.Tables[TABLE_Vacancies]
+	table, ok := db.Tables[TABLE_VACANCIES]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Vacancies}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_VACANCIES}
 	}
 
 	return &Vacancies{

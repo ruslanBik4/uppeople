@@ -91,9 +91,9 @@ func (r *TagsFields) ColValue(name string) interface{} {
 }
 
 func NewTags(db *dbEngine.DB) (*Tags, error) {
-	table, ok := db.Tables[TABLE_Tags]
+	table, ok := db.Tables[TABLE_TAGS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Tags}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_TAGS}
 	}
 
 	return &Tags{
@@ -176,110 +176,110 @@ func (t *Tags) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) 
 }
 
 func GetTagIdFirstContact() int32 {
-	if tag, ok := tagIds[TAG_FirstContact]; ok {
+	if tag, ok := tagIds[TAG_FIRST_CONTACT]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_FirstContact))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_FIRST_CONTACT))
 	}
 
 	return -1
 }
 
 func GetTagIdInterested() int32 {
-	if tag, ok := tagIds[TAG_Interested]; ok {
+	if tag, ok := tagIds[TAG_INTERESTED]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_Interested))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_INTERESTED))
 	}
 
 	return -1
 }
 
 func GetTagIdReject() int32 {
-	if tag, ok := tagIds[TAG_Reject]; ok {
+	if tag, ok := tagIds[TAG_REJECT]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_Reject))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_REJECT))
 	}
 
 	return -1
 }
 
 func GetTagIdNoAnswer() int32 {
-	if tag, ok := tagIds[TAG_NoAnswer]; ok {
+	if tag, ok := tagIds[TAG_NO_ANSWER]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_NoAnswer))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_NO_ANSWER))
 	}
 
 	return -1
 }
 
 func GetTagIdClosedToOffers() int32 {
-	if tag, ok := tagIds[TAG_ClosedToOffers]; ok {
+	if tag, ok := tagIds[TAG_CLOSED_TO_OFFERS]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_ClosedToOffers))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_CLOSED_TO_OFFERS))
 	}
 
 	return -1
 }
 
 func GetTagIdLowSalary() int32 {
-	if tag, ok := tagIds[TAG_LowSalary]; ok {
+	if tag, ok := tagIds[TAG_LOW_SALARY]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_LowSalary))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_LOW_SALARY))
 	}
 
 	return -1
 }
 
 func GetTagIdWasContactedEarlier() int32 {
-	if tag, ok := tagIds[TAG_WasContactedEarlier]; ok {
+	if tag, ok := tagIds[TAG_WAS_CONTACTED_EARLIER]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_WasContactedEarlier))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_WAS_CONTACTED_EARLIER))
 	}
 
 	return -1
 }
 
 func GetTagIdDoesNotLikeProject() int32 {
-	if tag, ok := tagIds[TAG_DoesNotLikeProject]; ok {
+	if tag, ok := tagIds[TAG_DOES_NOT_LIKE_PROJECT]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_DoesNotLikeProject))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_DOES_NOT_LIKE_PROJECT))
 	}
 
 	return -1
 }
 
 func GetTagIdTermsDoNotFit() int32 {
-	if tag, ok := tagIds[TAG_TermsDoNotFit]; ok {
+	if tag, ok := tagIds[TAG_TERMS_DO_NOT_FIT]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_TermsDoNotFit))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_TERMS_DO_NOT_FIT))
 	}
 
 	return -1
 }
 
 func GetTagIdRemoteOnly() int32 {
-	if tag, ok := tagIds[TAG_RemoteOnly]; ok {
+	if tag, ok := tagIds[TAG_REMOTE_ONLY]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_RemoteOnly))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_REMOTE_ONLY))
 	}
 
 	return -1
 }
 
 func GetTagIdDoesNotFit() int32 {
-	if tag, ok := tagIds[TAG_DoesNotFit]; ok {
+	if tag, ok := tagIds[TAG_DOES_NOT_FIT]; ok {
 		return tag.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_DoesNotFit))
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_DOES_NOT_FIT))
 	}
 
 	return -1

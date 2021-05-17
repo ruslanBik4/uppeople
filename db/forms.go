@@ -75,9 +75,9 @@ func (r *FormsFields) ColValue(name string) interface{} {
 }
 
 func NewForms(db *dbEngine.DB) (*Forms, error) {
-	table, ok := db.Tables[TABLE_Forms]
+	table, ok := db.Tables[TABLE_FORMS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Forms}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_FORMS}
 	}
 
 	return &Forms{

@@ -54,9 +54,9 @@ func (r *HomepagesFields) ColValue(name string) interface{} {
 }
 
 func NewHomepages(db *dbEngine.DB) (*Homepages, error) {
-	table, ok := db.Tables[TABLE_Homepages]
+	table, ok := db.Tables[TABLE_HOMEPAGES]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Homepages}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_HOMEPAGES}
 	}
 
 	return &Homepages{

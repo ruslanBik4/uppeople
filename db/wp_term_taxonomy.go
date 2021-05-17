@@ -75,9 +75,9 @@ func (r *Wp_term_taxonomyFields) ColValue(name string) interface{} {
 }
 
 func NewWp_term_taxonomy(db *dbEngine.DB) (*Wp_term_taxonomy, error) {
-	table, ok := db.Tables[TABLE_WPTermTaxonomy]
+	table, ok := db.Tables[TABLE_WP_TERM_TAXONOMY]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WPTermTaxonomy}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WP_TERM_TAXONOMY}
 	}
 
 	return &Wp_term_taxonomy{

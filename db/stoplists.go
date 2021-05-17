@@ -76,9 +76,9 @@ func (r *StoplistsFields) ColValue(name string) interface{} {
 }
 
 func NewStoplists(db *dbEngine.DB) (*Stoplists, error) {
-	table, ok := db.Tables[TABLE_StopLists]
+	table, ok := db.Tables[TABLE_STOP_LISTS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_StopLists}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_STOP_LISTS}
 	}
 
 	return &Stoplists{

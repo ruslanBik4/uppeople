@@ -97,9 +97,9 @@ func (r *Oauth_access_tokensFields) ColValue(name string) interface{} {
 }
 
 func NewOauth_access_tokens(db *dbEngine.DB) (*Oauth_access_tokens, error) {
-	table, ok := db.Tables[TABLE_OauthAccessTokens]
+	table, ok := db.Tables[TABLE_OAUTH_ACCESS_TOKENS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OauthAccessTokens}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OAUTH_ACCESS_TOKENS}
 	}
 
 	return &Oauth_access_tokens{

@@ -61,9 +61,9 @@ func (r *Chrome_extention_selectorsFields) ColValue(name string) interface{} {
 }
 
 func NewChrome_extention_selectors(db *dbEngine.DB) (*Chrome_extention_selectors, error) {
-	table, ok := db.Tables[TABLE_ChromeExtensionSelector]
+	table, ok := db.Tables[TABLE_CHROME_EXTENTION_SELECTORS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_ChromeExtensionSelector}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_CHROME_EXTENTION_SELECTORS}
 	}
 
 	return &Chrome_extention_selectors{

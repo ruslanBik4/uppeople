@@ -66,9 +66,9 @@ func (r *StatusForVacsFields) ColValue(name string) interface{} {
 }
 
 func NewStatusForVacs(db *dbEngine.DB) (*StatusForVacs, error) {
-	table, ok := db.Tables[TABLE_StatusForVacs]
+	table, ok := db.Tables[TABLE_STATUS_FOR_VACS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_StatusForVacs}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_STATUS_FOR_VACS}
 	}
 
 	return &StatusForVacs{
@@ -151,50 +151,50 @@ func (t *StatusForVacs) Update(ctx context.Context, Options ...dbEngine.BuildSql
 }
 
 func GetStatusForVacIdInterview() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Interview]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_INTERVIEW]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Interview))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_INTERVIEW))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdTest() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Test]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_TEST]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Test))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_TEST))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdFinalInterview() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_FinalInterview]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_FINAL_INTERVIEW]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_FinalInterview))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_FINAL_INTERVIEW))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdOffer() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Offer]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_OFFER]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Offer))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_OFFER))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdHired() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Hired]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_HIRED]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Hired))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_HIRED))
 	}
 
 	return -1
@@ -211,30 +211,30 @@ func GetStatusForVacIdWR() int32 {
 }
 
 func GetStatusForVacIdReview() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Review]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_REVIEW]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Review))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_REVIEW))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdRejected() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_Rejected]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_REJECTED]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_Rejected))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_REJECTED))
 	}
 
 	return -1
 }
 
 func GetStatusForVacIdOnHold() int32 {
-	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_OnHold]; ok {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_ON_HOLD]; ok {
 		return statForVac.Id
 	} else {
-		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_OnHold))
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_ON_HOLD))
 	}
 
 	return -1

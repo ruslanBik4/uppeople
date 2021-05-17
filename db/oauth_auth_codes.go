@@ -76,9 +76,9 @@ func (r *Oauth_auth_codesFields) ColValue(name string) interface{} {
 }
 
 func NewOauth_auth_codes(db *dbEngine.DB) (*Oauth_auth_codes, error) {
-	table, ok := db.Tables[TABLE_OauthAuthCodes]
+	table, ok := db.Tables[TABLE_OAUTH_AUTH_CODES]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OauthAuthCodes}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OAUTH_AUTH_CODES}
 	}
 
 	return &Oauth_auth_codes{

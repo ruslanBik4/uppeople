@@ -271,7 +271,7 @@ func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	tagIds = TagIdMap{}
 	tagsTable, err := NewTags(db)
 	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TABLE_Tags)
+		logs.ErrorLog(err, "cannot get %s table", TABLE_TAGS)
 		return err
 	}
 
@@ -292,7 +292,7 @@ func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	statusesIds = StatusIdMap{}
 	statusesTable, err := NewStatuses(db)
 	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TABLE_Statuses)
+		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUSES)
 		return err
 	}
 
@@ -313,7 +313,7 @@ func initStatusesForVacIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	statusesForVacIds = StatusForVacIdMap{}
 	statusesForVacsTable, err := NewStatusForVacs(db)
 	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TABLE_StatusForVacs)
+		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUS_FOR_VACS)
 		return err
 	}
 
@@ -334,7 +334,7 @@ func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	seniorityIds = SeniorityIdMap{}
 	seniorityTable, err := NewSeniorities(db)
 	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TABLE_Seniorities)
+		logs.ErrorLog(err, "cannot get %s table", TABLE_SENIORITIES)
 		return err
 	}
 
@@ -355,7 +355,7 @@ func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	platformIds = PlatformsIdMap{}
 	platformsTable, err := NewPlatforms(db)
 	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TABLE_Platforms)
+		logs.ErrorLog(err, "cannot get %s table", TABLE_PLATFORMS)
 		return err
 	}
 

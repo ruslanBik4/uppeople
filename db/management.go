@@ -54,9 +54,9 @@ func (r *ManagementFields) ColValue(name string) interface{} {
 }
 
 func NewManagement(db *dbEngine.DB) (*Management, error) {
-	table, ok := db.Tables[TABLE_Management]
+	table, ok := db.Tables[TABLE_MANAGEMENT]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Management}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_MANAGEMENT}
 	}
 
 	return &Management{

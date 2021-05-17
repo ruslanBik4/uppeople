@@ -61,9 +61,9 @@ func (r *Wp_termmetaFields) ColValue(name string) interface{} {
 }
 
 func NewWp_termmeta(db *dbEngine.DB) (*Wp_termmeta, error) {
-	table, ok := db.Tables[TABLE_WPTermMeta]
+	table, ok := db.Tables[TABLE_WP_TERM_META]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WPTermMeta}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WP_TERM_META}
 	}
 
 	return &Wp_termmeta{

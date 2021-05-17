@@ -50,9 +50,9 @@ func (r *PlatformsFields) ColValue(name string) interface{} {
 }
 
 func NewPlatforms(db *dbEngine.DB) (*Platforms, error) {
-	table, ok := db.Tables[TABLE_Platforms]
+	table, ok := db.Tables[TABLE_PLATFORMS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_Platforms}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_PLATFORMS}
 	}
 
 	return &Platforms{

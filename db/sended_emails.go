@@ -90,9 +90,9 @@ func (r *Sended_emailsFields) ColValue(name string) interface{} {
 }
 
 func NewSended_emails(db *dbEngine.DB) (*Sended_emails, error) {
-	table, ok := db.Tables[TABLE_SentEmails]
+	table, ok := db.Tables[TABLE_SENT_EMAILS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_SentEmails}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_SENT_EMAILS}
 	}
 
 	return &Sended_emails{

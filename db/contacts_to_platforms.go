@@ -54,9 +54,9 @@ func (r *Contacts_to_platformsFields) ColValue(name string) interface{} {
 }
 
 func NewContacts_to_platforms(db *dbEngine.DB) (*Contacts_to_platforms, error) {
-	table, ok := db.Tables[TABLE_ContactsToPlatforms]
+	table, ok := db.Tables[TABLE_CONTACTS_TO_PLATFORMS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_ContactsToPlatforms}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_CONTACTS_TO_PLATFORMS}
 	}
 
 	return &Contacts_to_platforms{

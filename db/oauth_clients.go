@@ -104,9 +104,9 @@ func (r *Oauth_clientsFields) ColValue(name string) interface{} {
 }
 
 func NewOauth_clients(db *dbEngine.DB) (*Oauth_clients, error) {
-	table, ok := db.Tables[TABLE_OauthClients]
+	table, ok := db.Tables[TABLE_OAUTH_CLIENTS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OauthClients}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OAUTH_CLIENTS}
 	}
 
 	return &Oauth_clients{
