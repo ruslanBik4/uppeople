@@ -395,8 +395,8 @@ github.com/ruslanBik4/dbEngine v1.0.1132/go.mod h1:518eN+pynYyvuJwv+5JxSqr1oT9vr
 github.com/ruslanBik4/httpgo v1.1.10082 h1:MwfWkn+TGURcYb6czK6LniLdr7RUm7Yd3CYWhRNLRl8=
 github.com/ruslanBik4/httpgo v1.1.10082/go.mod h1:VvgwTn9Q7ioNsptHZ52KZTDGHr3sOBaxfNkSuGNCnYw=
 github.com/ruslanBik4/logs v0.0.0-20200927155213-df5cc6a3fa8e/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
-github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27 h1:ORUgbGC/46dmd3WFzV9+pgDFkdwrfNCkQNp8SfZWmbg=
-github.com/ruslanBik4/logs v0.0.0-20200928084830-056cbda15c27/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
+github.com/ruslanBik4/logs v0.0.0-20210508143238-bd54b6518905 h1:W1WT9FVFvoRdbEjwYCMZN0vuOID9fDMpNDCddvclnVQ=
+github.com/ruslanBik4/logs v0.0.0-20210508143238-bd54b6518905/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=

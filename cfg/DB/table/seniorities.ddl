@@ -1,8 +1,8 @@
 create table seniorities
 (
-    id    bigserial not null
-            primary key,
-    name varchar(255) not null
+    id    serial not null,
+    name varchar(255) not null,
+    primary key (id)
 );
 
 COMMENT ON TABLE seniorities IS 'senoirities of candidates';
