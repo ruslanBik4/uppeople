@@ -96,15 +96,15 @@ func init() {
 	ctx := context.WithValue(context.TODO(), "mapRouting", api.Routes)
 	services.InitServices(ctx, "mail", "showLogs")
 
-	go func() {
-		t, err := telegrambot.NewTelegramBotFromEnv()
-		if err != nil {
-			logs.ErrorLog(err, "NewTelegramBotFromEnv")
-			return
-		}
-		teleBot = t
-		logs.SetWriters(teleBot, logs.FgErr, logs.FgDebug)
-	}()
+	// go func() {
+	t, err := telegrambot.NewTelegramBotFromEnv()
+	if err != nil {
+		logs.ErrorLog(err, "NewTelegramBotFromEnv")
+		return
+	}
+	teleBot = t
+	logs.SetWriters(teleBot, logs.FgErr, logs.FgDebug)
+	// }()
 }
 
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
