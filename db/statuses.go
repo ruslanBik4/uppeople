@@ -137,43 +137,39 @@ func (t *Statuses) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptio
 }
 
 func GetStatusIdHot() int32 {
-	if status, ok := statusesIds[STATUS_HOT]; ok {
-		return status.Id
-	} else {
+	if status, ok := statusesIds[STATUS_HOT]; !ok {
 		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_HOT))
+		return -1
+	} else {
+		return status.Id
 	}
-
-	return -1
 }
 
 func GetStatusIdOpen() int32 {
-	if status, ok := statusesIds[STATUS_OPEN]; ok {
-		return status.Id
-	} else {
+	if status, ok := statusesIds[STATUS_OPEN]; !ok {
 		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_OPEN))
+		return -1
+	} else {
+		return status.Id
 	}
-
-	return -1
 }
 
 func GetStatusIdClosed() int32 {
-	if status, ok := statusesIds[STATUS_CLOSED]; ok {
-		return status.Id
-	} else {
+	if status, ok := statusesIds[STATUS_CLOSED]; !ok {
 		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_CLOSED))
+		return -1
+	} else {
+		return status.Id
 	}
-
-	return -1
 }
 
 func GetStatusIdPaused() int32 {
-	if status, ok := statusesIds[STATUS_PAUSED]; ok {
-		return status.Id
-	} else {
+	if status, ok := statusesIds[STATUS_PAUSED]; !ok {
 		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_PAUSED))
+		return -1
+	} else {
+		return status.Id
 	}
-
-	return -1
 }
 
 func GetStatusFromId(id int32) *StatusesFields {

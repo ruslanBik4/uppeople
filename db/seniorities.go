@@ -137,83 +137,75 @@ func (t *Seniorities) Update(ctx context.Context, Options ...dbEngine.BuildSqlOp
 }
 
 func GetSeniorityIdJun() int32 {
-	if sen, ok := seniorityIds[SENIORITY_JUN]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_JUN]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_JUN))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityIdMid() int32 {
-	if sen, ok := seniorityIds[SENIORITY_MID]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_MID]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_MID))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityIdSen() int32 {
-	if sen, ok := seniorityIds[SENIORITY_SEN]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_SEN]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_SEN))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityIdLead() int32 {
-	if sen, ok := seniorityIds[SENIORITY_LEAD]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_LEAD]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_LEAD))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityArchitect() int32 {
-	if sen, ok := seniorityIds[SENIORITY_ARCHITECT]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_ARCHITECT]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_ARCHITECT))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityIdJunMid() int32 {
-	if sen, ok := seniorityIds[SENIORITY_JUN_MID]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_JUN_MID]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_JUN_MID))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityIdMidSen() int32 {
-	if sen, ok := seniorityIds[SENIORITY_MID_SEN]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_MID_SEN]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_MID_SEN))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityIdSenLead() int32 {
-	if sen, ok := seniorityIds[SENIORITY_SEN_LEAD]; ok {
-		return sen.Id
-	} else {
+	if sen, ok := seniorityIds[SENIORITY_SEN_LEAD]; !ok {
 		logs.ErrorLog(errors.Errorf("Seniority \"%s\" not found in database", SENIORITY_SEN_LEAD))
+		return -1
+	} else {
+		return sen.Id
 	}
-
-	return -1
 }
 
 func GetSeniorityFromId(id int32) *SenioritiesFields {
