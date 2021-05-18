@@ -186,18 +186,27 @@ func GetStatusFromId(id int32) *StatusesFields {
 	return nil
 }
 
-func GetStatusAsSelectedUnits() (res SelectedUnits) {
-	if len(seniorityIds) == 0 {
-		return nil
+func GetStatusAsSelectedUnits() SelectedUnits {
+	if len(statusesIdsAsSU) > 0 {
+		return statusesIdsAsSU
+	} else {
+		if len(statusesIds) == 0 {
+			return nil
+		}
+
+		for _, status := range statusesIds {
+			statusesIdsAsSU = append(statusesIdsAsSU,
+				&SelectedUnit{
+					Id:    status.Id,
+					Label: status.Status,
+					Value: strings.ToLower(status.Status),
+				})
+		}
+
+		if len(statusesIdsAsSU) == 0 {
+			return nil
+		}
 	}
 
-	for _, status := range statusesIds {
-		res = append(res,
-			&SelectedUnit{
-				Id:    status.Id,
-				Label: status.Status,
-				Value: strings.ToLower(status.Status),
-			})
-	}
-	return
+	return statusesIdsAsSU
 }

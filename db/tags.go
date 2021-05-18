@@ -295,40 +295,56 @@ func GetTagFromId(id int32) *TagsFields {
 	return nil
 }
 
-func GetTagsAsSelectedUnits() (res SelectedUnits) {
-	for _, tag := range tagIds {
-		if tag.ParentId == 0 {
-			res = append(res,
-				&SelectedUnit{
-					Id:    tag.Id,
-					Label: tag.Name,
-					Value: strings.ToLower(tag.Name),
-				})
+func GetTagsAsSelectedUnits() SelectedUnits {
+	if len(tagIdsAsSU) > 0 {
+		return tagIdsAsSU
+	} else {
+		if len(tagIds) == 0 {
+			return nil
+		}
+
+		for _, tag := range tagIds {
+			if tag.ParentId == 0 {
+				tagIdsAsSU = append(tagIdsAsSU,
+					&SelectedUnit{
+						Id:    tag.Id,
+						Label: tag.Name,
+						Value: strings.ToLower(tag.Name),
+					})
+			}
+		}
+
+		if len(tagIdsAsSU) == 0 {
+			return nil
 		}
 	}
 
-	if len(res) == 0 {
-		return nil
-	}
-
-	return
+	return tagIdsAsSU
 }
 
-func GetRejectReasonAsSelectedUnits() (res SelectedUnits) {
-	for _, tag := range tagIds {
-		if tag.ParentId == GetTagIdReject() {
-			res = append(res,
-				&SelectedUnit{
-					Id:    tag.Id,
-					Label: tag.Name,
-					Value: strings.ToLower(tag.Name),
-				})
+func GetRejectReasonAsSelectedUnits() SelectedUnits {
+	if len(reasonsIdsAsSU) > 0 {
+		return reasonsIdsAsSU
+	} else {
+		if len(tagIds) == 0 {
+			return nil
+		}
+
+		for _, tag := range tagIds {
+			if tag.ParentId == GetTagIdReject() {
+				reasonsIdsAsSU = append(reasonsIdsAsSU,
+					&SelectedUnit{
+						Id:    tag.Id,
+						Label: tag.Name,
+						Value: strings.ToLower(tag.Name),
+					})
+			}
+		}
+
+		if len(reasonsIdsAsSU) == 0 {
+			return nil
 		}
 	}
 
-	if len(res) == 0 {
-		return nil
-	}
-
-	return
+	return reasonsIdsAsSU
 }

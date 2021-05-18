@@ -225,18 +225,25 @@ func GetSeniorityFromId(id int32) *SenioritiesFields {
 	return nil
 }
 
-func GetSenioritiesAsSelectedUnits() (res SelectedUnits) {
-	if len(seniorityIds) == 0 {
-		return nil
-	}
+func GetSenioritiesAsSelectedUnits() SelectedUnits {
+	if len(seniorityIdsAsSU) > 0 {
+		return seniorityIdsAsSU
+	} else {
+		if len(seniorityIds) == 0 {
+			return nil
+		}
 
-	for _, sen := range seniorityIds {
-		res = append(res,
-			&SelectedUnit{
-				Id:    sen.Id,
-				Label: sen.Name,
-				Value: strings.ToLower(sen.Name),
-			})
+		for _, sen := range seniorityIds {
+			seniorityIdsAsSU = append(seniorityIdsAsSU,
+				&SelectedUnit{
+					Id:    sen.Id,
+					Label: sen.Name,
+					Value: strings.ToLower(sen.Name),
+				})
+		}
+		if len(seniorityIdsAsSU) == 0 {
+			return nil
+		}
 	}
-	return
+	return seniorityIdsAsSU
 }

@@ -116,3 +116,10 @@ var statusesIds StatusIdMap
 var statusesForVacIds StatusForVacIdMap
 var seniorityIds SeniorityIdMap
 var platformIds PlatformsIdMap
+
+var tagIdsAsSU SelectedUnits
+var reasonsIdsAsSU SelectedUnits
+var statusesIdsAsSU SelectedUnits
+var statusesForVacIdsAsSU SelectedUnits
+var seniorityIdsAsSU SelectedUnits
+var platformIdsAsSU SelectedUnits

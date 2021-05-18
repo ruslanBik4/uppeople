@@ -144,18 +144,26 @@ func GetPlatformFromId(id int32) *PlatformsFields {
 	return nil
 }
 
-func GetPlatformsAsSelectedUnits() (res SelectedUnits) {
-	if len(platformIds) == 0 {
-		return nil
-	}
+func GetPlatformsAsSelectedUnits() SelectedUnits {
+	if len(platformIdsAsSU) > 0 {
+		return platformIdsAsSU
+	} else {
+		if len(platformIds) == 0 {
+			return nil
+		}
 
-	for _, platform := range platformIds {
-		res = append(res,
-			&SelectedUnit{
-				Id:    platform.Id,
-				Label: platform.Name,
-				Value: strings.ToLower(platform.Name),
-			})
+		for _, platform := range platformIds {
+			platformIdsAsSU = append(platformIdsAsSU,
+				&SelectedUnit{
+					Id:    platform.Id,
+					Label: platform.Name,
+					Value: strings.ToLower(platform.Name),
+				})
+		}
+
+		if len(platformIdsAsSU) == 0 {
+			return nil
+		}
 	}
-	return
+	return platformIdsAsSU
 }
