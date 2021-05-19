@@ -118,8 +118,13 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
 
 func getIP(ctx *fasthttp.RequestCtx) string {
+	addr := ctx.Conn().RemoteAddr().String()
+	if addr > "" {
+		return addr
+	}
+
 	ipClient := ctx.Request.Header.Peek("X-Forwarded-For")
-	addr := string(ipClient)
+	addr = string(ipClient)
 	if len(ipClient) == 0 {
 		ipClient = ctx.Request.Header.Peek("Forwarded")
 		ips := regIp.FindSubmatch(ipClient)
