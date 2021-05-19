@@ -287,25 +287,25 @@ func GetTagFromId(id int32) *TagsFields {
 func GetTagsAsSelectedUnits() SelectedUnits {
 	if len(tagIdsAsSU) > 0 {
 		return tagIdsAsSU
-	} else {
-		if len(tagIds) == 0 {
-			return nil
-		}
+	}
 
-		for _, tag := range tagIds {
-			if tag.ParentId == 0 {
-				tagIdsAsSU = append(tagIdsAsSU,
-					&SelectedUnit{
-						Id:    tag.Id,
-						Label: tag.Name,
-						Value: strings.ToLower(tag.Name),
-					})
-			}
-		}
+	if len(tagIds) == 0 {
+		return nil
+	}
 
-		if len(tagIdsAsSU) == 0 {
-			return nil
+	for _, tag := range tagIds {
+		if tag.ParentId == 0 {
+			tagIdsAsSU = append(tagIdsAsSU,
+				&SelectedUnit{
+					Id:    tag.Id,
+					Label: tag.Name,
+					Value: strings.ToLower(tag.Name),
+				})
 		}
+	}
+
+	if len(tagIdsAsSU) == 0 {
+		return nil
 	}
 
 	return tagIdsAsSU
@@ -314,25 +314,25 @@ func GetTagsAsSelectedUnits() SelectedUnits {
 func GetRejectReasonAsSelectedUnits() SelectedUnits {
 	if len(reasonsIdsAsSU) > 0 {
 		return reasonsIdsAsSU
-	} else {
-		if len(tagIds) == 0 {
-			return nil
-		}
+	}
 
-		for _, tag := range tagIds {
-			if tag.ParentId == GetTagIdReject() {
-				reasonsIdsAsSU = append(reasonsIdsAsSU,
-					&SelectedUnit{
-						Id:    tag.Id,
-						Label: tag.Name,
-						Value: strings.ToLower(tag.Name),
-					})
-			}
-		}
+	if len(tagIds) == 0 {
+		return nil
+	}
 
-		if len(reasonsIdsAsSU) == 0 {
-			return nil
+	for _, tag := range tagIds {
+		if tag.ParentId == GetTagIdReject() {
+			reasonsIdsAsSU = append(reasonsIdsAsSU,
+				&SelectedUnit{
+					Id:    tag.Id,
+					Label: tag.Name,
+					Value: strings.ToLower(tag.Name),
+				})
 		}
+	}
+
+	if len(reasonsIdsAsSU) == 0 {
+		return nil
 	}
 
 	return reasonsIdsAsSU

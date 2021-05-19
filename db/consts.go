@@ -111,15 +111,21 @@ const SENIORITY_JUN_MID = "Jun-Mid"
 const SENIORITY_MID_SEN = "Mid-Sen"
 const SENIORITY_SEN_LEAD = "Sen-Lead"
 
-var tagIds TagIdMap
-var statusesIds StatusIdMap
-var statusesForVacIds StatusForVacIdMap
-var seniorityIds SeniorityIdMap
-var platformIds PlatformsIdMap
+//Consts for table values
+var (
+	tagIds            TagIdMap
+	statusesIds       StatusIdMap
+	statusesForVacIds StatusForVacIdMap
+	seniorityIds      SeniorityIdMap
+	platformIds       PlatformsIdMap
+)
 
-var tagIdsAsSU SelectedUnits
-var reasonsIdsAsSU SelectedUnits
-var statusesIdsAsSU SelectedUnits
-var statusesForVacIdsAsSU SelectedUnits
-var seniorityIdsAsSU SelectedUnits
-var platformIdsAsSU SelectedUnits
+// Consts forgetter handlerds
+var (
+	tagIdsAsSU            SelectedUnits
+	reasonsIdsAsSU        SelectedUnits
+	statusesIdsAsSU       SelectedUnits
+	statusesForVacIdsAsSU SelectedUnits
+	seniorityIdsAsSU      SelectedUnits
+	platformIdsAsSU       SelectedUnits
+)
