@@ -5,6 +5,7 @@
 package api
 
 import (
+	"regexp"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -96,10 +97,10 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, errors.Wrap(err, "Bearer.NewToken")
 	}
 
-	opts[1] = dbEngine.ArgsForSelect(time.Now(), a.Email)
+	opts[1] = dbEngine.ArgsForSelect(time.Now(), getIP(ctx), a.Email)
 
 	opts = append(opts,
-		dbEngine.ColumnsForSelect("last_login"),
+		dbEngine.ColumnsForSelect("last_login", "last_ip"),
 	)
 
 	_, err = users.Update(ctx,
@@ -112,6 +113,25 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	u.Pass.String = ""
 
 	return u, nil
+}
+
+var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
+
+func getIP(ctx *fasthttp.RequestCtx) string {
+	ipClient := ctx.Request.Header.Peek("X-Forwarded-For")
+	addr := string(ipClient)
+	if len(ipClient) == 0 {
+		ipClient = ctx.Request.Header.Peek("Forwarded")
+		ips := regIp.FindSubmatch(ipClient)
+
+		if len(ips) == 0 {
+			addr = string(ctx.Request.Header.Peek("X-ProxyUser-Ip"))
+		} else {
+			addr = string(ips[0])
+		}
+	}
+
+	return addr
 }
 
 func request(req *fasthttp.Request, u *auth.User) error {
@@ -135,7 +155,7 @@ func request(req *fasthttp.Request, u *auth.User) error {
 			u.Id = int32(user["id"].(float64))
 			u.Name = user["name"].(string)
 			u.Email = user["email"].(string)
-			u.Role_id = int32(user["role_id"].(float64))
+			u.RoleId = int32(user["role_id"].(float64))
 			u.Phone.String, _ = user["tel"].(string)
 
 			return nil
