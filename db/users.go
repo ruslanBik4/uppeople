@@ -23,7 +23,7 @@ type UsersFields struct {
 	Isdel       bool           `json:"isdel"`
 	RoleId      int32          `json:"role_id"`
 	LastLogin   time.Time      `json:"last_login"`
-	LastIP      time.Time      `json:"last_ip"`
+	LastIP      string         `json:"last_ip"`
 	Hash        int64          `json:"hash"`
 	LastPage    sql.NullString `json:"last_page"`
 	Address     string         `json:"address"`
