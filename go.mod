@@ -9,7 +9,7 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/json-iterator/go v1.1.10
 	github.com/pkg/errors v0.9.1
-	github.com/ruslanBik4/dbEngine v1.0.1132
+	github.com/ruslanBik4/dbEngine v1.0.1133
 	github.com/ruslanBik4/httpgo v1.1.10082
 	github.com/ruslanBik4/logs v0.0.0-20210518090836-8737863729c5
 	github.com/stretchr/testify v1.6.1
