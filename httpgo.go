@@ -10,7 +10,6 @@ import (
 	"net"
 	"os"
 	"path"
-	"regexp"
 	"runtime/trace"
 	"time"
 
@@ -97,8 +96,6 @@ func init() {
 
 }
 
-var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
-
 // version
 var (
 	Version string
@@ -118,6 +115,8 @@ func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}, nil
 }
 
+var ch chan string
+
 func main() {
 	title := getAppTitle()
 
@@ -135,7 +134,7 @@ func main() {
 		}
 	}()
 
-	ch := make(chan string)
+	ch = make(chan string)
 	go func() {
 		tBot, err := telegrambot.NewTelegramBotFromEnv()
 		if err != nil {
@@ -143,7 +142,7 @@ func main() {
 			return
 		}
 		if Branch > "" {
-			err, resp := tBot.SendMessage(title+"#starting", true)
+			err, resp := tBot.SendMessage(title+" #starting", true)
 			if err != nil {
 				logs.ErrorLog(err, resp)
 			}
@@ -178,8 +177,11 @@ func main() {
 		}
 	}
 
-	ch <- "finish"
-	time.After(time.Second)
+	select {
+	case <-ch:
+	case <-time.After(time.Second):
+	}
+
 }
 
 func getAppTitle() string {
@@ -193,8 +195,10 @@ func runServer() {
 		path.Join(*fSystem, *fCfgPath, "server.key"))
 	if err != nil {
 		logs.ErrorStack(err)
+		ch <- err.Error()
 	} else {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
+		ch <- " correct shutdown"
 	}
 
 }
