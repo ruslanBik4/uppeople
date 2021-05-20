@@ -143,7 +143,6 @@ func main() {
 			return
 		}
 		if Branch > "" {
-			logs.DebugLog(title)
 			err, resp := tBot.SendMessage(title+"#starting", true)
 			if err != nil {
 				logs.ErrorLog(err, resp)
@@ -153,7 +152,6 @@ func main() {
 		logs.SetWriters(tBot, logs.FgErr, logs.FgDebug)
 
 		msg := <-ch
-		logs.DebugLog(msg)
 		err, resp := tBot.SendMessage(
 			fmt.Sprintf("#shutdown at %v %s", time.Now(), msg),
 			true)
