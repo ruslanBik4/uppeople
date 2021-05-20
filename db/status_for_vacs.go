@@ -244,23 +244,22 @@ func GetStatusForVacFromId(id int32) *StatusForVacsFields {
 func GetStatusForVacAsSelectedUnits() SelectedUnits {
 	if len(statusesForVacIdsAsSU) > 0 {
 		return statusesForVacIdsAsSU
-	} else {
-		if len(statusesForVacIds) == 0 {
-			return nil
-		}
-
-		for _, statForVac := range statusesForVacIds {
-			statusesForVacIdsAsSU = append(statusesForVacIdsAsSU,
-				&SelectedUnit{
-					Id:    statForVac.Id,
-					Label: statForVac.Status,
-					Value: strings.ToLower(statForVac.Status),
-				})
-		}
-
-		if len(statusesForVacIdsAsSU) == 0 {
-			return nil
-		}
 	}
+
+	if len(statusesForVacIds) == 0 {
+		return nil
+	}
+
+	statusesForVacIdsAsSU := make(SelectedUnits, len(statusesForVacIds))
+	i := 0
+	for _, statForVac := range statusesForVacIds {
+		statusesForVacIdsAsSU[i] = &SelectedUnit{
+			Id:    statForVac.Id,
+			Label: statForVac.Status,
+			Value: strings.ToLower(statForVac.Status),
+		}
+		i++
+	}
+
 	return statusesForVacIdsAsSU
 }
