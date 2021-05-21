@@ -8,7 +8,6 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
-	"strings"
 )
 
 type Tags struct {
@@ -303,23 +302,14 @@ func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	err = tagsTable.SelectSelfScanEach(ctx,
 		func(record *TagsFields) error {
 			tagIds[record.Name] = *record
+			tagAsSelectedUnit := NewSelectedUnit(record.Id, record.Name)
 
 			switch record.ParentId {
 			case GetTagIdReject():
-				reasonsIdsAsSU = append(reasonsIdsAsSU,
-					&SelectedUnit{
-						Id:    record.Id,
-						Label: record.Name,
-						Value: strings.ToLower(record.Name),
-					})
+				reasonsIdsAsSU = append(reasonsIdsAsSU, tagAsSelectedUnit)
 
 			default:
-				tagIdsAsSU = append(tagIdsAsSU,
-					&SelectedUnit{
-						Id:    record.Id,
-						Label: record.Name,
-						Value: strings.ToLower(record.Name),
-					})
+				tagIdsAsSU = append(tagIdsAsSU, tagAsSelectedUnit)
 			}
 			return nil
 		},

@@ -4,10 +4,8 @@ package db
 
 import (
 	"database/sql"
-	"github.com/ruslanBik4/logs"
-	"strings"
-
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -160,11 +158,7 @@ func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	err = platformsTable.SelectSelfScanEach(ctx,
 		func(record *PlatformsFields) error {
 			platformIds[record.Name] = *record
-			platformIdsAsSU = append(platformIdsAsSU, &SelectedUnit{
-				Id:    record.Id,
-				Label: record.Name,
-				Value: strings.ToLower(record.Name),
-			})
+			platformIdsAsSU = append(platformIdsAsSU, NewSelectedUnit(record.Id, record.Name))
 			return nil
 		},
 		dbEngine.OrderBy("id"),

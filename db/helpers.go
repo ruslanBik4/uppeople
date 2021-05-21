@@ -1,6 +1,8 @@
 package db
 
 import (
+	"strings"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 )
@@ -12,6 +14,14 @@ type SelectedUnit struct {
 }
 
 type SelectedUnits []*SelectedUnit
+
+func NewSelectedUnit(id int32, label string) *SelectedUnit {
+	return &SelectedUnit{
+		Id:    id,
+		Label: label,
+		Value: strings.ToLower(label),
+	}
+}
 
 func (s *SelectedUnits) GetFields(columns []dbEngine.Column) []interface{} {
 	p := &SelectedUnit{}
