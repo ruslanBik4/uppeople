@@ -204,7 +204,7 @@ func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
 			})
 			return nil
 		},
-		dbEngine.OrderBy("order_num"),
+		dbEngine.OrderBy("id"),
 	)
 
 	if err != nil {

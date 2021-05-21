@@ -322,7 +322,9 @@ func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
 					})
 			}
 			return nil
-		})
+		},
+		dbEngine.OrderBy("order_num"),
+	)
 
 	if err != nil {
 		logs.ErrorLog(err, "while reading tags from db to tagIds(db.TagIdMap)")

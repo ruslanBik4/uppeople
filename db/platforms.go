@@ -166,7 +166,9 @@ func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
 				Value: strings.ToLower(record.Name),
 			})
 			return nil
-		})
+		},
+		dbEngine.OrderBy("id"),
+	)
 
 	if err != nil {
 		logs.ErrorLog(err, "while reading platforms from db to platformIds(db.PlatformsIdMap)")
