@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+	"github.com/ruslanBik4/logs"
 	"strings"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -145,24 +146,31 @@ func GetPlatformFromId(id int32) *PlatformsFields {
 }
 
 func GetPlatformsAsSelectedUnits() SelectedUnits {
-	if len(platformIdsAsSU) > 0 {
-		return platformIdsAsSU
-	}
-
-	if len(platformIds) == 0 {
-		return nil
-	}
-
-	platformIdsAsSU := make(SelectedUnits, len(platformIds))
-	i := 0
-	for _, platform := range platformIds {
-		platformIdsAsSU[i] = &SelectedUnit{
-			Id:    platform.Id,
-			Label: platform.Name,
-			Value: strings.ToLower(platform.Name),
-		}
-		i++
-	}
-
 	return platformIdsAsSU
+}
+
+func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	platformIds = PlatformsIdMap{}
+	platformsTable, err := NewPlatforms(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_PLATFORMS)
+		return err
+	}
+
+	err = platformsTable.SelectSelfScanEach(ctx,
+		func(record *PlatformsFields) error {
+			platformIds[record.Name] = *record
+			platformIdsAsSU = append(platformIdsAsSU, &SelectedUnit{
+				Id:    record.Id,
+				Label: record.Name,
+				Value: strings.ToLower(record.Name),
+			})
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading platforms from db to platformIds(db.PlatformsIdMap)")
+	}
+
+	return
 }

@@ -285,55 +285,48 @@ func GetTagFromId(id int32) *TagsFields {
 }
 
 func GetTagsAsSelectedUnits() SelectedUnits {
-	if len(tagIdsAsSU) > 0 {
-		return tagIdsAsSU
-	}
-
-	if len(tagIds) == 0 {
-		return nil
-	}
-
-	for _, tag := range tagIds {
-		if tag.ParentId == 0 {
-			tagIdsAsSU = append(tagIdsAsSU,
-				&SelectedUnit{
-					Id:    tag.Id,
-					Label: tag.Name,
-					Value: strings.ToLower(tag.Name),
-				})
-		}
-	}
-
-	if len(tagIdsAsSU) == 0 {
-		return nil
-	}
-
 	return tagIdsAsSU
 }
 
 func GetRejectReasonAsSelectedUnits() SelectedUnits {
-	if len(reasonsIdsAsSU) > 0 {
-		return reasonsIdsAsSU
-	}
-
-	if len(tagIds) == 0 {
-		return nil
-	}
-
-	for _, tag := range tagIds {
-		if tag.ParentId == GetTagIdReject() {
-			reasonsIdsAsSU = append(reasonsIdsAsSU,
-				&SelectedUnit{
-					Id:    tag.Id,
-					Label: tag.Name,
-					Value: strings.ToLower(tag.Name),
-				})
-		}
-	}
-
-	if len(reasonsIdsAsSU) == 0 {
-		return nil
-	}
-
 	return reasonsIdsAsSU
+}
+
+func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	tagIds = TagIdMap{}
+	tagsTable, err := NewTags(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_TAGS)
+		return err
+	}
+
+	err = tagsTable.SelectSelfScanEach(ctx,
+		func(record *TagsFields) error {
+			tagIds[record.Name] = *record
+
+			switch record.ParentId {
+			case GetTagIdReject():
+				reasonsIdsAsSU = append(reasonsIdsAsSU,
+					&SelectedUnit{
+						Id:    record.Id,
+						Label: record.Name,
+						Value: strings.ToLower(record.Name),
+					})
+
+			default:
+				tagIdsAsSU = append(tagIdsAsSU,
+					&SelectedUnit{
+						Id:    record.Id,
+						Label: record.Name,
+						Value: strings.ToLower(record.Name),
+					})
+			}
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading tags from db to tagIds(db.TagIdMap)")
+	}
+
+	return
 }

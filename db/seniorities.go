@@ -218,24 +218,31 @@ func GetSeniorityFromId(id int32) *SenioritiesFields {
 }
 
 func GetSenioritiesAsSelectedUnits() SelectedUnits {
-	if len(seniorityIdsAsSU) > 0 {
-		return seniorityIdsAsSU
-	}
-
-	if len(seniorityIds) == 0 {
-		return nil
-	}
-
-	seniorityIdsAsSU := make(SelectedUnits, len(seniorityIds))
-	i := 0
-	for _, sen := range seniorityIds {
-		seniorityIdsAsSU[i] = &SelectedUnit{
-			Id:    sen.Id,
-			Label: sen.Name,
-			Value: strings.ToLower(sen.Name),
-		}
-		i++
-	}
-
 	return seniorityIdsAsSU
+}
+
+func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	seniorityIds = SeniorityIdMap{}
+	seniorityTable, err := NewSeniorities(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_SENIORITIES)
+		return err
+	}
+
+	err = seniorityTable.SelectSelfScanEach(ctx,
+		func(record *SenioritiesFields) error {
+			seniorityIds[record.Name] = *record
+			seniorityIdsAsSU = append(seniorityIdsAsSU, &SelectedUnit{
+				Id:    record.Id,
+				Label: record.Name,
+				Value: strings.ToLower(record.Name),
+			})
+			return nil
+		})
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading seniorities from db to seniorityIds(db.SeniorityIdMap)")
+	}
+
+	return
 }

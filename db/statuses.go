@@ -183,25 +183,6 @@ func GetStatusFromId(id int32) *StatusesFields {
 }
 
 func GetStatusAsSelectedUnits() SelectedUnits {
-	if len(statusesIdsAsSU) > 0 {
-		return statusesIdsAsSU
-	}
-
-	if len(statusesIds) == 0 {
-		return nil
-	}
-
-	statusesIdsAsSU := make(SelectedUnits, len(statusesIds))
-	i := 0
-	for _, status := range statusesIds {
-		statusesIdsAsSU[i] = &SelectedUnit{
-			Id:    status.Id,
-			Label: status.Status,
-			Value: strings.ToLower(status.Status),
-		}
-		i++
-	}
-
 	return statusesIdsAsSU
 }
 
@@ -216,6 +197,11 @@ func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	err = statusesTable.SelectSelfScanEach(ctx,
 		func(record *StatusesFields) error {
 			statusesIds[record.Status] = *record
+			statusesIdsAsSU = append(statusesIdsAsSU, &SelectedUnit{
+				Id:    record.Id,
+				Label: record.Status,
+				Value: strings.ToLower(record.Status),
+			})
 			return nil
 		},
 		dbEngine.OrderBy("order_num"),
