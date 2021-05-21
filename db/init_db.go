@@ -288,48 +288,6 @@ func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	return
 }
 
-func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
-	statusesIds = StatusIdMap{}
-	statusesTable, err := NewStatuses(db)
-	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUSES)
-		return err
-	}
-
-	err = statusesTable.SelectSelfScanEach(ctx,
-		func(record *StatusesFields) error {
-			statusesIds[record.Status] = *record
-			return nil
-		})
-
-	if err != nil {
-		logs.ErrorLog(err, "while reading statuses from db to statusesIds(db.StatusIdMap)")
-	}
-
-	return
-}
-
-func initStatusesForVacIds(ctx context.Context, db *dbEngine.DB) (err error) {
-	statusesForVacIds = StatusForVacIdMap{}
-	statusesForVacsTable, err := NewStatusForVacs(db)
-	if err != nil {
-		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUS_FOR_VACS)
-		return err
-	}
-
-	err = statusesForVacsTable.SelectSelfScanEach(ctx,
-		func(record *StatusForVacsFields) error {
-			statusesForVacIds[record.Status] = *record
-			return nil
-		})
-
-	if err != nil {
-		logs.ErrorLog(err, "while reading statuses for vacancies from db to statusesForVacIds(db.StatusForVacIdMap)")
-	}
-
-	return
-}
-
 func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	seniorityIds = SeniorityIdMap{}
 	seniorityTable, err := NewSeniorities(db)

@@ -204,3 +204,26 @@ func GetStatusAsSelectedUnits() SelectedUnits {
 
 	return statusesIdsAsSU
 }
+
+func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	statusesIds = StatusIdMap{}
+	statusesTable, err := NewStatuses(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUSES)
+		return err
+	}
+
+	err = statusesTable.SelectSelfScanEach(ctx,
+		func(record *StatusesFields) error {
+			statusesIds[record.Status] = *record
+			return nil
+		},
+		dbEngine.OrderBy("order_num"),
+	)
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading statuses from db to statusesIds(db.StatusIdMap)")
+	}
+
+	return
+}

@@ -2,7 +2,8 @@ create table statuses
 (
     id serial not null,
     status character varying not null,
-        PRIMARY KEY (id)
+    order_num integer not null,
+    PRIMARY KEY (id)
 );
 COMMENT ON TABLE statuses IS 'statuses of vacancies';
 -- example comment with dataJSON

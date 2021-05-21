@@ -242,24 +242,34 @@ func GetStatusForVacFromId(id int32) *StatusForVacsFields {
 }
 
 func GetStatusForVacAsSelectedUnits() SelectedUnits {
-	if len(statusesForVacIdsAsSU) > 0 {
-		return statusesForVacIdsAsSU
-	}
-
-	if len(statusesForVacIds) == 0 {
-		return nil
-	}
-
-	statusesForVacIdsAsSU := make(SelectedUnits, len(statusesForVacIds))
-	i := 0
-	for _, statForVac := range statusesForVacIds {
-		statusesForVacIdsAsSU[i] = &SelectedUnit{
-			Id:    statForVac.Id,
-			Label: statForVac.Status,
-			Value: strings.ToLower(statForVac.Status),
-		}
-		i++
-	}
-
 	return statusesForVacIdsAsSU
+}
+
+func initStatusesForVacIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	statusesForVacIds = StatusForVacIdMap{}
+	statusesForVacsTable, err := NewStatusForVacs(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUS_FOR_VACS)
+		return err
+	}
+
+	statusesForVacIdsAsSU = make(SelectedUnits, 0)
+	err = statusesForVacsTable.SelectSelfScanEach(ctx,
+		func(record *StatusForVacsFields) error {
+			statusesForVacIds[record.Status] = *record
+			statusesForVacIdsAsSU = append(statusesForVacIdsAsSU, &SelectedUnit{
+				Id:    record.Id,
+				Label: record.Status,
+				Value: strings.ToLower(record.Status),
+			})
+
+			return nil
+		},
+		dbEngine.OrderBy("order_num"),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "while reading statuses for vacancies from db to statusesForVacIds(db.StatusForVacIdMap)")
+	}
+
+	return
 }
