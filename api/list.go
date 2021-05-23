@@ -64,6 +64,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		ref.TagColor = ref.Tags.Color
 	}
 
+	logs.DebugLog("%+v", record)
 	ref.Seniority = db.GetSeniorityFromId(record.Seniority_id).Name
 
 	platform := db.GetPlatformFromId(record.Platform_id)
