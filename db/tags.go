@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
@@ -284,11 +285,11 @@ func GetTagFromId(id int32) *TagsFields {
 }
 
 func GetTagsAsSelectedUnits() SelectedUnits {
-	return tagIdsAsSU
+	return tagsSelected
 }
 
 func GetRejectReasonAsSelectedUnits() SelectedUnits {
-	return reasonsIdsAsSU
+	return reasonsSelected
 }
 
 func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
@@ -305,12 +306,12 @@ func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
 			tagAsSelectedUnit := NewSelectedUnit(record.Id, record.Name)
 
 			switch record.ParentId {
-			case GetTagIdReject():
-				reasonsIdsAsSU = append(reasonsIdsAsSU, tagAsSelectedUnit)
-
+			case 0:
+				tagsSelected = append(tagsSelected, tagAsSelectedUnit)
 			default:
-				tagIdsAsSU = append(tagIdsAsSU, tagAsSelectedUnit)
+				reasonsSelected = append(reasonsSelected, tagAsSelectedUnit)
 			}
+
 			return nil
 		},
 		dbEngine.OrderBy("order_num"),

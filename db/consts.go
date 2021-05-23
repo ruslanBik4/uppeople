@@ -122,10 +122,10 @@ var (
 
 // Consts forgetter handlerds
 var (
-	tagIdsAsSU            SelectedUnits
-	reasonsIdsAsSU        SelectedUnits
-	statusesIdsAsSU       SelectedUnits
-	statusesForVacIdsAsSU SelectedUnits
-	seniorityIdsAsSU      SelectedUnits
-	platformIdsAsSU       SelectedUnits
+	tagsSelected        SelectedUnits
+	reasonsSelected     SelectedUnits
+	statusesSelected    SelectedUnits
+	statusesVacSelected SelectedUnits
+	senioritySelected   SelectedUnits
+	platformsSelected   SelectedUnits
 )

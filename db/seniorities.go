@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
@@ -216,7 +217,7 @@ func GetSeniorityFromId(id int32) *SenioritiesFields {
 }
 
 func GetSenioritiesAsSelectedUnits() SelectedUnits {
-	return seniorityIdsAsSU
+	return senioritySelected
 }
 
 func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
@@ -230,7 +231,7 @@ func initSeniorityIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	err = seniorityTable.SelectSelfScanEach(ctx,
 		func(record *SenioritiesFields) error {
 			seniorityIds[record.Name] = *record
-			seniorityIdsAsSU = append(seniorityIdsAsSU, NewSelectedUnit(record.Id, record.Name))
+			senioritySelected = append(senioritySelected, NewSelectedUnit(record.Id, record.Name))
 			return nil
 		},
 		dbEngine.OrderBy("id"),

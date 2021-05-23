@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
@@ -181,7 +182,7 @@ func GetStatusFromId(id int32) *StatusesFields {
 }
 
 func GetStatusAsSelectedUnits() SelectedUnits {
-	return statusesIdsAsSU
+	return statusesSelected
 }
 
 func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
@@ -195,7 +196,7 @@ func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	err = statusesTable.SelectSelfScanEach(ctx,
 		func(record *StatusesFields) error {
 			statusesIds[record.Status] = *record
-			statusesIdsAsSU = append(statusesIdsAsSU, NewSelectedUnit(record.Id, record.Status))
+			statusesSelected = append(statusesSelected, NewSelectedUnit(record.Id, record.Status))
 			return nil
 		},
 		dbEngine.OrderBy("id"),

@@ -4,6 +4,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
@@ -144,7 +145,7 @@ func GetPlatformFromId(id int32) *PlatformsFields {
 }
 
 func GetPlatformsAsSelectedUnits() SelectedUnits {
-	return platformIdsAsSU
+	return platformsSelected
 }
 
 func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
@@ -158,7 +159,7 @@ func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	err = platformsTable.SelectSelfScanEach(ctx,
 		func(record *PlatformsFields) error {
 			platformIds[record.Name] = *record
-			platformIdsAsSU = append(platformIdsAsSU, NewSelectedUnit(record.Id, record.Name))
+			platformsSelected = append(platformsSelected, NewSelectedUnit(record.Id, record.Name))
 			return nil
 		},
 		dbEngine.OrderBy("id"),
