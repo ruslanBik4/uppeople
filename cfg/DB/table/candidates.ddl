@@ -23,7 +23,7 @@ create table candidates
     zapoln_profile integer,
     file character varying not null default '',
     avatar character varying not null default '',
-    seniority_id integer not null,
+    seniority_id integer not null default 1,
     date_follow_up date,
     vacancies integer[],
         PRIMARY KEY (id)
@@ -45,4 +45,12 @@ create unique index candidates_linkedin_uindex
     on candidates (linkedin)
     where (((linkedin)::text > ''::text) AND (linkedin IS NOT NULL));
 
+alter table candidates
+    add constraint candidates_seniorities_id_fk
+        foreign key (seniority_id) references seniorities
+            on update cascade on delete set default;
 
+alter table candidates
+    add constraint candidates_tags_id_fk
+        foreign key (tag_id) references tags
+            on update cascade on delete set default

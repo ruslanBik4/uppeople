@@ -40,7 +40,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	record *db.CandidatesFields,
 	DB *dbEngine.DB,
 ) *CandidateView {
-	ref := &CandidateView{
+	view := &CandidateView{
 		ViewCandidate: &ViewCandidate{
 			CandidatesFields: record,
 		},
@@ -49,7 +49,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	users, _ := db.NewUsers(DB)
 
 	err := users.SelectOneAndScan(ctx,
-		&ref.Recruiter,
+		&view.Recruiter,
 		dbEngine.ColumnsForSelect("name"),
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(record.Recruter_id),
@@ -58,35 +58,50 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		logs.ErrorLog(err, "users.SelectOneAndScan")
 	}
 
-	ref.Tags = db.GetTagFromId(record.Tag_id)
-	if ref.Tags != nil {
-		ref.TagName = ref.Tags.Name
-		ref.TagColor = ref.Tags.Color
+	err = DB.Conn.SelectAndScanEach(ctx,
+		nil,
+		&view.SelectedVacancies,
+		`select v.id, 
+		concat(companies.name, ' ("', platforms.name, '")') as label, 
+		LOWER(CONCAT(companies.name, ' ("', platforms.name , '")')) as value
+	FROM vacancies v JOIN companies on (v.company_id=companies.id)
+	JOIN platforms ON (v.platform_id = platforms.id)
+	WHERE v.id=ANY($1)
+`,
+		view.CandidatesFields.Vacancies,
+	)
+	if err != nil {
+		logs.ErrorLog(err, "SelectedVacancies")
 	}
 
-	logs.DebugLog("%+v", record)
-	ref.Seniority = db.GetSeniorityFromId(record.Seniority_id).Name
+	view.Tags = db.GetTagFromId(record.Tag_id)
+	if view.Tags != nil {
+		view.TagName = view.Tags.Name
+		view.TagColor = view.Tags.Color
+	}
+
+	view.Seniority = db.GetSeniorityFromId(record.Seniority_id).Name
 
 	platform := db.GetPlatformFromId(record.Platform_id)
-	ref.Platform = platform.Name
-	ref.ViewCandidate.Platform = &db.SelectedUnit{
+	view.Platform = platform.Name
+	view.ViewCandidate.Platform = &db.SelectedUnit{
 		Id:    platform.Id,
 		Label: platform.Name,
 		Value: strings.ToLower(platform.Name),
 	}
 
-	ref.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
+	view.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		SQL_VIEW_CANDIDATE_VACANCIES,
-		ref.ViewCandidate.Id,
+		view.ViewCandidate.Id,
 	)
 	if err != nil {
 		logs.ErrorLog(err, "")
 	}
 
-	args := make([]int32, len(ref.ViewCandidate.Vacancies))
-	for i, vacancy := range ref.ViewCandidate.Vacancies {
+	args := make([]int32, len(view.ViewCandidate.Vacancies))
+	for i, vacancy := range view.ViewCandidate.Vacancies {
 		args[i] = vacancy["company_id"].(int32)
-		ref.Statuses = append(ref.Statuses,
+		view.Statuses = append(view.Statuses,
 			&statusCandidate{
 				CompId:    vacancy["company_id"].(int32),
 				CompName:  vacancy["name"].(string),
@@ -98,12 +113,12 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 			})
 	}
 	if len(args) > 0 {
-		ref.Companies = getCompanies(ctx,
+		view.Companies = getCompanies(ctx,
 			DB,
 			dbEngine.WhereForSelect("id"),
 			dbEngine.ArgsForSelect(args),
 		)
 	}
 
-	return ref
+	return view
 }

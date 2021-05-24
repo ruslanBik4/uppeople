@@ -324,22 +324,6 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	view := NewCandidateView(ctx, table.Record, DB)
 
-	err = DB.Conn.SelectAndScanEach(ctx,
-		nil,
-		&view.SelectedVacancies,
-		`select v.id, 
-		concat(companies.name, ' ("', platforms.name, '")') as label, 
-		LOWER(CONCAT(companies.name, ' ("', platforms.name , '")')) as value
-	FROM vacancies v JOIN companies on (v.company_id=companies.id)
-	JOIN platforms ON (v.platform_id = platforms.id)
-	WHERE v.id=ANY($1)
-`,
-		view.CandidatesFields.Vacancies,
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-
 	res.Candidate = view.ViewCandidate
 	for _, vacancy := range res.Candidate.Vacancies {
 		res.Statuses = append(res.Statuses, StatusesCandidate{
