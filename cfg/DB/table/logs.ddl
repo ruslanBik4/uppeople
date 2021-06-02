@@ -1,7 +1,7 @@
 create table logs
 (
     id serial not null,
-    user_id integer,
+    user_id integer not null default 1,
     candidate_id integer,
     company_id integer,
     vacancy_id integer,
@@ -22,7 +22,7 @@ alter table logs
             on update cascade on delete set default;
 alter table logs
     add constraint logs_company_id_fk
-        foreign key (company_id) references uppeople.public.companies
+        foreign key (company_id) references companies
             on update cascade on delete set default;
 alter table logs
     add constraint logs_vacancy_id_fk

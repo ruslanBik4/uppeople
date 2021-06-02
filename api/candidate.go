@@ -172,7 +172,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, table, _ := getTableCommentsForCandidates(ctx)
 
 	i, err := table.Delete(ctx,
-		dbEngine.ColumnsForSelect("id"),
+		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id),
 	)
 	if err != nil {
