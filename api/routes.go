@@ -127,6 +127,14 @@ var (
 				ParamID,
 			},
 		},
+		"/api/main/deleteCommentCandidate/": {
+			Fnc:      HandleRmCommentsCandidate,
+			Desc:     "delete comment of candidate (/id of comments)",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
 		"/api/interview/sendCV/": {
 			Fnc:      HandleSendCV,
 			Desc:     "send candidate to company",

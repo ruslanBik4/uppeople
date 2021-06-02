@@ -161,12 +161,7 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 	return createResult(i)
 }
 
-func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
+func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
@@ -174,8 +169,32 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
+	DB, table, _ := getTableCommentsForCandidates(ctx)
+
+	i, err := table.Delete(ctx,
+		dbEngine.ColumnsForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	// todo: logs
+	toLogCandidate(ctx, DB, id, "", CODE_DEL_COMMENT)
+
+	return createResult(i)
+}
+
+func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
+		}, apis.ErrWrongParamsList
+	}
+
+	DB, table, _ := getTableCommentsForCandidates(ctx)
 	text := string(ctx.Request.Body())
-	table, _ := db.NewComments_for_candidates(DB)
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect("candidate_id", "comments"),
 		dbEngine.ArgsForSelect(id, text),
@@ -184,10 +203,20 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, " оставил комментарий в кандидате "+text, CODE_LOG_UPDATE)
+	toLogCandidate(ctx, DB, id, text, CODE_ADD_COMMENT)
 
 	return createResult(i)
+}
 
+func getTableCommentsForCandidates(ctx *fasthttp.RequestCtx) (*dbEngine.DB, *db.Comments_for_candidates, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewComments_for_candidates(DB)
+
+	return DB, table, nil
 }
 
 func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
