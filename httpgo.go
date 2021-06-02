@@ -62,7 +62,7 @@ func init() {
 		logs.Fatal(err)
 	}
 
-	ctxApis := apis.NewCtxApis(0)
+	ctxApis := apis.NewCtxApis(8)
 
 	ctxApis.AddValue("migration", path.Join(*fCfgPath, "DB"))
 	DB := db.GetDB(ctxApis)
@@ -91,7 +91,7 @@ func init() {
 
 	httpServer = httpgo.NewHttpgo(cfg, listener, a)
 
-	ctx := context.WithValue(context.TODO(), "mapRouting", api.Routes)
+	ctx := context.WithValue(ctxApis, "mapRouting", api.Routes)
 	services.InitServices(ctx, "mail", "showLogs")
 
 }

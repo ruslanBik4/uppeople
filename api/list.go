@@ -58,20 +58,17 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		logs.ErrorLog(err, "users.SelectOneAndScan")
 	}
 
-	err = DB.Conn.SelectAndScanEach(ctx,
-		nil,
-		&view.SelectedVacancies,
-		`select v.id, 
-		concat(companies.name, ' ("', platforms.name, '")') as label, 
-		LOWER(CONCAT(companies.name, ' ("', platforms.name , '")')) as value
-	FROM vacancies v JOIN companies on (v.company_id=companies.id)
-	JOIN platforms ON (v.platform_id = platforms.id)
-	WHERE v.id=ANY($1)
-`,
-		view.CandidatesFields.Vacancies,
-	)
-	if err != nil {
-		logs.ErrorLog(err, "SelectedVacancies")
+	selectedVacancies, ok := DB.Tables["select_vacancies"]
+	if ok {
+		err = selectedVacancies.SelectAndScanEach(ctx,
+			nil,
+			&view.SelectedVacancies,
+			dbEngine.WhereForSelect("id"),
+			dbEngine.ArgsForSelect(view.CandidatesFields.Vacancies),
+		)
+		if err != nil {
+			logs.ErrorLog(err, "SelectedVacancies")
+		}
 	}
 
 	view.Tags = db.GetTagFromId(record.Tag_id)

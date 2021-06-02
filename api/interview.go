@@ -82,7 +82,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				return createErrResult(err)
 			}
 
-			_, err = IntRevCandidate.Insert(ctx,
+			_, err = IntRevCandidate.Upsert(ctx,
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date"),
 				dbEngine.ArgsForSelect(u.CompId, id, vacID, db.GetStatusForVacIdReview(), user.Id, timeNow),

@@ -11,12 +11,12 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/ruslanBik4/dbEngine v1.0.1133
 	github.com/ruslanBik4/httpgo v1.1.10083
-	github.com/ruslanBik4/logs v0.0.0-20210518090836-8737863729c5
+	github.com/ruslanBik4/logs v0.0.12
 	github.com/stretchr/testify v1.6.1
-	github.com/valyala/fasthttp v1.18.0
+	github.com/valyala/fasthttp v1.26.0
 	github.com/valyala/quicktemplate v1.6.3
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	golang.org/x/net v0.0.0-20210510120150-4163338589ed
 )
 
 //replace github.com/ruslanBik4/dbEngine => /Users/ruslan/work/src/github.com/ruslanBik4/dbEngine
