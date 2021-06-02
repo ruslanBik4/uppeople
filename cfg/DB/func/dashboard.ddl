@@ -32,8 +32,8 @@ BEGIN
            group by 1) j
            ),
        (select json_object_agg(j.name, j.obj)
-           from (select c.name, json_build_object('countAll', count(i.id), 'Review',
-               count(i.id) FILTER ( WHERE s.id = 1 )) obj
+           from (select c.name, json_build_object('countAll', count(*), 'Review',
+               count(*) FILTER ( WHERE s.id = 1 )) obj
                  from intRows i join vacancies v on (i.vacancy_id = v.id)
                      join platforms p on p.id = v.platform_id
                      join companies c on i.company_id = c.id
@@ -41,9 +41,9 @@ BEGIN
            group by c.name) j
            ),
        (select json_object_agg(vacancy, j.obj)
-        from (select vacancy, json_build_object('countAll', count(i.id),
+        from (select vacancy, json_build_object('countAll', count(*),
                                         'Review',
-                                       count(i.id) FILTER ( WHERE s.id = 9 )) obj
+                                       count(*) FILTER ( WHERE s.id = 9 )) obj
               from intRows i join vacancies v on (i.vacancy_id = v.id)
                              join platforms p on p.id = v.platform_id
                              join companies c on i.company_id = c.id
