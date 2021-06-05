@@ -66,14 +66,15 @@ BEGIN
             from users join roles  on users.role_id = roles.id
           group by 1) j),
      (select json_object_agg(status, j.obj)
-        from (select s.status, count(i.id)  obj
+        from (select s.status, count(*)  obj
               from int_rev_candidates i
                 join status_for_vacs s on i.status = s.id
               where age(i.date) < interval '1 month'
               group by 1) j
        ),
     (select json_object_agg(status, j.obj)
-        from (select s.status, json_agg( json_build_object( 'id', i.id, 'name', users.name, 'role', roles.nazva_en) ) obj
+        from (select s.status,
+                     json_agg( json_build_object( 'id', i.candidate_id, 'name', users.name, 'role', roles.nazva_en) ) obj
               from int_rev_candidates i
                 join status_for_vacs s on i.status = s.id
                 join users on i.user_id=users.id

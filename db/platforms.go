@@ -15,13 +15,20 @@ type Platforms struct {
 	Record *PlatformsFields
 	rows   sql.Rows
 }
+type PlatformsIdMap map[string]PlatformsFields
 
 type PlatformsFields struct {
 	Id   int32  `json:"id"`
 	Name string `json:"name"`
 }
 
-type PlatformsIdMap map[string]PlatformsFields
+func (d *PlatformsFields) GetValue() interface{} {
+	return d
+}
+
+func (d *PlatformsFields) NewValue() interface{} {
+	return &PlatformsFields{}
+}
 
 func (r *PlatformsFields) RefColValue(name string) interface{} {
 	switch name {
@@ -90,7 +97,7 @@ func (t *Platforms) SelectSelfScanEach(ctx context.Context, each func(record *Pl
 		}, t, Options...)
 }
 
-func (t *Platforms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Platforms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (i int64, err error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -102,6 +109,12 @@ func (t *Platforms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpti
 			dbEngine.ColumnsForSelect(columns...),
 			dbEngine.ArgsForSelect(v...))
 	}
+
+	defer func() {
+		if i > 0 {
+			t.reCache(ctx, int32(i))
+		}
+	}()
 
 	return t.Table.Insert(ctx, Options...)
 }
@@ -132,6 +145,17 @@ func (t *Platforms) Update(ctx context.Context, Options ...dbEngine.BuildSqlOpti
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func (t *Platforms) reCache(ctx context.Context, id int32) {
+	err := t.SelectOneAndScan(ctx, t, dbEngine.WhereForSelect("id"), dbEngine.ArgsForSelect(id))
+	if err != nil {
+		logs.ErrorLog(err, "SelectOneAndScan")
+	} else {
+		name := t.Record.Name
+		platformIds[name] = *t.Record
+		platformsSelected = append(platformsSelected, NewSelectedUnit(id, name))
+	}
 }
 
 func GetPlatformFromId(id int32) *PlatformsFields {

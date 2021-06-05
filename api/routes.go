@@ -111,6 +111,12 @@ var (
 			DTO:      &DTOUser{},
 			NeedAuth: true,
 		},
+		"/api/admin/add-platform": {
+			Fnc:      HandleAddPlatform,
+			Desc:     "add new platform",
+			DTO:      &db.PlatformsFields{},
+			NeedAuth: true,
+		},
 		"/api/main/addCommentForCompany/": {
 			Fnc:      HandleAddCommentForCompany,
 			Desc:     "add comment of company",
