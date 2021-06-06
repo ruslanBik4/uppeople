@@ -6,10 +6,12 @@ package api
 
 import (
 	"go/types"
+	"runtime/trace"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -109,6 +111,12 @@ var (
 			DTO:      &DTOUser{},
 			NeedAuth: true,
 		},
+		"/api/admin/add-platform": {
+			Fnc:      HandleAddPlatform,
+			Desc:     "add new platform",
+			DTO:      &db.PlatformsFields{},
+			NeedAuth: true,
+		},
 		"/api/main/addCommentForCompany/": {
 			Fnc:      HandleAddCommentForCompany,
 			Desc:     "add comment of company",
@@ -120,6 +128,14 @@ var (
 		"/api/main/addCommentForCandidate/": {
 			Fnc:      HandleAddCommentsCandidate,
 			Desc:     "add comment of candidate",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamID,
+			},
+		},
+		"/api/main/deleteCommentCandidate/": {
+			Fnc:      HandleRmCommentsCandidate,
+			Desc:     "delete comment of candidate (/id of comments)",
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,
@@ -559,6 +575,17 @@ var (
 				},
 			},
 		},
+		"/api/system/trace/": {
+			Fnc: HandleTrace,
+			Params: []apis.InParam{
+				{
+					Name: "cmd",
+					Desc: "command for pgx",
+					Req:  false,
+					Type: apis.NewTypeInParam(types.String),
+				},
+			},
+		},
 	}
 )
 var hosts = []string{
@@ -586,9 +613,47 @@ func HandleApiRedirect(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func init() {
-	for _, route := range PostRoutes {
+	for path, route := range PostRoutes {
 		route.Method = apis.POST
+		if trace.IsEnabled() {
+			route.Fnc = func(handler apis.ApiRouteHandler) apis.ApiRouteHandler {
+				return func(ctx *fasthttp.RequestCtx) (resp interface{}, err error) {
+					ctx1, task := trace.NewTask(ctx, path)
+					defer task.End()
+					reg := trace.StartRegion(ctx1, path)
+					defer reg.End()
+					logs.DebugLog(reg, task)
+					trace.WithRegion(ctx1, path,
+						func() {
+							resp, err = handler(ctx)
+						})
+
+					return
+				}
+			}(route.Fnc)
+		}
 	}
 	Routes.AddRoutes(PostRoutes)
+
+	for path, route := range GetRoutes {
+		if trace.IsEnabled() {
+			route.Fnc = func(handler apis.ApiRouteHandler) apis.ApiRouteHandler {
+				return func(ctx *fasthttp.RequestCtx) (resp interface{}, err error) {
+					ctx1, task := trace.NewTask(ctx, path)
+					defer task.End()
+					reg := trace.StartRegion(ctx1, path)
+					defer reg.End()
+					logs.DebugLog(reg, task)
+					trace.WithRegion(ctx1, path,
+						func() {
+							resp, err = handler(ctx)
+						})
+
+					return
+				}
+			}(route.Fnc)
+		}
+	}
+
 	Routes.AddRoutes(GetRoutes)
 }

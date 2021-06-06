@@ -216,9 +216,9 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 }
 
 func NewCandidates(db *dbEngine.DB) (*Candidates, error) {
-	table, ok := db.Tables["candidates"]
+	table, ok := db.Tables[TABLE_CANDIDATES]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "candidates"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_CANDIDATES}
 	}
 
 	return &Candidates{

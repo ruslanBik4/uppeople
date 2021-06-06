@@ -7,6 +7,8 @@ package api
 import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/valyala/fasthttp"
+
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 func HandleReturnOptionsForSelects(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -21,35 +23,35 @@ func HandleReturnOptionsForSelects(ctx *fasthttp.RequestCtx) (interface{}, error
 }
 
 type selectOpt struct {
-	Companies     SelectedUnits `json:"companies"`
-	Platforms     SelectedUnits `json:"platforms"`
-	Recruiters    SelectedUnits `json:"recruiters"`
-	Statuses      SelectedUnits `json:"candidateStatus"`
-	Location      SelectedUnits `json:"location"`
-	RejectReasons SelectedUnits `json:"reject_reasons"`
-	RejectTag     SelectedUnits `json:"reject_tag"`
-	Recruiter     SelectedUnits `json:"recruiter"`
-	Seniorities   SelectedUnits `json:"seniorities"`
-	Tags          SelectedUnits `json:"tags"`
-	VacancyStatus SelectedUnits `json:"vacancyStatus"`
+	Companies     db.SelectedUnits `json:"companies"`
+	Platforms     db.SelectedUnits `json:"platforms"`
+	Recruiters    db.SelectedUnits `json:"recruiters"`
+	Statuses      db.SelectedUnits `json:"candidateStatus"`
+	Location      db.SelectedUnits `json:"location"`
+	RejectReasons db.SelectedUnits `json:"reject_reasons"`
+	RejectTag     db.SelectedUnits `json:"reject_tag"`
+	Recruiter     db.SelectedUnits `json:"recruiter"`
+	Seniorities   db.SelectedUnits `json:"seniorities"`
+	Tags          db.SelectedUnits `json:"tags"`
+	VacancyStatus db.SelectedUnits `json:"vacancyStatus"`
 	// vacancies
 }
 
 func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {
 	s := selectOpt{
 		Companies:     getCompanies(ctx, DB),
-		Platforms:     getPlatforms(ctx, DB),
-		Recruiters:    getRecruters(ctx, DB),
-		Statuses:      getStatusVac(ctx, DB),
+		Platforms:     db.GetPlatformsAsSelectedUnits(),
+		Recruiters:    getRecruiters(ctx, DB),
+		Statuses:      db.GetStatusForVacAsSelectedUnits(),
 		Location:      getLocations(ctx, DB),
-		RejectReasons: getRejectReason(ctx, DB),
-		Seniorities:   getSeniorities(ctx, DB),
-		Tags:          getTags(ctx, DB),
-		VacancyStatus: getStatusVac(ctx, DB),
+		RejectReasons: db.GetRejectReasonAsSelectedUnits(),
+		Seniorities:   db.GetSenioritiesAsSelectedUnits(),
+		Tags:          db.GetTagsAsSelectedUnits(),
+		VacancyStatus: db.GetStatusAsSelectedUnits(),
 	}
 	for _, tag := range s.Tags {
-		if tag.Id == 3 {
-			s.RejectTag = SelectedUnits{tag}
+		if tag.Id == db.GetTagIdReject() {
+			s.RejectTag = db.SelectedUnits{tag}
 		}
 	}
 

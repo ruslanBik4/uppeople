@@ -5,7 +5,9 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -16,9 +18,11 @@ type Statuses struct {
 }
 
 type StatusesFields struct {
-	Id     int64          `json:"id"`
-	Status sql.NullString `json:"status"`
+	Id     int32  `json:"id"`
+	Status string `json:"status"`
 }
+
+type StatusIdMap map[string]StatusesFields
 
 func (r *StatusesFields) RefColValue(name string) interface{} {
 	switch name {
@@ -47,9 +51,9 @@ func (r *StatusesFields) ColValue(name string) interface{} {
 }
 
 func NewStatuses(db *dbEngine.DB) (*Statuses, error) {
-	table, ok := db.Tables["statuses"]
+	table, ok := db.Tables[TABLE_STATUSES]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "statuses"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_STATUSES}
 	}
 
 	return &Statuses{
@@ -129,4 +133,78 @@ func (t *Statuses) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptio
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetStatusIdHot() int32 {
+	if status, ok := statusesIds[STATUS_HOT]; !ok {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_HOT))
+		return -1
+	} else {
+		return status.Id
+	}
+}
+
+func GetStatusIdOpen() int32 {
+	if status, ok := statusesIds[STATUS_OPEN]; !ok {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_OPEN))
+		return -1
+	} else {
+		return status.Id
+	}
+}
+
+func GetStatusIdClosed() int32 {
+	if status, ok := statusesIds[STATUS_CLOSED]; !ok {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_CLOSED))
+		return -1
+	} else {
+		return status.Id
+	}
+}
+
+func GetStatusIdPaused() int32 {
+	if status, ok := statusesIds[STATUS_PAUSED]; !ok {
+		logs.ErrorLog(errors.Errorf("Status \"%s\" not found in database", STATUS_PAUSED))
+		return -1
+	} else {
+		return status.Id
+	}
+}
+
+func GetStatusFromId(id int32) *StatusesFields {
+	for _, status := range statusesIds {
+		if status.Id == id {
+			return &status
+		}
+	}
+
+	return nil
+}
+
+func GetStatusAsSelectedUnits() SelectedUnits {
+	return statusesSelected
+}
+
+func initStatusesIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	statusesIds = StatusIdMap{}
+	statusesTable, err := NewStatuses(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUSES)
+		return err
+	}
+
+	err = statusesTable.SelectSelfScanEach(ctx,
+		func(record *StatusesFields) error {
+			statusesIds[record.Status] = *record
+			statusesSelected = append(statusesSelected, NewSelectedUnit(record.Id, record.Status))
+			return nil
+		},
+		dbEngine.OrderBy("id"),
+	)
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading statuses from db to statusesIds(db.StatusIdMap)")
+	}
+
+	return
 }

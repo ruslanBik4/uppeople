@@ -5,9 +5,7 @@
 package api
 
 import (
-	"database/sql/driver"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -18,6 +16,16 @@ import (
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
+
+type ViewCompany struct {
+	*db.CompaniesFields
+	Vacancies  int32                `json:"vacancies,omitempty"`
+	Candidates int32                `json:"candidates,omitempty"`
+	Calendar   []*db.MeetingsFields `json:"calendar,omitempty"`
+	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
+	Managers   []*db.UsersFields    `json:"managers,omitempty"`
+	Recruiters []int32              `json:"recruiters"`
+}
 
 func HandleAddCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	u, ok := ctx.UserValue(apis.JSONParams).(*db.CompaniesFields)
@@ -148,51 +156,6 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return createResult(i)
 }
 
-func EmptyValue(value interface{}) bool {
-	if value == nil {
-		return true
-	}
-
-	v, ok := value.(driver.Valuer)
-	if ok {
-		v1, _ := v.Value()
-		return v1 == nil
-	}
-
-	switch val := value.(type) {
-	case []int32:
-		return len(val) == 0
-	case []int64:
-		return len(val) == 0
-	case []float32:
-		return len(val) == 0
-	case []float64:
-		return len(val) == 0
-	case []string:
-		return len(val) == 0
-	case int32:
-		return val == 0
-
-	case int64:
-		return val == 0
-
-	case string:
-		return strings.TrimSpace(val) == ""
-	default:
-		return false
-	}
-}
-
-func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create",
-			"kod_deystviya"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
-			text,
-			time.Now(),
-			code))
-}
-
 func HandleCommentsCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -213,16 +176,6 @@ func HandleCommentsCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			 order By time_create DESC`,
 		id,
 	)
-}
-
-type ViewCompany struct {
-	*db.CompaniesFields
-	Vacancies  int32                `json:"vacancies,omitempty"`
-	Candidates int32                `json:"candidates,omitempty"`
-	Calendar   []*db.MeetingsFields `json:"calendar,omitempty"`
-	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
-	Managers   []*db.UsersFields    `json:"managers,omitempty"`
-	Recruiters []int32              `json:"recruiters"`
 }
 
 func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -294,4 +247,14 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	}
 
 	return v, nil
+}
+
+func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
+	toLog(ctx, DB,
+		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create",
+			"kod_deystviya"),
+		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
+			text,
+			time.Now(),
+			code))
 }

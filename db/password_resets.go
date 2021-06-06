@@ -55,9 +55,9 @@ func (r *Password_resetsFields) ColValue(name string) interface{} {
 }
 
 func NewPassword_resets(db *dbEngine.DB) (*Password_resets, error) {
-	table, ok := db.Tables["password_resets"]
+	table, ok := db.Tables[TABLE_PASSWORD_RESETS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "password_resets"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_PASSWORD_RESETS}
 	}
 
 	return &Password_resets{

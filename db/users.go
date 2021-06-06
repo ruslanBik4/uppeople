@@ -17,20 +17,21 @@ type Users struct {
 }
 
 type UsersFields struct {
-	Id           int32          `json:"id"`
-	Name         string         `json:"name"`
-	Email        string         `json:"email"`
-	Isdel        bool           `json:"isdel"`
-	Role_id      int32          `json:"role_id"`
-	Last_login   time.Time      `json:"last_login"`
-	Hash         int64          `json:"hash"`
-	Last_page    sql.NullString `json:"last_page"`
-	Address      string         `json:"address"`
-	Emailpool    []string       `json:"emailpool"`
-	Phone        sql.NullString `json:"phone"`
-	Languages    []string       `json:"languages"`
-	Id_homepages int32          `json:"id_homepages"`
-	Createat     time.Time      `json:"createat"`
+	Id          int32          `json:"id"`
+	Name        string         `json:"name"`
+	Email       string         `json:"email"`
+	Isdel       bool           `json:"isdel"`
+	RoleId      int32          `json:"role_id"`
+	LastLogin   time.Time      `json:"last_login"`
+	LastIP      string         `json:"last_ip"`
+	Hash        int64          `json:"hash"`
+	LastPage    sql.NullString `json:"last_page"`
+	Address     string         `json:"address"`
+	EmailPool   []string       `json:"emailpool"`
+	Phone       sql.NullString `json:"phone"`
+	Languages   []string       `json:"languages"`
+	IdHomepages int32          `json:"id_homepages"`
+	CreateAt    time.Time      `json:"createat"`
 }
 
 func (r *UsersFields) RefColValue(name string) interface{} {
@@ -48,22 +49,25 @@ func (r *UsersFields) RefColValue(name string) interface{} {
 		return &r.Isdel
 
 	case "role_id":
-		return &r.Role_id
+		return &r.RoleId
 
 	case "last_login":
-		return &r.Last_login
+		return &r.LastLogin
 
 	case "hash":
 		return &r.Hash
 
 	case "last_page":
-		return &r.Last_page
+		return &r.LastPage
+
+	case "last_ip":
+		return &r.LastIP
 
 	case "address":
 		return &r.Address
 
 	case "emailpool":
-		return &r.Emailpool
+		return &r.EmailPool
 
 	case "phone":
 		return &r.Phone
@@ -72,10 +76,10 @@ func (r *UsersFields) RefColValue(name string) interface{} {
 		return &r.Languages
 
 	case "id_homepages":
-		return &r.Id_homepages
+		return &r.IdHomepages
 
 	case "createat":
-		return &r.Createat
+		return &r.CreateAt
 
 	default:
 		return nil
@@ -97,22 +101,25 @@ func (r *UsersFields) ColValue(name string) interface{} {
 		return r.Isdel
 
 	case "role_id":
-		return r.Role_id
+		return r.RoleId
 
 	case "last_login":
-		return r.Last_login
+		return r.LastLogin
 
 	case "hash":
 		return r.Hash
 
 	case "last_page":
-		return r.Last_page
+		return r.LastPage
+
+	case "last_ip":
+		return r.LastIP
 
 	case "address":
 		return r.Address
 
 	case "emailpool":
-		return r.Emailpool
+		return r.EmailPool
 
 	case "phone":
 		return r.Phone
@@ -121,10 +128,10 @@ func (r *UsersFields) ColValue(name string) interface{} {
 		return r.Languages
 
 	case "id_homepages":
-		return r.Id_homepages
+		return r.IdHomepages
 
 	case "createat":
-		return r.Createat
+		return r.CreateAt
 
 	default:
 		return nil
@@ -132,9 +139,9 @@ func (r *UsersFields) ColValue(name string) interface{} {
 }
 
 func NewUsers(db *dbEngine.DB) (*Users, error) {
-	table, ok := db.Tables["users"]
+	table, ok := db.Tables[TABLE_USERS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "users"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_USERS}
 	}
 
 	return &Users{

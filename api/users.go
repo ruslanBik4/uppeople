@@ -17,10 +17,10 @@ import (
 )
 
 type UserResponse struct {
-	Users       []UserRow     `json:"users"`
-	Partners    SelectedUnits `json:"partners"`
-	Freelancers SelectedUnits `json:"freelancers"`
-	Recruiters  SelectedUnits `json:"recruiters"`
+	Users       []UserRow        `json:"users"`
+	Partners    db.SelectedUnits `json:"partners"`
+	Freelancers db.SelectedUnits `json:"freelancers"`
+	Recruiters  db.SelectedUnits `json:"recruiters"`
 }
 
 type DTOUser struct {

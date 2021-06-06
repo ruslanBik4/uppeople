@@ -42,7 +42,7 @@ func (u *User) GetFields(columns []dbEngine.Column) []interface{} {
 }
 
 func (u *User) IsAdmin() bool {
-	return u.Role_id == 1
+	return u.RoleId == 1
 }
 
 func (u *User) GetUserID() int {

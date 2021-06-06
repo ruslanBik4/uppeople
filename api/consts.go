@@ -17,6 +17,8 @@ const (
 	CODE_LOG_PEFORM     = 102
 	CODE_LOG_DELETE     = 103
 	CODE_LOG_RE_CONTACT = 104
+	CODE_ADD_COMMENT    = 104
+	CODE_DEL_COMMENT    = 104
 )
 
 const (
@@ -51,3 +53,23 @@ UPPeople team.</p>
 <a href="http://my.uppeople.co/" target="_self"><span style="color: blue;font-size: 16px;font-family: Journal, serif;"@"UPpeople" Recruiting agency</span></a><span style="font-size: 16px;"> </span></p>
  <br><br>`
 )
+
+const SQL_VIEW_CANDIDATE_VACANCIES = `select v.id,
+		j.name, 
+		j.name as label, 
+		LOWER(j.name) as value, 
+		user_ids, 
+		platform_id,
+        coalesce( (select u.name from users u where u.id = vc.user_id), '') as recruiter,
+		CONCAT(platforms.name, ' ("', 
+			(select name from seniorities where id=seniority_id), '")') as platform,
+		companies, sv.id as status_id, v.company_id, sv.status, salary, 
+		coalesce(vc.date_last_change, vc.date_create) as date_last_change, vc.rej_text, sv.color
+FROM vacancies v JOIN companies on (v.company_id=companies.id)
+	JOIN vacancies_to_candidates vc on (v.id = vc.vacancy_id )
+	JOIN platforms ON (v.platform_id = platforms.id)
+	JOIN status_for_vacs sv on (vc.status = sv.id)
+    JOIN LATERAL (select concat(companies.name, ' ("', platforms.name, '")') as name) j on true
+	WHERE vc.candidate_id=$1 AND vc.status!=1
+    order by date_last_change desc
+`

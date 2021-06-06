@@ -62,9 +62,9 @@ func (r *Oauth_personal_access_clientsFields) ColValue(name string) interface{} 
 }
 
 func NewOauth_personal_access_clients(db *dbEngine.DB) (*Oauth_personal_access_clients, error) {
-	table, ok := db.Tables["oauth_personal_access_clients"]
+	table, ok := db.Tables[TABLE_OAUTH_PERSONAL_ACCESS_CLIENTS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "oauth_personal_access_clients"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_OAUTH_PERSONAL_ACCESS_CLIENTS}
 	}
 
 	return &Oauth_personal_access_clients{

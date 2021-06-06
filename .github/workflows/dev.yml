@@ -3,8 +3,6 @@ name: Go
 on:
   push:
     branches: [ dev ]
-  pull_request:
-    branches: [ dev ]
 
 jobs:
   delete-artifacts:
@@ -13,7 +11,7 @@ jobs:
       - uses: kolpav/purge-artifacts-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          expire-in: 0 # Setting this to 0 will delete all artifacts
+          expire-in: 1days # Setting this to 0 will delete all artifacts
 
   build:
     name: Build

@@ -21,13 +21,13 @@ import (
 
 type VacancyDTO struct {
 	*db.VacanciesFields
-	Comment               string         `json:"comment"`
-	SelectCompany         SelectedUnit   `json:"selectCompany"`
-	SelectLocation        SelectedUnit   `json:"selectLocation"`
-	SelectPlatform        SelectedUnit   `json:"selectPlatform"`
-	SelectSeniority       SelectedUnit   `json:"selectSeniority"`
-	SelectRecruiter       []SelectedUnit `json:"selectRecruiter"`
-	SelectedVacancyStatus int32          `json:"selectedVacancyStatus"`
+	Comment               string            `json:"comment"`
+	SelectCompany         db.SelectedUnit   `json:"selectCompany"`
+	SelectLocation        db.SelectedUnit   `json:"selectLocation"`
+	SelectPlatform        db.SelectedUnit   `json:"selectPlatform"`
+	SelectSeniority       db.SelectedUnit   `json:"selectSeniority"`
+	SelectRecruiter       []db.SelectedUnit `json:"selectRecruiter"`
+	SelectedVacancyStatus int32             `json:"selectedVacancyStatus"`
 }
 
 func (v *VacancyDTO) GetValue() interface{} {
@@ -41,13 +41,13 @@ func (v *VacancyDTO) NewValue() interface{} {
 }
 
 type vacDTO struct {
-	CompanyId             int32          `json:"company_id"`
-	Sort                  int32          `json:"sort"`
-	CurrentColumn         string         `json:"currentColumn"`
-	SelectPlatforms       []SelectedUnit `json:"selectPlatforms"`
-	SelectSeniorities     []SelectedUnit `json:"selectSeniorities"`
-	SelectCandidateStatus []SelectedUnit `json:"selectCandidate_status"`
-	SelectStatuses        []SelectedUnit `json:"selectStatuses"`
+	CompanyId             int32             `json:"company_id"`
+	Sort                  int32             `json:"sort"`
+	CurrentColumn         string            `json:"currentColumn"`
+	SelectPlatforms       []db.SelectedUnit `json:"selectPlatforms"`
+	SelectSeniorities     []db.SelectedUnit `json:"selectSeniorities"`
+	SelectCandidateStatus []db.SelectedUnit `json:"selectCandidate_status"`
+	SelectStatuses        []db.SelectedUnit `json:"selectStatuses"`
 }
 
 func (v *vacDTO) GetValue() interface{} {
@@ -70,8 +70,8 @@ func HandleViewVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	err := DB.Conn.SelectOneAndScan(ctx,
 		v,
 		`select *, 
-			(select p.nazva from platforms p where v.platform_id=p.id) as platform,
-			(select s.nazva from seniorities s where v.seniority_id=s.id) as seniority,
+			(select p.name from platforms p where v.platform_id=p.id) as platform,
+			(select s.name from seniorities s where v.seniority_id=s.id) as seniority,
 			(select c.name from companies c where v.company_id=c.id) as company,
 			(select s.name from location_for_vacancies s where v.location_id=s.id) as location
 			from vacancies v

@@ -139,9 +139,9 @@ func (r *Wp_commentsFields) ColValue(name string) interface{} {
 }
 
 func NewWp_comments(db *dbEngine.DB) (*Wp_comments, error) {
-	table, ok := db.Tables["wp_comments"]
+	table, ok := db.Tables[TABLE_WP_COMMENTS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "wp_comments"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WP_COMMENTS}
 	}
 
 	return &Wp_comments{

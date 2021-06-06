@@ -5,9 +5,41 @@
 package api
 
 import (
+	"fmt"
+	"os/exec"
+	"runtime/trace"
+	"strings"
+
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 )
+
+func HandleTrace(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	trace.Stop()
+
+	const port = ":6060"
+	cmd := exec.CommandContext(ctx, `sudo`, `go`, `tool`, `trace`, "-http="+port, "dev.out")
+	cmd.Stdout = ctx.Response.BodyWriter()
+	cmd.Stderr = ctx.Response.BodyWriter()
+	err := cmd.Start()
+	if err != nil {
+		s := string(ctx.Response.Body())
+
+		logs.DebugLog(s)
+
+		return s, errors.Wrap(err, cmd.String()+s)
+	}
+
+	host := strings.Split(string(ctx.Host()), ":")
+	url := fmt.Sprintf("http://%s%s/", host[0], port)
+	// parts[len(parts)-1])
+	logs.DebugLog("redirect:", url)
+	ctx.Redirect(url, fasthttp.StatusMovedPermanently)
+
+	return nil, nil
+}
 
 func HandleStatConn(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)

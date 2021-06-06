@@ -104,9 +104,9 @@ func (r *Wp_usersFields) ColValue(name string) interface{} {
 }
 
 func NewWp_users(db *dbEngine.DB) (*Wp_users, error) {
-	table, ok := db.Tables["wp_users"]
+	table, ok := db.Tables[TABLE_WP_USERS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "wp_users"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_WP_USERS}
 	}
 
 	return &Wp_users{

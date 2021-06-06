@@ -16,7 +16,7 @@ mod:
 #	chown ruslan:progs go.*
 # Builds the project
 run:
-	go run ${LDFLAGS} httpgo.go
+	go run -race ${LDFLAGS} httpgo.go
 #httpgo only
 httpgo_all:
 	go mod tidy
@@ -28,7 +28,7 @@ httpgo_all:
 	journalctl -u httpgo --since="30 second ago" -o cat
 # Builds the project
 build:
-	go build -race ${LDFLAGS} -o ${BINARY}
+	go build ${LDFLAGS} -o ${BINARY}
 # Builds dev server
 dev:
 	go build -race ${LDFLAGS} -o ${BINARY}_dev

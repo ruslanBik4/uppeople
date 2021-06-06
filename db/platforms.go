@@ -6,6 +6,7 @@ import (
 	"database/sql"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -14,10 +15,19 @@ type Platforms struct {
 	Record *PlatformsFields
 	rows   sql.Rows
 }
+type PlatformsIdMap map[string]PlatformsFields
 
 type PlatformsFields struct {
-	Id    int64          `json:"id"`
-	Nazva sql.NullString `json:"nazva"`
+	Id   int32  `json:"id"`
+	Name string `json:"name"`
+}
+
+func (d *PlatformsFields) GetValue() interface{} {
+	return d
+}
+
+func (d *PlatformsFields) NewValue() interface{} {
+	return &PlatformsFields{}
 }
 
 func (r *PlatformsFields) RefColValue(name string) interface{} {
@@ -25,8 +35,8 @@ func (r *PlatformsFields) RefColValue(name string) interface{} {
 	case "id":
 		return &r.Id
 
-	case "nazva":
-		return &r.Nazva
+	case "name":
+		return &r.Name
 
 	default:
 		return nil
@@ -38,8 +48,8 @@ func (r *PlatformsFields) ColValue(name string) interface{} {
 	case "id":
 		return r.Id
 
-	case "nazva":
-		return r.Nazva
+	case "name":
+		return r.Name
 
 	default:
 		return nil
@@ -47,9 +57,9 @@ func (r *PlatformsFields) ColValue(name string) interface{} {
 }
 
 func NewPlatforms(db *dbEngine.DB) (*Platforms, error) {
-	table, ok := db.Tables["platforms"]
+	table, ok := db.Tables[TABLE_PLATFORMS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "platforms"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_PLATFORMS}
 	}
 
 	return &Platforms{
@@ -87,7 +97,7 @@ func (t *Platforms) SelectSelfScanEach(ctx context.Context, each func(record *Pl
 		}, t, Options...)
 }
 
-func (t *Platforms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *Platforms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (i int64, err error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -99,6 +109,12 @@ func (t *Platforms) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOpti
 			dbEngine.ColumnsForSelect(columns...),
 			dbEngine.ArgsForSelect(v...))
 	}
+
+	defer func() {
+		if i > 0 {
+			t.reCache(ctx, int32(i))
+		}
+	}()
 
 	return t.Table.Insert(ctx, Options...)
 }
@@ -129,4 +145,53 @@ func (t *Platforms) Update(ctx context.Context, Options ...dbEngine.BuildSqlOpti
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func (t *Platforms) reCache(ctx context.Context, id int32) {
+	err := t.SelectOneAndScan(ctx, t, dbEngine.WhereForSelect("id"), dbEngine.ArgsForSelect(id))
+	if err != nil {
+		logs.ErrorLog(err, "SelectOneAndScan")
+	} else {
+		name := t.Record.Name
+		platformIds[name] = *t.Record
+		platformsSelected = append(platformsSelected, NewSelectedUnit(id, name))
+	}
+}
+
+func GetPlatformFromId(id int32) *PlatformsFields {
+	for _, platform := range platformIds {
+		if platform.Id == id {
+			return &platform
+		}
+	}
+
+	return nil
+}
+
+func GetPlatformsAsSelectedUnits() SelectedUnits {
+	return platformsSelected
+}
+
+func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	platformIds = PlatformsIdMap{}
+	platformsTable, err := NewPlatforms(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_PLATFORMS)
+		return err
+	}
+
+	err = platformsTable.SelectSelfScanEach(ctx,
+		func(record *PlatformsFields) error {
+			platformIds[record.Name] = *record
+			platformsSelected = append(platformsSelected, NewSelectedUnit(record.Id, record.Name))
+			return nil
+		},
+		dbEngine.OrderBy("id"),
+	)
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading platforms from db to platformIds(db.PlatformsIdMap)")
+	}
+
+	return
 }

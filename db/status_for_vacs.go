@@ -5,24 +5,28 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
-type Status_for_vacs struct {
+type StatusForVacs struct {
 	dbEngine.Table
-	Record *Status_for_vacsFields
+	Record *StatusForVacsFields
 	rows   sql.Rows
 }
 
-type Status_for_vacsFields struct {
-	Id        int64          `json:"id"`
-	Status    sql.NullString `json:"status"`
-	Color     string         `json:"color"`
-	Order_num int64          `json:"order_num"`
+type StatusForVacsFields struct {
+	Id       int32  `json:"id"`
+	Status   string `json:"status"`
+	Color    string `json:"color"`
+	OrderNum int64  `json:"order_num"`
 }
 
-func (r *Status_for_vacsFields) RefColValue(name string) interface{} {
+type StatusForVacIdMap map[string]StatusForVacsFields
+
+func (r *StatusForVacsFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
@@ -34,14 +38,14 @@ func (r *Status_for_vacsFields) RefColValue(name string) interface{} {
 		return &r.Color
 
 	case "order_num":
-		return &r.Order_num
+		return &r.OrderNum
 
 	default:
 		return nil
 	}
 }
 
-func (r *Status_for_vacsFields) ColValue(name string) interface{} {
+func (r *StatusForVacsFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
@@ -53,30 +57,30 @@ func (r *Status_for_vacsFields) ColValue(name string) interface{} {
 		return r.Color
 
 	case "order_num":
-		return r.Order_num
+		return r.OrderNum
 
 	default:
 		return nil
 	}
 }
 
-func NewStatus_for_vacs(db *dbEngine.DB) (*Status_for_vacs, error) {
-	table, ok := db.Tables["status_for_vacs"]
+func NewStatusForVacs(db *dbEngine.DB) (*StatusForVacs, error) {
+	table, ok := db.Tables[TABLE_STATUS_FOR_VACS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "status_for_vacs"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_STATUS_FOR_VACS}
 	}
 
-	return &Status_for_vacs{
+	return &StatusForVacs{
 		Table: table,
 	}, nil
 }
 
-func (t *Status_for_vacs) NewRecord() *Status_for_vacsFields {
-	t.Record = &Status_for_vacsFields{}
+func (t *StatusForVacs) NewRecord() *StatusForVacsFields {
+	t.Record = &StatusForVacsFields{}
 	return t.Record
 }
 
-func (t *Status_for_vacs) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *StatusForVacs) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -90,7 +94,7 @@ func (t *Status_for_vacs) GetFields(columns []dbEngine.Column) []interface{} {
 	return v
 }
 
-func (t *Status_for_vacs) SelectSelfScanEach(ctx context.Context, each func(record *Status_for_vacsFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *StatusForVacs) SelectSelfScanEach(ctx context.Context, each func(record *StatusForVacsFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -101,7 +105,7 @@ func (t *Status_for_vacs) SelectSelfScanEach(ctx context.Context, each func(reco
 		}, t, Options...)
 }
 
-func (t *Status_for_vacs) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *StatusForVacs) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -117,7 +121,7 @@ func (t *Status_for_vacs) Insert(ctx context.Context, Options ...dbEngine.BuildS
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Status_for_vacs) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *StatusForVacs) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)
@@ -143,4 +147,124 @@ func (t *Status_for_vacs) Update(ctx context.Context, Options ...dbEngine.BuildS
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetStatusForVacIdInterview() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_INTERVIEW]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_INTERVIEW))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdTest() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_TEST]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_TEST))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdFinalInterview() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_FINAL_INTERVIEW]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_FINAL_INTERVIEW))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdOffer() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_OFFER]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_OFFER))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdHired() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_HIRED]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_HIRED))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdWR() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_WR]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_WR))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdReview() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_REVIEW]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_REVIEW))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdRejected() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_REJECTED]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_REJECTED))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacIdOnHold() int32 {
+	if statForVac, ok := statusesForVacIds[STATUS_FOR_VAC_ON_HOLD]; !ok {
+		logs.ErrorLog(errors.Errorf("StatusForVac \"%s\" not found in database", STATUS_FOR_VAC_ON_HOLD))
+		return -1
+	} else {
+		return statForVac.Id
+	}
+}
+
+func GetStatusForVacFromId(id int32) *StatusForVacsFields {
+	for _, statForVac := range statusesForVacIds {
+		if statForVac.Id == id {
+			return &statForVac
+		}
+	}
+
+	return nil
+}
+
+func GetStatusForVacAsSelectedUnits() SelectedUnits {
+	return statusesVacSelected
+}
+
+func initStatusesForVacIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	statusesForVacIds = StatusForVacIdMap{}
+	statusesForVacsTable, err := NewStatusForVacs(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_STATUS_FOR_VACS)
+		return err
+	}
+
+	statusesVacSelected = make(SelectedUnits, 0)
+	err = statusesForVacsTable.SelectSelfScanEach(ctx,
+		func(record *StatusForVacsFields) error {
+			statusesForVacIds[record.Status] = *record
+			statusesVacSelected = append(statusesVacSelected, NewSelectedUnit(record.Id, record.Status))
+
+			return nil
+		},
+		dbEngine.OrderBy("order_num"),
+	)
+	if err != nil {
+		logs.ErrorLog(err, "while reading statuses for vacancies from db to statusesForVacIds(db.StatusForVacIdMap)")
+	}
+
+	return
 }

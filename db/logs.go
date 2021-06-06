@@ -97,9 +97,9 @@ func (r *LogsFields) ColValue(name string) interface{} {
 }
 
 func NewLogs(db *dbEngine.DB) (*Logs, error) {
-	table, ok := db.Tables["logs"]
+	table, ok := db.Tables[TABLE_LOGS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "logs"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_LOGS}
 	}
 
 	return &Logs{

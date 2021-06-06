@@ -17,28 +17,28 @@ import (
 type ResCandidates struct {
 	*ResList
 	Candidates []*CandidateView `json:"candidates"`
-	Company    SelectedUnits    `json:"company"`
-	Recruiter  SelectedUnits    `json:"recruiter"`
-	Reasons    SelectedUnits    `json:"reasons"`
-	Statuses   SelectedUnits    `json:"statuses"`
-	Tags       SelectedUnits    `json:"tags"`
+	// Company    db.SelectedUnits `json:"company"`
+	// Recruiter  db.SelectedUnits `json:"recruiter"`
+	// Reasons    db.SelectedUnits `json:"reasons"`
+	// Statuses   db.SelectedUnits `json:"statuses"`
+	// Tags       db.SelectedUnits `json:"tags"`
 }
 
 type SearchCandidates struct {
-	Name            string        `json:"search"`
-	CompanyID       int32         `json:"company_id"`
-	MySent          bool          `json:"mySent"`
-	Sort            int32         `json:"sort"`
-	CurrentColumn   string        `json:"currentColumn"`
-	DateFrom        string        `json:"dateFrom"`
-	DateTo          string        `json:"dateTo"`
-	SelectRecruiter *SelectedUnit `json:"selectRecruiter"`
-	SelectCompanies SelectedUnits `json:"selectCompanies"`
-	SelectReason    *SelectedUnit `json:"selectReason"`
-	SelectTag       *SelectedUnit `json:"selectTag"`
-	SelectPlatforms SelectedUnits `json:"selectPlatforms"`
-	SelectSeniority SelectedUnits `json:"selectSeniority"`
-	SelectStatuses  SelectedUnits `json:"selectStatuses"`
+	Name            string           `json:"search"`
+	CompanyID       int32            `json:"company_id"`
+	MySent          bool             `json:"mySent"`
+	Sort            int32            `json:"sort"`
+	CurrentColumn   string           `json:"currentColumn"`
+	DateFrom        string           `json:"dateFrom"`
+	DateTo          string           `json:"dateTo"`
+	SelectRecruiter *db.SelectedUnit `json:"selectRecruiter"`
+	SelectCompanies db.SelectedUnits `json:"selectCompanies"`
+	SelectReason    *db.SelectedUnit `json:"selectReason"`
+	SelectTag       *db.SelectedUnit `json:"selectTag"`
+	SelectPlatforms db.SelectedUnits `json:"selectPlatforms"`
+	SelectSeniority db.SelectedUnits `json:"selectSeniority"`
+	SelectStatuses  db.SelectedUnits `json:"selectStatuses"`
 }
 
 func (s *SearchCandidates) GetValue() interface{} {
@@ -50,6 +50,7 @@ func (s *SearchCandidates) NewValue() interface{} {
 }
 
 func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
+
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
 		return nil, dbEngine.ErrDBNotFound
@@ -61,18 +62,15 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		offset = (id - 1) * pageItem
 	}
 
-	candidates, _ := db.NewCandidates(DB)
 	res := ResCandidates{
-		ResList:    NewResList(ctx, DB, id),
+		ResList:    NewResList(id),
 		Candidates: make([]*CandidateView, 0),
-		Company:    getCompanies(ctx, DB),
-		Reasons:    getRejectReason(ctx, DB),
-		Recruiter:  getRecruters(ctx, DB),
-		Statuses:   getStatusVac(ctx, DB),
-		Tags:       getTags(ctx, DB),
+		// Company:    getCompanies(ctx, DB),
+		// Reasons:    db.GetRejectReasonAsSelectedUnits(),
+		// Recruiter:  getRecruiters(ctx, DB),
+		// Statuses:   db.GetStatusForVacAsSelectedUnits(),
+		// Tags:       db.GetTagsAsSelectedUnits(),
 	}
-
-	seniors := getSeniorities(ctx, DB)
 	optionsCount := []dbEngine.BuildSqlOptions{
 		dbEngine.ColumnsForSelect("count(*)"),
 	}
@@ -96,7 +94,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if dto.SelectTag != nil {
-			if dto.SelectTag.Id == 3 {
+			if dto.SelectTag.Id == db.GetTagIdReject() {
 				if dto.SelectReason != nil {
 					where = append(where, "tag_id")
 					args = append(args, dto.SelectReason.Id)
@@ -189,13 +187,13 @@ where candidates.id = candidate_id
 order by status desc
 fetch first 1 row only)`
 			case "Platform":
-				orderBy = `(select nazva from platforms where id = platform_id)`
+				orderBy = `(select name from platforms where id = platform_id)`
 			case "Recruiter":
 				orderBy = `(select name from users where id = recruter_id)`
 			case "Tag/Reason":
 				orderBy = `(select name from tags where id = tag_id)`
 			case "Seniority":
-				orderBy = `(select nazva from seniorities where id = seniority_id)`
+				orderBy = `(select name from seniorities where id = seniority_id)`
 			case "Status":
 				orderBy = `(select status from vacancies_to_candidates where candidates.id = candidate_id
 order by status desc
@@ -230,10 +228,10 @@ fetch first 1 row only
 		)
 	}
 
+	candidates, _ := db.NewCandidates(DB)
 	err := candidates.SelectSelfScanEach(ctx,
 		func(record *db.CandidatesFields) error {
-
-			cV := NewCandidateView(ctx, record, DB, res.Platforms, seniors)
+			cV := NewCandidateView(ctx, record, DB)
 			res.Candidates = append(res.Candidates, cV)
 
 			return nil
@@ -243,7 +241,6 @@ fetch first 1 row only
 	if err != nil {
 		return createErrResult(err)
 	}
-
 	if len(res.Candidates) == 0 {
 		ctx.SetStatusCode(fasthttp.StatusNoContent)
 		return nil, nil

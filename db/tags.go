@@ -5,7 +5,9 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -16,12 +18,14 @@ type Tags struct {
 }
 
 type TagsFields struct {
-	Id        int64  `json:"id"`
-	Name      string `json:"name"`
-	Color     string `json:"color"`
-	Parent_id int64  `json:"parent_id"`
-	Order_num int64  `json:"order_num"`
+	Id       int32  `json:"id"`
+	Name     string `json:"name"`
+	Color    string `json:"color"`
+	ParentId int32  `json:"parent_id"`
+	OrderNum int32  `json:"order_num"`
 }
+
+type TagIdMap map[string]TagsFields
 
 func (r *TagsFields) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
@@ -29,8 +33,8 @@ func (r *TagsFields) GetFields(columns []dbEngine.Column) []interface{} {
 			&r.Id,
 			&r.Name,
 			&r.Color,
-			&r.Parent_id,
-			&r.Order_num,
+			&r.ParentId,
+			&r.OrderNum,
 		}
 	}
 
@@ -54,10 +58,10 @@ func (r *TagsFields) RefColValue(name string) interface{} {
 		return &r.Color
 
 	case "parent_id":
-		return &r.Parent_id
+		return &r.ParentId
 
 	case "order_num":
-		return &r.Order_num
+		return &r.OrderNum
 
 	default:
 		return nil
@@ -76,10 +80,10 @@ func (r *TagsFields) ColValue(name string) interface{} {
 		return r.Color
 
 	case "parent_id":
-		return r.Parent_id
+		return r.ParentId
 
 	case "order_num":
-		return r.Order_num
+		return r.OrderNum
 
 	default:
 		return nil
@@ -87,9 +91,9 @@ func (r *TagsFields) ColValue(name string) interface{} {
 }
 
 func NewTags(db *dbEngine.DB) (*Tags, error) {
-	table, ok := db.Tables["tags"]
+	table, ok := db.Tables[TABLE_TAGS]
 	if !ok {
-		return nil, dbEngine.ErrNotFoundTable{Table: "tags"}
+		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_TAGS}
 	}
 
 	return &Tags{
@@ -169,4 +173,153 @@ func (t *Tags) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) 
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetTagIdFirstContact() int32 {
+	if tag, ok := tagIds[TAG_FIRST_CONTACT]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_FIRST_CONTACT))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdInterested() int32 {
+	if tag, ok := tagIds[TAG_INTERESTED]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_INTERESTED))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdReject() int32 {
+	if tag, ok := tagIds[TAG_REJECT]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_REJECT))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdNoAnswer() int32 {
+	if tag, ok := tagIds[TAG_NO_ANSWER]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_NO_ANSWER))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdClosedToOffers() int32 {
+	if tag, ok := tagIds[TAG_CLOSED_TO_OFFERS]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_CLOSED_TO_OFFERS))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdLowSalary() int32 {
+	if tag, ok := tagIds[TAG_LOW_SALARY]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_LOW_SALARY))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdWasContactedEarlier() int32 {
+	if tag, ok := tagIds[TAG_WAS_CONTACTED_EARLIER]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_WAS_CONTACTED_EARLIER))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdDoesNotLikeProject() int32 {
+	if tag, ok := tagIds[TAG_DOES_NOT_LIKE_PROJECT]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_DOES_NOT_LIKE_PROJECT))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdTermsDoNotFit() int32 {
+	if tag, ok := tagIds[TAG_TERMS_DO_NOT_FIT]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_TERMS_DO_NOT_FIT))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdRemoteOnly() int32 {
+	if tag, ok := tagIds[TAG_REMOTE_ONLY]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_REMOTE_ONLY))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagIdDoesNotFit() int32 {
+	if tag, ok := tagIds[TAG_DOES_NOT_FIT]; !ok {
+		logs.ErrorLog(errors.Errorf("Tag \"%s\" not found in database", TAG_DOES_NOT_FIT))
+		return -1
+	} else {
+		return tag.Id
+	}
+}
+
+func GetTagFromId(id int32) *TagsFields {
+	for _, tag := range tagIds {
+		if tag.Id == id {
+			return &tag
+		}
+	}
+
+	return nil
+}
+
+func GetTagsAsSelectedUnits() SelectedUnits {
+	return tagsSelected
+}
+
+func GetRejectReasonAsSelectedUnits() SelectedUnits {
+	return reasonsSelected
+}
+
+func initTagIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	tagIds = TagIdMap{}
+	tagsTable, err := NewTags(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_TAGS)
+		return err
+	}
+
+	err = tagsTable.SelectSelfScanEach(ctx,
+		func(record *TagsFields) error {
+			tagIds[record.Name] = *record
+			tagAsSelectedUnit := NewSelectedUnit(record.Id, record.Name)
+
+			switch record.ParentId {
+			case 0:
+				tagsSelected = append(tagsSelected, tagAsSelectedUnit)
+			default:
+				reasonsSelected = append(reasonsSelected, tagAsSelectedUnit)
+			}
+
+			return nil
+		},
+		dbEngine.OrderBy("order_num"),
+	)
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading tags from db to tagIds(db.TagIdMap)")
+	}
+
+	return
 }

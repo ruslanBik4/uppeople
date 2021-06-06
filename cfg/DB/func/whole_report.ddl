@@ -20,7 +20,7 @@ BEGIN
                v.company_id,
                c.recruter_id,
                v.id as vacancy_id,
-               CONCAT( (select nazva from platforms p where p.id = v.platform_id),
+               CONCAT( (select name from platforms p where p.id = v.platform_id),
                        ' (',
                        (select s.status from statuses s where s.id = v.status),
                        ')'

@@ -6,6 +6,7 @@ package api
 
 import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
 	"github.com/ruslanBik4/uppeople/db"
 	"github.com/valyala/fasthttp"
@@ -14,6 +15,30 @@ import (
 type ResPlatforms struct {
 	*ResList
 	Platforms []*db.PlatformsFields `json:"platforms"`
+}
+
+func HandleAddPlatform(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	p, ok := ctx.UserValue(apis.JSONParams).(*db.PlatformsFields)
+	if !ok {
+		return "wrong DTO", apis.ErrWrongParamsList
+	}
+
+	platforms, _ := db.NewPlatforms(DB)
+
+	i, err := platforms.Insert(ctx,
+		dbEngine.ColumnsForSelect("name"),
+		dbEngine.ArgsForSelect(p.Name),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	return createResult(i)
 }
 
 func HandleAllPlatforms(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -30,14 +55,14 @@ func HandleAllPlatforms(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	platforms, _ := db.NewPlatforms(DB)
 	res := ResPlatforms{
-		ResList: NewResList(ctx, DB, id),
+		ResList: NewResList(id),
 	}
 
 	optionsCount := []dbEngine.BuildSqlOptions{
 		dbEngine.ColumnsForSelect("count(*)"),
 	}
 	options := []dbEngine.BuildSqlOptions{
-		dbEngine.OrderBy("nazva"),
+		dbEngine.OrderBy("name"),
 		dbEngine.FetchOnlyRows(pageItem),
 		dbEngine.Offset(offset),
 	}

@@ -13,9 +13,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/valyala/fasthttp"
 
+	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
@@ -106,13 +106,8 @@ func HandleAuthLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleGetPlatformsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getPlatforms(ctx, DB),
+		"status": db.GetPlatformsAsSelectedUnits(),
 	}
 
 	return m, nil
@@ -176,13 +171,8 @@ func GetCandidateURL(ctx *fasthttp.RequestCtx, id int32) string {
 }
 
 func HandleGetReasonsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getRejectReason(ctx, DB),
+		"status": db.GetRejectReasonAsSelectedUnits(),
 	}
 
 	return m, nil
@@ -196,9 +186,9 @@ func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{},
 
 	data, err := DB.Conn.SelectToMaps(ctx,
 		`select vacancies.id, platform_id, user_ids,
-CONCAT(companies.name, ' (', platforms.nazva , ')') as name,
-CONCAT(companies.name, ' (', platforms.nazva , ')') as label,
-LOWER(CONCAT(companies.name, ' (', platforms.nazva , ')')) as value
+CONCAT(companies.name, ' (', platforms.name , ')') as name,
+CONCAT(companies.name, ' (', platforms.name , ')') as label,
+LOWER(CONCAT(companies.name, ' (', platforms.name , ')')) as value
 from vacancies left join companies on vacancies.company_id = companies.id
 left join platforms on vacancies.platform_id = platforms.id
 where $1=ANY(user_ids)`,
@@ -217,26 +207,16 @@ where $1=ANY(user_ids)`,
 }
 
 func HandleGetTagsLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getTags(ctx, DB),
+		"status": db.GetTagsAsSelectedUnits(),
 	}
 
 	return m, nil
 }
 
 func HandleGetSenioritiesLinkedin(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
 	m := map[string]interface{}{
-		"status": getSeniorities(ctx, DB),
+		"status": db.GetSenioritiesAsSelectedUnits(),
 	}
 
 	return m, nil

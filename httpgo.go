@@ -10,7 +10,6 @@ import (
 	"net"
 	"os"
 	"path"
-	"regexp"
 	"runtime/trace"
 	"time"
 
@@ -42,11 +41,6 @@ var (
 			Fnc:  HandleVersion,
 			Desc: "view version server",
 		},
-		// "/test/": &apis.ApiRoute{
-		// 	Desc:   "default endpoint",
-		// 	Fnc:    HandleTest,
-		// 	Method: apis.POST,
-		// }, //
 	}
 	fPort     = flag.String("port", ":443", "host address to listen on")
 	fNoSecure = flag.Bool("insecure", false, "flag to force https")
@@ -55,7 +49,10 @@ var (
 	fWeb      = flag.String("web", "./", "path to web files")
 )
 
-var httpServer *httpgo.HttpGo
+// instances
+var (
+	httpServer *httpgo.HttpGo
+)
 
 func init() {
 	flag.Parse()
@@ -65,7 +62,7 @@ func init() {
 		logs.Fatal(err)
 	}
 
-	ctxApis := apis.NewCtxApis(0)
+	ctxApis := apis.NewCtxApis(8)
 
 	ctxApis.AddValue("migration", path.Join(*fCfgPath, "DB"))
 	DB := db.GetDB(ctxApis)
@@ -94,35 +91,10 @@ func init() {
 
 	httpServer = httpgo.NewHttpgo(cfg, listener, a)
 
-	ctx := context.WithValue(context.TODO(), "mapRouting", api.Routes)
+	ctx := context.WithValue(ctxApis, "mapRouting", api.Routes)
 	services.InitServices(ctx, "mail", "showLogs")
 
-	go func() {
-		t, err := telegrambot.NewTelegramBotFromEnv()
-		if err != nil {
-			logs.ErrorLog(err, "NewTelegramBotFromEnv")
-			return
-		}
-		logs.SetWriters(t, logs.FgErr, logs.FgDebug)
-	}()
 }
-
-var regIp = regexp.MustCompile(`for=s*(\d+\.?)+,`)
-
-// func (dst *CitextArray) MarshalJSON() ([]byte, error) {
-// 	buf := bytes.NewBufferString("[")
-// 	for i, text := range dst.Elements {
-// 		if i > 0 {
-// 			buf.WriteString(",")
-// 		}
-//
-// 		buf.WriteString(text.String)
-// 	}
-//
-// 	buf.WriteString("]")
-//
-// 	return buf.Bytes(), nil
-// }
 
 // version
 var (
@@ -131,7 +103,7 @@ var (
 	Branch  string
 )
 
-// HandleLogServer show status httpgo
+// HandleVersion show status httpgo
 // @/api/version/
 func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
@@ -143,8 +115,10 @@ func HandleVersion(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}, nil
 }
 
+var ch chan string
+
 func main() {
-	title := fmt.Sprintf("polymer (%s) Version: %s, Build Time: %s", Branch, Version, Build)
+	title := getAppTitle()
 
 	t := "https"
 	if *fNoSecure {
@@ -160,19 +134,71 @@ func main() {
 		}
 	}()
 
-	if f, err := os.Open("trace.opt"); err != nil {
+	ch = make(chan string)
+	go func() {
+		tBot, err := telegrambot.NewTelegramBotFromEnv()
+		if err != nil {
+			logs.ErrorLog(err, "NewTelegramBotFromEnv")
+			return
+		}
+		if Branch > "" {
+			err, resp := tBot.SendMessage(title+" #starting", true)
+			if err != nil {
+				logs.ErrorLog(err, resp)
+			}
+		}
+
+		logs.SetWriters(tBot, logs.FgErr, logs.FgDebug)
+
+		msg := <-ch
+		err, resp := tBot.SendMessage(
+			fmt.Sprintf("#shutdown at %v %s", time.Now(), msg),
+			true)
+		if err != nil {
+			logs.ErrorLog(err, resp)
+		}
+	}()
+
+	if f, err := os.Create(Branch + ".out"); err != nil {
 		logs.ErrorLog(err, "trace")
 	} else {
-		trace.Start(f)
+		err = trace.Start(f)
+		if err != nil {
+			logs.ErrorLog(err, "trace")
+			runServer()
+		} else {
+			defer trace.Stop()
+			ctx, task := trace.NewTask(context.TODO(), "test")
+			defer task.End()
+			reg := trace.StartRegion(ctx, "httpgo")
+			defer reg.End()
+			logs.DebugLog(reg, task)
+			trace.WithRegion(ctx, "httpgo", runServer)
+		}
 	}
 
+	select {
+	case <-ch:
+	case <-time.After(time.Second):
+	}
+
+}
+
+func getAppTitle() string {
+	return fmt.Sprintf("UPPeople (%s) Version: %s, Build Time: %s", Branch, Version, Build)
+}
+
+func runServer() {
 	err := httpServer.Run(
 		!(*fNoSecure),
 		path.Join(*fSystem, *fCfgPath, "server.crt"),
 		path.Join(*fSystem, *fCfgPath, "server.key"))
 	if err != nil {
 		logs.ErrorStack(err)
+		ch <- err.Error()
 	} else {
 		logs.StatusLog("Server https correct shutdown at %v", time.Now())
+		ch <- " correct shutdown"
 	}
+
 }

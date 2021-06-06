@@ -8,11 +8,13 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
-	"github.com/ruslanBik4/uppeople/db"
 	"github.com/valyala/fasthttp"
+
+	"github.com/ruslanBik4/uppeople/db"
 )
 
 type VacanciesView struct {
@@ -46,9 +48,9 @@ func (v *VacanciesView) GetFields(columns []dbEngine.Column) []interface{} {
 
 type ResVacancies struct {
 	*ResList
-	CandidateStatus SelectedUnits   `json:"candidateStatus"`
-	VacancyStatus   SelectedUnits   `json:"vacancyStatus"`
-	Vacancies       []VacanciesView `json:"vacancies"`
+	CandidateStatus db.SelectedUnits `json:"candidateStatus"`
+	VacancyStatus   db.SelectedUnits `json:"vacancyStatus"`
+	Vacancies       []VacanciesView  `json:"vacancies"`
 }
 
 func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -72,7 +74,7 @@ func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		where += comma + " v.status = ANY(array[0, 1])"
 	}
 
-	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.nazva, ') ',
+	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.name, ') ',
 		(select s.status from statuses s where s.id = v.status)
 ) as name`
 	if dto.WithRecruiters {
@@ -81,9 +83,9 @@ func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
                             WHERE vacancy_id = v.id) as recruiters`
 	}
 	sql += ` from vacancies v left join platforms on v.platform_id=platforms.id
-	left join companies c on v.company_id = c.id 
+	left join companies c on v.company_id = c.id
 `
-	return DB.Conn.SelectToMaps(ctx, sql+where + " order by v.status")
+	return DB.Conn.SelectToMaps(ctx, sql+where+" order by v.status")
 }
 
 func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -152,11 +154,11 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		case "Company":
 			orderBy = `(select name from companies where id = company_id)`
 		case "Platform":
-			orderBy = `(select nazva from platforms where id = platform_id)`
+			orderBy = `(select name from platforms where id = platform_id)`
 		case "Location":
 			orderBy = `(select name from location_for_vacancies where id = location_id)`
 		case "Seniority":
-			orderBy = `(select nazva from seniorities where id = seniority_id)`
+			orderBy = `(select name from seniorities where id = seniority_id)`
 		case "Contacts":
 			orderBy = `coalesce(email, phone, skype)`
 		case "Date":
@@ -171,10 +173,10 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 	vacancies, _ := db.NewVacancies(DB)
 	res := ResVacancies{
-		ResList:         NewResList(ctx, DB, id),
+		ResList:         NewResList(id),
 		Vacancies:       make([]VacanciesView, 0),
-		CandidateStatus: getStatusVac(ctx, DB),
-		VacancyStatus:   getStatuses(ctx, DB),
+		CandidateStatus: db.GetStatusForVacAsSelectedUnits(),
+		VacancyStatus:   db.GetStatusAsSelectedUnits(),
 	}
 
 	options := []dbEngine.BuildSqlOptions{
@@ -226,19 +228,9 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 			}
 
-			for _, s := range res.Seniority {
-				if s.Id == int32(record.SeniorityId) {
-					view.Seniority = s.Label
-					break
-				}
-			}
+			view.Seniority = db.GetSeniorityFromId(record.SeniorityId).Name
 
-			for _, s := range res.Platforms {
-				if s.Id == record.PlatformId {
-					view.Platform = s.Label
-					break
-				}
-			}
+			view.Platform = db.GetPlatformFromId(record.PlatformId).Name
 
 			res.Vacancies = append(res.Vacancies, view)
 

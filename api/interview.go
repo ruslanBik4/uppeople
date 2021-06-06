@@ -9,14 +9,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ruslanBik4/logs"
-
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/httpgo/services"
+	"github.com/ruslanBik4/logs"
+	"github.com/valyala/fasthttp"
+
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
-	"github.com/valyala/fasthttp"
 )
 
 type DTOSendCV struct {
@@ -76,16 +76,16 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			_, err = tableVTC.Upsert(ctx,
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date_last_change"),
-				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, user.Id, timeNow),
+				dbEngine.ArgsForSelect(u.CompId, id, vacID, db.GetStatusForVacIdReview(), user.Id, timeNow),
 			)
 			if err != nil {
 				return createErrResult(err)
 			}
 
-			_, err = IntRevCandidate.Insert(ctx,
+			_, err = IntRevCandidate.Upsert(ctx,
 				dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 					"status", "user_id", "date"),
-				dbEngine.ArgsForSelect(u.CompId, id, vacID, 9, user.Id, timeNow),
+				dbEngine.ArgsForSelect(u.CompId, id, vacID, db.GetStatusForVacIdReview(), user.Id, timeNow),
 			)
 			if err != nil {
 				return createErrResult(err)
@@ -103,7 +103,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			i, err := candidates.Update(ctx,
 				dbEngine.ColumnsForSelect("date", "tag_id", "recruter_id"),
 				dbEngine.WhereForSelect("id"),
-				dbEngine.ArgsForSelect(timeNow, 2, user.Id, id),
+				dbEngine.ArgsForSelect(timeNow, db.GetTagIdInterested(), user.Id, id),
 			)
 			if err != nil {
 				return createErrResult(err)
@@ -152,8 +152,8 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 type DTOSendInterview struct {
-	SelectedCompany  SelectedUnit `json:"selectedCompany"`
-	SelectedVacancy  SelectedUnit `json:"selectedVacancy"`
+	SelectedCompany  db.SelectedUnit `json:"selectedCompany"`
+	SelectedVacancy  db.SelectedUnit `json:"selectedVacancy"`
 	SelectedContacts []struct {
 		Email string `json:"email"`
 	} `json:"selectedContacts"`
@@ -214,7 +214,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	_, err = tableVTC.Upsert(ctx,
 		dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 			"status", "user_id", "date_last_change"),
-		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, 2, user.Id, timeNow),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, db.GetStatusForVacIdInterview(), user.Id, timeNow),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -223,7 +223,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	_, err = IntRevCandidate.Upsert(ctx,
 		dbEngine.ColumnsForSelect("company_id", "candidate_id", "vacancy_id",
 			"status", "user_id", "date"),
-		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, 2, user.Id, timeNow),
+		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, vacID, db.GetStatusForVacIdInterview(), user.Id, timeNow),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -240,7 +240,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	platformName := platform.Record.Nazva.String
+	platformName := platform.Record.Name
 
 	emailSubject := fmt.Sprintf("UPpeople invite %s - %s", record.Name, platformName)
 
@@ -334,9 +334,9 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
              from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
            WHERE t.company_id = c.id AND (all_platforms=1 OR platform_id=$1)) as contacts,
   (select json_agg(json_build_object('id', v.id,
-		   'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
+		   'platform', (select p.name  from platforms p where p.id = v.platform_id),
 		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
-           'seniority', (select s.nazva from seniorities s where s.id = v.seniority_id),
+           'seniority', (select s.name from seniorities s where s.id = v.seniority_id),
            'salary', v.salary, 
 			'name', v.name, 
 			'user_ids', v.user_ids)) as vacancies

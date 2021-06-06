@@ -35,6 +35,7 @@ func (c *CandidateDTO) NewValue() interface{} {
 
 type statusCandidate struct {
 	Date         time.Time  `json:"date"`
+	Color        string     `json:"color,omitempty"`
 	Comments     string     `json:"comments"`
 	CompId       int32      `json:"comp_id"`
 	Recruiter    string     `json:"recruiter"`
@@ -43,24 +44,24 @@ type statusCandidate struct {
 	CompName     string     `json:"compName"`
 	CommentVac   string     `json:"commentVac"`
 }
+
 type ViewCandidate struct {
 	*db.CandidatesFields
-	Platform          *SelectedUnit            `json:"platforms,omitempty"`
-	Companies         SelectedUnits            `json:"companies,omitempty"`
+	Platform          *db.SelectedUnit         `json:"platforms,omitempty"`
+	Companies         db.SelectedUnits         `json:"companies,omitempty"`
 	Seniority         string                   `json:"seniority"`
 	Tags              *db.TagsFields           `json:"tags,omitempty"`
 	Recruiter         string                   `json:"recruiter"`
 	Vacancies         []map[string]interface{} `json:"vacancies"`
-	SelectedVacancies SelectedUnits            `json:"selectedVacancies"`
+	SelectedVacancies db.SelectedUnits         `json:"selectedVacancies"`
 }
 
 type CandidateView struct {
 	*ViewCandidate
-	Platform string          `json:"platform,omitempty"`
-	TagName  string          `json:"tag_name,omitempty"`
-	TagColor string          `json:"tag_color,omitempty"`
-	Color    string          `json:"color,omitempty"`
-	Status   statusCandidate `json:"status"`
+	Platform string             `json:"platform,omitempty"`
+	TagName  string             `json:"tag_name,omitempty"`
+	TagColor string             `json:"tag_color,omitempty"`
+	Statuses []*statusCandidate `json:"statuses"`
 }
 
 type VacanciesDTO struct {
@@ -69,20 +70,20 @@ type VacanciesDTO struct {
 	DateLastChange time.Time           `json:"date_last_change"`
 }
 type StatusesCandidate struct {
-	Candidate_id     int32                     `json:"candidate_id"`
-	Company          *db.CompaniesFields       `json:"company"`
-	Company_id       int32                     `json:"company_id"`
-	Date_create      time.Time                 `json:"date_create"`
-	Date_last_change time.Time                 `json:"date_last_change"`
-	Id               int32                     `json:"id"`
-	Notice           string                    `json:"notice"`
-	Rating           string                    `json:"rating"`
-	Rej_text         string                    `json:"rej_text"`
-	Status           int32                     `json:"status"`
-	Status_vac       *db.Status_for_vacsFields `json:"vacancyStatus"`
-	User_id          int32                     `json:"user_id"`
-	Vacancy          VacanciesDTO              `json:"vacancy"`
-	Vacancy_id       int32                     `json:"vacancy_id"`
+	Candidate_id     int32                   `json:"candidate_id"`
+	Company          *db.CompaniesFields     `json:"company"`
+	Company_id       int32                   `json:"company_id"`
+	Date_create      time.Time               `json:"date_create"`
+	Date_last_change time.Time               `json:"date_last_change"`
+	Id               int32                   `json:"id"`
+	Notice           string                  `json:"notice"`
+	Rating           string                  `json:"rating"`
+	Rej_text         string                  `json:"rej_text"`
+	Status           int32                   `json:"status"`
+	Status_vac       *db.StatusForVacsFields `json:"vacancyStatus"`
+	User_id          int32                   `json:"user_id"`
+	Vacancy          VacanciesDTO            `json:"vacancy"`
+	Vacancy_id       int32                   `json:"vacancy_id"`
 }
 type ViewCandidates struct {
 	Candidate *ViewCandidate      `json:"0"`
@@ -160,12 +161,7 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 	return createResult(i)
 }
 
-func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
+func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
 		return map[string]string{
@@ -173,8 +169,32 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
+	DB, table, _ := getTableCommentsForCandidates(ctx)
+
+	i, err := table.Delete(ctx,
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	// todo: logs
+	toLogCandidate(ctx, DB, id, "", CODE_DEL_COMMENT)
+
+	return createResult(i)
+}
+
+func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	id, ok := ctx.UserValue(ParamID.Name).(int32)
+	if !ok {
+		return map[string]string{
+			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
+		}, apis.ErrWrongParamsList
+	}
+
+	DB, table, _ := getTableCommentsForCandidates(ctx)
 	text := string(ctx.Request.Body())
-	table, _ := db.NewComments_for_candidates(DB)
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect("candidate_id", "comments"),
 		dbEngine.ArgsForSelect(id, text),
@@ -183,10 +203,20 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, " оставил комментарий в кандидате "+text, CODE_LOG_UPDATE)
+	toLogCandidate(ctx, DB, id, text, CODE_ADD_COMMENT)
 
 	return createResult(i)
+}
 
+func getTableCommentsForCandidates(ctx *fasthttp.RequestCtx) (*dbEngine.DB, *db.Comments_for_candidates, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, nil, dbEngine.ErrDBNotFound
+	}
+
+	table, _ := db.NewComments_for_candidates(DB)
+
+	return DB, table, nil
 }
 
 func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -251,19 +281,8 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	platformName := platform.Record.Nazva.String
-
-	seniTable, _ := db.NewSeniorities(DB)
-	err = seniTable.SelectOneAndScan(ctx,
-		seniTable,
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(table.Record.Seniority_id),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-
-	seniority := seniTable.Record.Nazva.String
+	platformName := platform.Record.Name
+	seniority := db.GetSeniorityFromId(table.Record.Seniority_id)
 
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
@@ -273,9 +292,9 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
              from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
            WHERE t.company_id = c.id AND (all_platforms=1 OR platform_id=$1)) as contacts,
   (select json_agg(json_build_object('id', v.id,
-		   'platform', (select p.nazva  from platforms p where p.id = v.platform_id),
+		   'platform', (select p.name  from platforms p where p.id = v.platform_id),
 		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
-           'seniority', (select s.nazva from seniorities s where s.id = v.seniority_id),
+           'seniority', (select s.name from seniorities s where s.id = v.seniority_id),
            'salary', v.salary, 
 			'name', v.name, 
 			'user_ids', v.user_ids)) as vacancy
@@ -332,23 +351,7 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		Statuses:  []StatusesCandidate{},
 	}
 
-	view := NewCandidateView(ctx, table.Record, DB, res.SelectOpt.Platforms, res.SelectOpt.Seniorities)
-
-	err = DB.Conn.SelectAndScanEach(ctx,
-		nil,
-		&view.SelectedVacancies,
-		`select v.id, 
-		concat(companies.name, ' ("', platforms.nazva, '")') as label, 
-		LOWER(CONCAT(companies.name, ' ("', platforms.nazva , '")')) as value
-	FROM vacancies v JOIN companies on (v.company_id=companies.id)
-	JOIN platforms ON (v.platform_id = platforms.id)
-	WHERE v.id=ANY($1)
-`,
-		view.CandidatesFields.Vacancies,
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
+	view := NewCandidateView(ctx, table.Record, DB)
 
 	res.Candidate = view.ViewCandidate
 	for _, vacancy := range res.Candidate.Vacancies {
@@ -363,22 +366,16 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				},
 			},
 			Id: vacancy["id"].(int32),
-			Status_vac: &db.Status_for_vacsFields{
-				Id: vacancy["status_id"].(int64),
-				Status: sql.NullString{
-					String: vacancy["status"].(string),
-					Valid:  true,
-				},
+			Status_vac: &db.StatusForVacsFields{
+				Id:     vacancy["status_id"].(int32),
+				Status: vacancy["status"].(string),
 			},
 			Vacancy: VacanciesDTO{
 				&db.VacanciesFields{
 					Id:     vacancy["id"].(int32),
 					Salary: vacancy["salary"].(int32),
 				},
-				&db.PlatformsFields{Nazva: sql.NullString{
-					String: vacancy["platform"].(string),
-					Valid:  true,
-				}},
+				&db.PlatformsFields{Name: vacancy["platform"].(string)},
 				vacancy["date_last_change"].(time.Time),
 			},
 			Date_last_change: vacancy["date_last_change"].(time.Time),
@@ -399,70 +396,40 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	columns := []string{
-		"name",
-		"platform_id",
-		"salary",
-		"email",
-		"phone",
-		"skype",
-		"link",
-		"linkedin",
-		"str_companies",
-		"status",
-		"tag_id",
-		"comments",
-		"date",
-		"recruter_id",
-		"text_rezume",
-		"sfera",
-		"experience",
-		"education",
-		"language",
-		"zapoln_profile",
-		"file",
-		"seniority_id",
-		"date_follow_up",
-		"Vacancies",
+	table, err := db.NewCandidates(DB)
+	if err != nil {
+		return createErrResult(err)
 	}
 
-	if u.Tag_id == 0 {
-		return map[string]interface{}{
-			"tag_id": "required value",
-		}, apis.ErrWrongParamsList
-	}
-	args := []interface{}{
-		u.Name,
-		u.Platform_id,
-		u.Salary,
-		u.Email,
-		u.Phone,
-		u.Skype,
-		u.Link,
-		u.Linkedin,
-		u.Str_companies,
-		u.Status,
-		1,
-		u.Comments,
-		time.Now(),
-		auth.GetUserID(ctx),
-		u.Text_rezume,
-		u.Sfera,
-		u.Experience,
-		u.Education,
-		u.Language,
-		u.Zapoln_profile,
-		u.File,
-		u.Seniority_id,
-		u.Date_follow_up,
-		u.Vacancies,
+	columns := make([]string, 0)
+	args := make([]interface{}, 0)
+
+	stopColumns := map[string]interface{}{
+		"id":          nil,
+		"tag_id":      db.GetTagIdFirstContact(),
+		"date":        time.Now(),
+		"recruter_id": auth.GetUserID(ctx),
 	}
 
-	if u.Avatar > "" {
-		columns = append(columns, "avatar")
-		args = append(args, u.Avatar)
+	if u != nil {
+		for _, col := range table.Columns() {
+			name := col.Name()
+			if val, ok := stopColumns[name]; ok {
+				if val != nil {
+					columns = append(columns, name)
+					args = append(args, val)
+				}
+				continue
+			}
+
+			newValue := u.ColValue(name)
+			if !EmptyValue(newValue) {
+				columns = append(columns, name)
+				args = append(args, newValue)
+			}
+		}
 	}
-	table, _ := db.NewCandidates(DB)
+
 	id, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.ArgsForSelect(args...),
@@ -487,6 +454,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	//putVacancies(ctx, u, DB)
 
 	return id, nil
+
 }
 
 type FollowUpDTO struct {

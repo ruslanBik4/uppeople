@@ -9,26 +9,9 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/uppeople/db"
 	"github.com/valyala/fasthttp"
 )
-
-func HandleGetTags(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	return getTags(ctx, DB), nil
-}
-
-func HandleGetStatuses(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	return getStatuses(ctx, DB), nil
-}
 
 type DTOAmounts struct {
 	RecruiterId int32  `json:"recruiter_id"`
@@ -68,6 +51,14 @@ type AmountsByTags struct {
 	Total   int32                    `json:"total"`
 }
 
+func HandleGetTags(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	return db.GetTagsAsSelectedUnits(), nil
+}
+
+func HandleGetStatuses(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	return db.GetStatusAsSelectedUnits(), nil
+}
+
 func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
@@ -75,7 +66,7 @@ func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, erro
 	}
 
 	sql := `SELECT vacancy_id, vtc.company_id,
-				 p.nazva as platform_name,
+				 p.name as platform_name,
 				  c.name as company_name,
 				   u.name as user_name,
 				   user_id as recruiter_id, 
