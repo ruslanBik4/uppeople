@@ -186,7 +186,7 @@ func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
 			platformsSelected = append(platformsSelected, NewSelectedUnit(record.Id, record.Name))
 			return nil
 		},
-		dbEngine.OrderBy("id"),
+		dbEngine.OrderBy("name"),
 	)
 
 	if err != nil {
