@@ -16,7 +16,7 @@ mod:
 #	chown ruslan:progs go.*
 # Builds the project
 run:
-	go run -race ${LDFLAGS} httpgo.go
+	go run -race ${LDFLAGS} httpgo.go -debug
 #httpgo only
 httpgo_all:
 	go mod tidy
