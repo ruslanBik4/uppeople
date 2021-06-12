@@ -20,11 +20,11 @@ alter table logs
     add constraint logs_users_id_fk
         foreign key (user_id) references users
             on update cascade on delete set default;
-alter table logs
-    add constraint logs_company_id_fk
-        foreign key (company_id) references companies
-            on update cascade on delete set default;
-alter table logs
-    add constraint logs_vacancy_id_fk
-        foreign key (vacancy_id) references vacancies
-            on update cascade on delete cascade;
+-- alter table logs
+--     add constraint logs_company_id_fk
+--         foreign key (company_id) references companies
+--             on update cascade on delete set default;
+-- alter table logs
+--     add constraint logs_vacancy_id_fk
+--         foreign key (vacancy_id) references vacancies
+--             on update cascade on delete cascade;

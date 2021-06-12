@@ -14,7 +14,7 @@ create table users
     PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE users IS 'USers table with roles & other data';
+COMMENT ON TABLE users IS 'Users table with roles & other data';
 COMMENT ON COLUMN users.name IS 'full name';
 create unique index users_name_idx
     ON users (name);

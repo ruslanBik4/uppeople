@@ -36,7 +36,7 @@ create unique index candidates_name_uindex
 
 create unique index candidates_email_uindex
     on candidates (email)
-    where (((email)::text > ''::text) AND (email IS NOT NULL));
+    where ((email)::text > ''::text);
 
 create unique index candidates_mobile_uindex
     on candidates (phone)
