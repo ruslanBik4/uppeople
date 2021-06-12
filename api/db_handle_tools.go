@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"strings"
 	"time"
@@ -82,12 +81,6 @@ func EmptyValue(value interface{}) bool {
 		return true
 	}
 
-	v, ok := value.(driver.Valuer)
-	if ok {
-		v1, _ := v.Value()
-		return v1 == nil
-	}
-
 	switch val := value.(type) {
 	case []int32:
 		return len(val) == 0
@@ -99,7 +92,13 @@ func EmptyValue(value interface{}) bool {
 		return len(val) == 0
 	case []string:
 		return len(val) == 0
-	case int32, int64, float32, float64:
+	case int32:
+		return val == 0
+	case int64:
+		return val == 0
+	case float32:
+		return val == 0
+	case float64:
 		return val == 0
 	case time.Time:
 		return val.IsZero()
@@ -109,17 +108,9 @@ func EmptyValue(value interface{}) bool {
 		} else {
 			return val.IsZero()
 		}
-	case sql.NullInt32:
-		return !val.Valid
-	case sql.NullInt64:
-		return !val.Valid
-	case sql.NullFloat64:
-		return !val.Valid
-	case sql.NullTime:
-		return !val.Valid
-	case sql.NullString:
-		return !val.Valid
-
+	case driver.Valuer:
+		v1, _ := val.Value()
+		return v1 == nil
 	case string:
 		return strings.TrimSpace(val) == ""
 	default:

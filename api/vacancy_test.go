@@ -10,12 +10,12 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/ruslanBik4/uppeople/db"
+	. "github.com/ruslanBik4/uppeople/db"
 )
 
 func TestVacancyDTO_GetValue(t *testing.T) {
 	type fields struct {
-		VacanciesFields       *db.VacanciesFields
+		VacanciesFields       *VacanciesFields
 		Comment               string
 		Description           string
 		Phone                 string
@@ -27,11 +27,7 @@ func TestVacancyDTO_GetValue(t *testing.T) {
 		SelectRecruiter       []SelectedUnit
 		SelectedVacancyStatus int32
 	}
-	var tests []struct {
-		name   string
-		fields fields
-		want   interface{}
-	} = []struct {
+	var tests = []struct {
 		name   string
 		fields fields
 		want   interface{}
@@ -55,7 +51,7 @@ func TestVacancyDTO_GetValue(t *testing.T) {
 					{19, "Kateryna Denysenko", "kateryna denysenko"},
 				},
 				SelectedVacancyStatus: 1,
-				VacanciesFields: &db.VacanciesFields{
+				VacanciesFields: &VacanciesFields{
 					Salary:      1000,
 					Description: "<p>test</p>\n",
 					Details:     "<p>test</p>\n",
