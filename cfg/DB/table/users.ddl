@@ -17,6 +17,6 @@ create table users
 COMMENT ON TABLE users IS 'Users table with roles & other data';
 COMMENT ON COLUMN users.name IS 'full name';
 create unique index users_name_idx
-    ON users (name);
+    ON users (name, email);
 create unique index users_email_idx
     ON users (email);

@@ -12,7 +12,6 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/auth"
@@ -170,7 +169,6 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		columns = append(columns, name)
 		args = append(args, newVal)
-		logs.DebugLog(name, newVal)
 	}
 	if len(columns) == 0 {
 		return "no new data on record", apis.ErrWrongParamsList
