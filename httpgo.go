@@ -139,6 +139,7 @@ func main() {
 		tBot, err := telegrambot.NewTelegramBotFromEnv()
 		if err != nil {
 			logs.ErrorLog(err, "NewTelegramBotFromEnv")
+			<-ch
 			return
 		}
 		if Branch > "" {
@@ -157,6 +158,7 @@ func main() {
 		if err != nil {
 			logs.ErrorLog(err, resp)
 		}
+		ch <- resp.String()
 	}()
 
 	if f, err := os.Create(Branch + ".out"); err != nil {
@@ -178,7 +180,8 @@ func main() {
 	}
 
 	select {
-	case <-ch:
+	case msg := <-ch:
+		logs.DebugLog(msg)
 	case <-time.After(time.Second):
 	}
 
