@@ -1,6 +1,6 @@
 CREATE TABLE int_rev_candidates
 (
-    candidate_id integer not null,
+    candidate_id integer not null default 1,
     company_id   integer not null,
     vacancy_id   integer not null,
     status       integer not null,
