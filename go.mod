@@ -7,7 +7,7 @@ require (
 	github.com/jackc/pgio v1.0.0
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx/v4 v4.11.0
-	github.com/json-iterator/go v1.1.10
+	github.com/json-iterator/go v1.1.11
 	github.com/pkg/errors v0.9.1
 	github.com/ruslanBik4/dbEngine v1.0.1140
 	github.com/ruslanBik4/httpgo v1.1.10083
