@@ -11,9 +11,11 @@ import (
 	"os"
 	"path"
 	"runtime/trace"
+	"strings"
 	"time"
 
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/httpgo/apis/crud"
 	httpgo "github.com/ruslanBik4/httpgo/httpGo"
 	"github.com/ruslanBik4/httpgo/models/telegrambot"
 	"github.com/ruslanBik4/httpgo/services"
@@ -81,6 +83,15 @@ func init() {
 	badRoutings := a.AddRoutes(routes)
 	if len(badRoutings) > 0 {
 		logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
+	}
+
+	ctxApis.AddValue(crud.PathVersion, "api/"+strings.Split(Version, ".")[0])
+	dbRoutes := crud.RoutesFromDB(ctxApis)
+	if dbRoutes != nil {
+		badRoutings := a.AddRoutes(dbRoutes)
+		if len(badRoutings) > 0 {
+			logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
+		}
 	}
 
 	cfg, err := httpgo.NewCfgHttp(path.Join(*fSystem, *fCfgPath, "httpgo.yml"))
