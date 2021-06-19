@@ -341,7 +341,7 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			'name', v.name, 
 			'user_ids', v.user_ids)) as vacancies
 	from vacancies v
-	where c.id = v.company_id and status <= 1 and platform_id=$1)
+	where c.id = v.company_id and status <= 1 and platform_id=ANY($1) )
 FROM  companies c 
 WHERE exists (select NULL from vacancies_to_candidates where c.id = company_id and status = 9) 
 		and

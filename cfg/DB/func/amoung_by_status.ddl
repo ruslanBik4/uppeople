@@ -13,7 +13,7 @@ $$
 BEGIN
     return query
       with rowsStatus as (
-          SELECT sfv.order_num, vtc.status, sfv.status as name, sfv.color, count(vtc.id)::integer as amount
+          SELECT sfv.order_num, vtc.status, sfv.status as name, sfv.color, count(vtc.*)::integer as amount
           FROM vacancies_to_candidates vtc
                    JOIN candidates c ON c.id = vtc.candidate_id
                    JOIN status_for_vacs sfv ON sfv.id = vtc.status
