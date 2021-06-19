@@ -9,8 +9,8 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/json-iterator/go v1.1.11
 	github.com/pkg/errors v0.9.1
-	github.com/ruslanBik4/dbEngine v1.0.1140
-	github.com/ruslanBik4/httpgo v1.1.10083
+	github.com/ruslanBik4/dbEngine v1.0.1142
+	github.com/ruslanBik4/httpgo v1.1.10084
 	github.com/ruslanBik4/logs v0.0.12
 	github.com/stretchr/testify v1.6.1
 	github.com/valyala/fasthttp v1.26.0
@@ -21,4 +21,4 @@ require (
 
 //replace github.com/ruslanBik4/dbEngine => /Users/ruslan/work/src/github.com/ruslanBik4/dbEngine
 
-replace github.com/ruslanBik4/httpgo => /Users/ruslan/work/src/github.com/ruslanBik4/httpgo
+//replace github.com/ruslanBik4/httpgo => /Users/ruslan/work/src/github.com/ruslanBik4/httpgo

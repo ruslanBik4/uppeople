@@ -18,7 +18,7 @@ type Candidates struct {
 
 type CandidatesFields struct {
 	Id             int32          `json:"id"`
-	Platform_id    int32          `json:"platform_id"`
+	Platforms      []int32        `json:"platforms"`
 	Name           string         `json:"name"`
 	Salary         int32          `json:"salary"`
 	Email          string         `json:"email"`
@@ -26,18 +26,15 @@ type CandidatesFields struct {
 	Skype          string         `json:"skype"`
 	Link           string         `json:"link"`
 	Linkedin       sql.NullString `json:"linkedin"`
-	Str_companies  sql.NullString `json:"str_companies"`
 	Status         string         `json:"status"`
 	Tag_id         int32          `json:"tag_id"`
 	Comments       string         `json:"comment"`
 	Date           time.Time      `json:"date"`
 	Recruter_id    int32          `json:"recruter_id"`
 	Text_rezume    string         `json:"resume"`
-	Sfera          string         `json:"sfera"`
 	Experience     string         `json:"experience"`
 	Education      string         `json:"education"`
 	Language       string         `json:"language"`
-	Zapoln_profile sql.NullInt32  `json:"zapoln_profile"`
 	File           string         `json:"file"`
 	Avatar         string         `json:"avatar"`
 	Seniority_id   int32          `json:"seniority_id"`
@@ -50,8 +47,8 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "id":
 		return &r.Id
 
-	case "platform_id":
-		return &r.Platform_id
+	case "platforms":
+		return &r.Platforms
 
 	case "name":
 		return &r.Name
@@ -74,9 +71,6 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "linkedin":
 		return &r.Linkedin
 
-	case "str_companies":
-		return &r.Str_companies
-
 	case "status":
 		return &r.Status
 
@@ -95,9 +89,6 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "text_rezume":
 		return &r.Text_rezume
 
-	case "sfera":
-		return &r.Sfera
-
 	case "experience":
 		return &r.Experience
 
@@ -106,9 +97,6 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 
 	case "language":
 		return &r.Language
-
-	case "zapoln_profile":
-		return &r.Zapoln_profile
 
 	case "file":
 		return &r.File
@@ -135,8 +123,8 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "id":
 		return r.Id
 
-	case "platform_id":
-		return r.Platform_id
+	case "platforms":
+		return r.Platforms
 
 	case "name":
 		return r.Name
@@ -159,9 +147,6 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "linkedin":
 		return r.Linkedin
 
-	case "str_companies":
-		return r.Str_companies
-
 	case "status":
 		return r.Status
 
@@ -180,9 +165,6 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "text_rezume":
 		return r.Text_rezume
 
-	case "sfera":
-		return r.Sfera
-
 	case "experience":
 		return r.Experience
 
@@ -191,9 +173,6 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 
 	case "language":
 		return r.Language
-
-	case "zapoln_profile":
-		return r.Zapoln_profile
 
 	case "file":
 		return r.File

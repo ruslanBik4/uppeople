@@ -234,7 +234,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	err = platform.SelectOneAndScan(ctx,
 		platform,
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(record.Platform_id),
+		dbEngine.ArgsForSelect(record.Platforms),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -347,7 +347,7 @@ WHERE exists (select NULL from vacancies_to_candidates where c.id = company_id a
 		and
       c.id in (select v.company_id from vacancies v
                where status <= 1 and platform_id=$1 and $2 = ANY(user_ids))`,
-		table.Record.Platform_id,
+		table.Record.Platforms,
 		auth.GetUserData(ctx).Id,
 	)
 	if err != nil {

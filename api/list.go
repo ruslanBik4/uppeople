@@ -5,7 +5,6 @@
 package api
 
 import (
-	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -20,8 +19,6 @@ type ResList struct {
 	Count, Page, TotalPage int
 	CurrentPage            int `json:"currentPage"`
 	PerPage                int `json:"perPage"`
-	// Platforms              db.SelectedUnits `json:"platforms"`
-	// Seniority              db.SelectedUnits `json:"seniority"`
 }
 
 func NewResList(pageNum int) *ResList {
@@ -78,14 +75,6 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 	}
 
 	view.Seniority = db.GetSeniorityFromId(record.Seniority_id).Name
-
-	platform := db.GetPlatformFromId(record.Platform_id)
-	view.Platform = platform.Name
-	view.ViewCandidate.Platform = &db.SelectedUnit{
-		Id:    platform.Id,
-		Label: platform.Name,
-		Value: strings.ToLower(platform.Name),
-	}
 
 	view.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		SQL_VIEW_CANDIDATE_VACANCIES,

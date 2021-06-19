@@ -17,7 +17,6 @@ BEGIN
                 coalesce(skype,''),
                 coalesce(link,''),
                 linkedin,
-                str_companies,
                 coalesce(status,''),
                 tag_id,
                 coalesce(comments,''),

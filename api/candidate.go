@@ -47,7 +47,6 @@ type statusCandidate struct {
 
 type ViewCandidate struct {
 	*db.CandidatesFields
-	Platform          *db.SelectedUnit         `json:"platforms,omitempty"`
 	Companies         db.SelectedUnits         `json:"companies,omitempty"`
 	Seniority         string                   `json:"seniority"`
 	Tags              *db.TagsFields           `json:"tags,omitempty"`
@@ -58,7 +57,6 @@ type ViewCandidate struct {
 
 type CandidateView struct {
 	*ViewCandidate
-	Platform string             `json:"platform,omitempty"`
 	TagName  string             `json:"tag_name,omitempty"`
 	TagColor string             `json:"tag_color,omitempty"`
 	Statuses []*statusCandidate `json:"statuses"`
@@ -275,7 +273,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	err = platform.SelectOneAndScan(ctx,
 		platform,
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(table.Record.Platform_id),
+		dbEngine.ArgsForSelect(table.Record.Platforms),
 	)
 	if err != nil {
 		return createErrResult(err)
@@ -303,7 +301,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 FROM companies c
 WHERE c.id in (select v.company_id from vacancies v
     where status <= 1 and platform_id=$1 and $2 = ANY(user_ids))`,
-		table.Record.Platform_id,
+		table.Record.Platforms,
 		auth.GetUserData(ctx).Id,
 	)
 	if err != nil {
@@ -591,16 +589,13 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"skype",
 			"link",
 			"linkedin",
-			"str_companies",
 			"status",
 			"tag_id",
 			"comments",
 			"text_rezume",
-			"sfera",
 			"experience",
 			"education",
 			"language",
-			"zapoln_profile",
 			"file",
 			// "avatar",
 			"seniority_id",
@@ -609,23 +604,20 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 		args = []interface{}{
 			u.Name,
-			u.Platform_id,
+			u.Platforms,
 			u.Salary,
 			u.Email,
 			u.Phone,
 			u.Skype,
 			u.Link,
 			u.Linkedin,
-			u.Str_companies,
 			u.Status,
 			u.Tag_id,
 			u.Comments,
 			u.Text_rezume,
-			u.Sfera,
 			u.Experience,
 			u.Education,
 			u.Language,
-			u.Zapoln_profile,
 			u.File,
 			// u.Avatar,
 			u.Seniority_id,
