@@ -582,7 +582,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	} else {
 		columns = []string{
 			"name",
-			"platform_id",
+			"platforms",
 			"salary",
 			"email",
 			"phone",

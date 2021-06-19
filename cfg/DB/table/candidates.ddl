@@ -1,8 +1,7 @@
 create table candidates
 (
     id serial not null,
-    platform_id integer not null default 0,
-    platforms integer[],
+    platforms integer[] not null,
     name character varying not null,
     salary integer not null default 0,
     email character varying not null default '',
