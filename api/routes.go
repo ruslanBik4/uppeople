@@ -489,6 +489,7 @@ var (
 			Fnc:      HandleReturnOptionsForSelects,
 			Desc:     "show options for selects ",
 			NeedAuth: true,
+			WithCors: true,
 		},
 		"/api/main/allCandidates/": {
 			Fnc:      HandleAllCandidates,
