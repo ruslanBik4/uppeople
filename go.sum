@@ -392,8 +392,8 @@ github.com/rs/zerolog v1.13.0/go.mod h1:YbFCdg8HfsridGWAh22vktObvhZbQsZXe4/zB0OK
 github.com/rs/zerolog v1.15.0/go.mod h1:xYTKnLHcpfU2225ny5qZjxnj9NvkumZYjJHlAThCjNc=
 github.com/ruslanBik4/dbEngine v1.0.1142 h1:KKbXP7M382WgzTvnG9qvqO7eNLpJwAODHZkPNY/ABfA=
 github.com/ruslanBik4/dbEngine v1.0.1142/go.mod h1:518eN+pynYyvuJwv+5JxSqr1oT9vr5ePvvowVg+jcxw=
-github.com/ruslanBik4/httpgo v1.1.10084 h1:6ceMnnxH76aXAfrlZ+CiLvRy6LgQYMjRCd55svhNzRQ=
-github.com/ruslanBik4/httpgo v1.1.10084/go.mod h1:kspMiF7XBSKLuZc7xHu3OSXE2zSzBnGIkllHlLeR+YM=
+github.com/ruslanBik4/httpgo v1.1.10085 h1:liXTYsoF5K3KCHTk7JyjdrnWMVPWU8Xq/y73fAltsbw=
+github.com/ruslanBik4/httpgo v1.1.10085/go.mod h1:ipm6MWdJNJy919WhNTR4x2tkAh1yHKdRk9ahKu0ia+A=
 github.com/ruslanBik4/logs v0.0.0-20200927155213-df5cc6a3fa8e/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
 github.com/ruslanBik4/logs v0.0.12 h1:NMpEwnYs6mewtxbh0mZQEre7/KZYUPxuvdo+NCvbsGc=
 github.com/ruslanBik4/logs v0.0.12/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
@@ -452,6 +452,8 @@ github.com/valyala/fasthttp v1.6.0/go.mod h1:FstJa9V+Pj9vQ7OJie2qMHdwemEDaDiSdBn
 github.com/valyala/fasthttp v1.16.0/go.mod h1:YOKImeEosDdBPnxc0gy7INqi3m1zK6A+xl6TwOBhHCA=
 github.com/valyala/fasthttp v1.26.0 h1:k5Tooi31zPG/g8yS6o2RffRO2C9B9Kah9SY8j/S7058=
 github.com/valyala/fasthttp v1.26.0/go.mod h1:cmWIqlu99AO/RKcp1HWaViTqc57FswJOfYYdPJBl8BA=
+github.com/valyala/fastjson v1.6.3 h1:tAKFnnwmeMGPbwJ7IwxcTPCNr3uIzoIj3/Fh90ra4xc=
+github.com/valyala/fastjson v1.6.3/go.mod h1:CLCAqky6SMuOcxStkYQvblddUtoRxhYMGLrsQns1aXY=
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=
 github.com/valyala/quicktemplate v1.6.3 h1:O7EuMwuH7Q94U2CXD6sOX8AYHqQqWtmIk690IhmpkKA=
 github.com/valyala/quicktemplate v1.6.3/go.mod h1:fwPzK2fHuYEODzJ9pkw0ipCPNHZ2tD5KW4lOuSdPKzY=

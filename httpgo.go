@@ -88,6 +88,9 @@ func init() {
 	ctxApis.AddValue(crud.PathVersion, "api/"+strings.Split(Version, ".")[0])
 	dbRoutes := crud.RoutesFromDB(ctxApis)
 	if dbRoutes != nil {
+		for key := range dbRoutes {
+			dbRoutes[key].WithCors = true
+		}
 		badRoutings := a.AddRoutes(dbRoutes)
 		if len(badRoutings) > 0 {
 			logs.ErrorLog(apis.ErrRouteForbidden, badRoutings)
