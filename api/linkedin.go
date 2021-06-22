@@ -66,6 +66,7 @@ var (
 			Fnc:       HandleGetCandidateInfoLinkedin,
 			Desc:      "get_candidate_info linkEdin",
 			Multipart: true,
+			NeedAuth:  true,
 			WithCors:  true,
 			Params: []apis.InParam{
 				{
