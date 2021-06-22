@@ -63,10 +63,10 @@ var (
 			WithCors: true,
 		},
 		"/api/get_candidate_info": {
-			Fnc:       HandleGetCandidateInfoLinkedin,
-			Desc:      "get_candidate_info linkEdin",
-			Multipart: true,
-			WithCors:  true,
+			Fnc:  HandleGetCandidateInfoLinkedin,
+			Desc: "get_candidate_info linkEdin",
+			// Multipart: true,
+			WithCors: true,
 			Params: []apis.InParam{
 				{
 					Name: "url",
