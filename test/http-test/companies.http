@@ -12,7 +12,7 @@ Authorization:Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "IsActive": true
+  "IsActive": true,
 }
 ###  "name": "Edible",
 GET https://{{host}}/api/main/viewInformationForCompany/2

@@ -28,6 +28,7 @@ Content-Type: application/json
 
 {
   "mySent":false,
+  "selectPlatforms": [{"id": 12},{"id":2}],
   "selectRecruiter":{"id":42,"label":"Volodymyr","value":"volodymyr"},
   "dateFrom":"2021-03-29","dateFromAllCandidates":"2021-03-29",
   "dateTo":"2021-03-29","dateToAllCandidates":"2021-03-29"

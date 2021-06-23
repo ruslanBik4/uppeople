@@ -106,7 +106,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if dto.SelectPlatforms != nil {
-			where = append(where, "platforms")
+			where = append(where, "&&platforms")
 			p := make([]int32, len(dto.SelectPlatforms))
 			for i, unit := range dto.SelectPlatforms {
 				p[i] = unit.Id
