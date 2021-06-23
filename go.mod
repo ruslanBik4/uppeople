@@ -10,7 +10,7 @@ require (
 	github.com/json-iterator/go v1.1.11
 	github.com/pkg/errors v0.9.1
 	github.com/ruslanBik4/dbEngine v1.0.1142
-	github.com/ruslanBik4/httpgo v1.1.10085
+	github.com/ruslanBik4/httpgo v1.1.10086
 	github.com/ruslanBik4/logs v0.0.12
 	github.com/stretchr/testify v1.6.1
 	github.com/valyala/fasthttp v1.26.0

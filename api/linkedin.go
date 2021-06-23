@@ -70,12 +70,14 @@ var (
 			WithCors:  true,
 			Params: []apis.InParam{
 				{
-					Name: "url",
-					Type: apis.NewTypeInParam(types.String),
+					Name:    "url",
+					Type:    apis.NewTypeInParam(types.String),
+					PartReq: []string{"name"},
 				},
 				{
-					Name: "name",
-					Type: apis.NewTypeInParam(types.String),
+					Name:    "name",
+					Type:    apis.NewTypeInParam(types.String),
+					PartReq: []string{"url"},
 				},
 			},
 		},

@@ -65,11 +65,6 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	res := ResCandidates{
 		ResList:    NewResList(id),
 		Candidates: make([]*CandidateView, 0),
-		// Company:    getCompanies(ctx, DB),
-		// Reasons:    db.GetRejectReasonAsSelectedUnits(),
-		// Recruiter:  getRecruiters(ctx, DB),
-		// Statuses:   db.GetStatusForVacAsSelectedUnits(),
-		// Tags:       db.GetTagsAsSelectedUnits(),
 	}
 	optionsCount := []dbEngine.BuildSqlOptions{
 		dbEngine.ColumnsForSelect("count(*)"),
@@ -111,7 +106,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 
 		if dto.SelectPlatforms != nil {
-			where = append(where, "platform_id")
+			where = append(where, "platforms")
 			p := make([]int32, len(dto.SelectPlatforms))
 			for i, unit := range dto.SelectPlatforms {
 				p[i] = unit.Id
