@@ -7,7 +7,7 @@ Content-Type: application/json
     client.global.set("auth_token", response.body.access_token);
 %}
 ###
-POST https://{{host}}/api/get_recruiter_vacancies
+GET https://{{host}}/api/get_recruiter_vacancies
 Content-Type: application/x-www-form-urlencoded
 Authorization:Bearer {{auth_token}}
 

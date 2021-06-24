@@ -35,7 +35,11 @@ func (s *SelectedUnits) GetFields(columns []dbEngine.Column) []interface{} {
 		case "value":
 			r = append(r, &p.Value)
 		default:
-			logs.ErrorLog(dbEngine.ErrNotFoundColumn{Column: col.Name()}, "SelectedUnits. GetFields")
+			logs.ErrorStack(dbEngine.ErrNotFoundColumn{
+				Column: col.Name(),
+				// todo: add Table into Column
+				Table: "col.Table",
+			}, "SelectedUnits. GetFields")
 		}
 	}
 

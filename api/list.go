@@ -60,6 +60,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		err = selectedVacancies.SelectAndScanEach(ctx,
 			nil,
 			&view.SelectedVacancies,
+			dbEngine.ColumnsForSelect("id", "label", "value"),
 			dbEngine.WhereForSelect("id"),
 			dbEngine.ArgsForSelect(view.CandidatesFields.Vacancies),
 		)
