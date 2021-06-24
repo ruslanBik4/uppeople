@@ -36,7 +36,7 @@ type CandidatesFields struct {
 	Education      string         `json:"education"`
 	Language       string         `json:"language"`
 	File           string         `json:"file"`
-	Avatar         string         `json:"avatar"`
+	Avatar         []byte         `json:"avatar"`
 	Seniority_id   int32          `json:"seniority_id"`
 	Date_follow_up *time.Time     `json:"date_follow_up"`
 	Vacancies      []int32        `json:"vacancies"`

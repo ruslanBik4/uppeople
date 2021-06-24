@@ -189,12 +189,8 @@ func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{},
 	}
 
 	data, err := DB.Conn.SelectToMaps(ctx,
-		`select vacancies.id, platform_id, user_ids,
-CONCAT(companies.name, ' (', platforms.name , ')') as name,
-CONCAT(companies.name, ' (', platforms.name , ')') as label,
-LOWER(CONCAT(companies.name, ' (', platforms.name , ')')) as value
-from vacancies left join companies on vacancies.company_id = companies.id
-left join platforms on vacancies.platform_id = platforms.id
+		`select id, platform_id, user_ids, label as name,  label,  value
+from select_vacancies
 where $1=ANY(user_ids)`,
 		auth.GetUserData(ctx).Id,
 	)
@@ -252,6 +248,10 @@ func HandleGetSelectorslinkEdin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func init() {
 	for path, route := range LERoutes {
 		route.WithCors = true
+		if strings.HasSuffix(path, "get_recruiter_vacancies") {
+			Routes.AddRoutes(map[string]*apis.ApiRoute{path: route})
+		}
+
 		if !strings.HasSuffix(path, "show_candidate_linkedin") {
 			route.Method = apis.POST
 		}
