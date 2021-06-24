@@ -104,7 +104,26 @@ func HandleReContactCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	toLogCandidate(ctx, DB, id, "recontacted", CODE_LOG_RE_CONTACT)
+	table, _ := db.NewCandidates(DB)
+	columns := []string{
+		"recruter_id",
+		"date",
+	}
+	args := []interface{}{
+		auth.GetUserID(ctx),
+		time.Now(),
+	}
+
+	_, err := table.Update(ctx,
+		dbEngine.ColumnsForSelect(columns...),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(append(args, id)...),
+	)
+	if err != nil {
+		return createErrResult(err)
+	}
+
+	toLogCandidate(ctx, DB, id, "", CODE_LOG_RE_CONTACT)
 
 	return nil, nil
 }
@@ -284,23 +303,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
-		`SELECT id as comp_id, c.name, send_details,
-  (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
-           'platform_id', cp.platform_id, 'name', t.name))
-             from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
-           WHERE t.company_id = c.id AND (all_platforms=1 OR platform_id=ANY($1))) as contacts,
-  (select json_agg(json_build_object('id', v.id,
-		   'platform', (select p.name  from platforms p where p.id = v.platform_id),
-		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
-           'seniority', (select s.name from seniorities s where s.id = v.seniority_id),
-           'salary', v.salary, 
-			'name', v.name, 
-			'user_ids', v.user_ids)) as vacancy
-	from vacancies v
-	where c.id = v.company_id and status <= 1 and platform_id=ANY($1))
-FROM companies c
-WHERE c.id in (select v.company_id from vacancies v
-    where status <= 1 and platform_id=ANY($1) and $2 = ANY(user_ids))`,
+		SEND_CV_COMPANIES_SQL,
 		table.Record.Platforms,
 		auth.GetUserData(ctx).Id,
 	)
