@@ -19,7 +19,7 @@ create table candidates
     education character varying not null default '',
     language character varying not null default '',
     file character varying not null default '',
-    avatar bytea not null default ''::bytea,
+    avatar bytea,
     seniority_id integer not null default 1,
     date_follow_up date,
     vacancies integer[],
