@@ -16,23 +16,20 @@ import (
 	"github.com/ruslanBik4/uppeople/db"
 )
 
-func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	return DB.Conn.SelectToMaps(ctx,
-		fmt.Sprintf(`select logs.id as logId, CONCAT('Пользователь ', users.name, 
+var LOG_VIEW = fmt.Sprintf(`select logs.id as logId, CONCAT('Пользователь ', users.name, 
 		CASE WHEN kod_deystviya=%d THEN ' проработал ' 
 			 WHEN kod_deystviya=%d  THEN ' добавил нового '
 			 WHEN kod_deystviya=%d  THEN ' обновил у '
 			 WHEN kod_deystviya=%d  THEN ' удалил '
+			 WHEN kod_deystviya=%d  THEN ' обновил контакт '
 			ELSE '' END,
-		CASE WHEN candidate_id > 0 THEN CONCAT(' кандидата ', can.name)
+		CASE WHEN candidate_id > 0 THEN 
+				CASE WHEN kod_deystviya=%d THEN CONCAT(' с кандидатом ', can.name)
+				ELSE CONCAT(' кандидата ', can.name) END
 			 WHEN vacancy_id > 0 THEN CONCAT(' вакансию компании ', companies.name)
 			ELSE '' END,
-			' ', logs.text) as text, 
+			' ', 
+		CASE WHEN kod_deystviya=%d THEN '' ELSE logs.text END) as text, 
 		logs.create_at as date, 
 		companies.id as compId, companies.name as compName, vacancies.id as vacId, 
 		CONCAT_WS(' - ', platforms.name, seniorities.name) as vac
@@ -44,9 +41,15 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			left Join seniorities ON (vacancies.seniority_id = seniorities.id)
 		where candidate_id =$1
 		order by logs.create_at DESC`,
-			CODE_LOG_PEFORM, CODE_LOG_INSERT, CODE_LOG_UPDATE, CODE_LOG_DELETE),
-		ctx.UserValue("id"),
-	)
+	CODE_LOG_PEFORM, CODE_LOG_INSERT, CODE_LOG_UPDATE, CODE_LOG_DELETE, CODE_LOG_RE_CONTACT, CODE_LOG_RE_CONTACT, CODE_LOG_RE_CONTACT)
+
+func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
+	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
+	if !ok {
+		return nil, dbEngine.ErrDBNotFound
+	}
+
+	return DB.Conn.SelectToMaps(ctx, LOG_VIEW, ctx.UserValue("id"))
 }
 
 func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string, code int32) {

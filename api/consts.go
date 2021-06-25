@@ -73,3 +73,21 @@ FROM vacancies v JOIN companies on (v.company_id=companies.id)
 	WHERE vc.candidate_id=$1 AND vc.status!=1
     order by date_last_change desc
 `
+
+const SEND_CV_COMPANIES_SQL = `SELECT id as comp_id, c.name, send_details,
+  (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.all_platforms,
+           'platform_id', cp.platform_id, 'name', t.name))
+             from contacts t left join contacts_to_platforms cp on t.id=cp.contact_id
+           WHERE t.company_id = c.id AND (all_platforms=1 OR platform_id=ANY($1))) as contacts,
+  (select json_agg(json_build_object('id', v.id,
+		   'platform', (select p.name  from platforms p where p.id = v.platform_id),
+		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
+           'seniority', (select s.name from seniorities s where s.id = v.seniority_id),
+           'salary', v.salary, 
+			'name', v.name, 
+			'user_ids', v.user_ids)) as vacancy
+	from vacancies v
+	where c.id = v.company_id and status <= 1 and platform_id=ANY($1))
+FROM companies c
+WHERE c.id in (select v.company_id from vacancies v
+    where status <= 1 and platform_id=ANY($1) and $2 = ANY(user_ids))`
