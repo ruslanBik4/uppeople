@@ -93,5 +93,3 @@ BEGIN
 from vac;
 END;
 $$;
-
-

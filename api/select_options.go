@@ -24,6 +24,7 @@ func HandleReturnOptionsForSelects(ctx *fasthttp.RequestCtx) (interface{}, error
 
 type selectOpt struct {
 	Companies     db.SelectedUnits `json:"companies"`
+	Languages     db.SelectedUnits `json:"languages"`
 	Platforms     db.SelectedUnits `json:"platforms"`
 	Recruiters    db.SelectedUnits `json:"recruiters"`
 	Statuses      db.SelectedUnits `json:"candidateStatus"`
@@ -40,6 +41,7 @@ type selectOpt struct {
 func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {
 	s := selectOpt{
 		Companies:     getCompanies(ctx, DB),
+		Languages:     getLanguages(ctx, DB),
 		Platforms:     db.GetPlatformsAsSelectedUnits(),
 		Recruiters:    getRecruiters(ctx, DB),
 		Statuses:      db.GetStatusForVacAsSelectedUnits(),

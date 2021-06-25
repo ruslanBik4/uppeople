@@ -17,9 +17,9 @@ create table candidates
     cv text not null default '',
     experience character varying not null default '',
     education character varying not null default '',
-    language character varying not null default '',
+    id_languages integer not null default 0,
     file character varying not null default '',
-    avatar bytea not null default ''::bytea,
+    avatar bytea,
     seniority_id integer not null default 1,
     date_follow_up date,
     vacancies integer[],
@@ -27,6 +27,7 @@ create table candidates
 );
 
 COMMENT ON TABLE candidates IS 'list of candidates';
+COMMENT ON COLUMN candidates.id_languages IS 'Language {"suggestions":"/api/main/returnOptionsForSelects", "multiple":true,"suggestions_params":{"name":"languages"}}';
 COMMENT ON COLUMN candidates.platforms IS 'Platform {"suggestions":"/api/main/returnOptionsForSelects", "multiple":true,"suggestions_params":{"name":"platforms"}}';
 COMMENT ON COLUMN candidates.recruter_id IS 'Recruiter name {"suggestions":"/api/main/returnOptionsForSelects","suggestions_params":{"name":"recruiters"}}';
 COMMENT ON COLUMN candidates.seniority_id IS 'Seniority {"suggestions":"/api/main/returnOptionsForSelects","suggestions_params":{"name":"seniorities"}}';
@@ -56,4 +57,9 @@ alter table candidates
 alter table candidates
     add constraint candidates_tags_id_fk
         foreign key (tag_id) references tags
-            on update cascade on delete set default
+            on update cascade on delete set default;
+
+alter table candidates
+    add constraint candidates_id_languages_fk
+        foreign key (id_languages) references languages
+            on update cascade on delete set default;
