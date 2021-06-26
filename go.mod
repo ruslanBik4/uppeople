@@ -9,7 +9,7 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/json-iterator/go v1.1.11
 	github.com/pkg/errors v0.9.1
-	github.com/ruslanBik4/dbEngine v1.0.1142
+	github.com/ruslanBik4/dbEngine v1.0.1143
 	github.com/ruslanBik4/httpgo v1.1.10086
 	github.com/ruslanBik4/logs v0.0.12
 	github.com/stretchr/testify v1.6.1
@@ -19,6 +19,6 @@ require (
 	golang.org/x/net v0.0.0-20210510120150-4163338589ed
 )
 
-//replace github.com/ruslanBik4/dbEngine => /Users/ruslan/work/src/github.com/ruslanBik4/dbEngine
+replace github.com/ruslanBik4/dbEngine => /Users/ruslan/work/src/github.com/ruslanBik4/dbEngine
 
 //replace github.com/ruslanBik4/httpgo => /Users/ruslan/work/src/github.com/ruslanBik4/httpgo
