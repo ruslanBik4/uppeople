@@ -45,7 +45,7 @@ BEGIN
            CASE WHEN v.id = 1 THEN
                     (select count(*)
                      from logs
-                     where kod_deystviya = 104
+                     where action_code = 104
                        and create_at between COALESCE($1, NOW() - interval '1 month') and COALESCE( $2, now() )
                        and (v.company_id is null OR company_id = v.company_id)
                        and (v.vacancy_id is null OR vacancy_id = v.vacancy_id)

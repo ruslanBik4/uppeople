@@ -163,9 +163,9 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 			err := DB.Conn.SelectOneAndScan(ctx,
 				[]interface{}{&row.CreateCount, &row.UpdateCount, &row.SendCount},
-				`select count(*) FILTER ( WHERE kod_deystviya = $1 ),
-       count(*) FILTER ( WHERE kod_deystviya = $2 ),
-       count(*) FILTER ( WHERE kod_deystviya = $3 )
+				`select count(*) FILTER ( WHERE action_code = $1 ),
+       count(*) FILTER ( WHERE action_code = $2 ),
+       count(*) FILTER ( WHERE action_code = $3 )
 from logs
 where age(date_create) < interval '7 day' and user_id = $4`,
 				CODE_LOG_INSERT,

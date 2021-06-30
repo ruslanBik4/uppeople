@@ -252,7 +252,7 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create",
-			"kod_deystviya"),
+			"action_code"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
 			text,
 			time.Now(),

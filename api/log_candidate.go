@@ -17,19 +17,19 @@ import (
 )
 
 var LOG_VIEW = fmt.Sprintf(`select logs.id as logId, CONCAT('Пользователь ', users.name, 
-		CASE WHEN kod_deystviya=%d THEN ' проработал ' 
-			 WHEN kod_deystviya=%d  THEN ' добавил нового '
-			 WHEN kod_deystviya=%d  THEN ' обновил у '
-			 WHEN kod_deystviya=%d  THEN ' удалил '
-			 WHEN kod_deystviya=%d  THEN ' обновил контакт '
+		CASE WHEN action_code=%d THEN ' проработал ' 
+			 WHEN action_code=%d  THEN ' добавил нового '
+			 WHEN action_code=%d  THEN ' обновил у '
+			 WHEN action_code=%d  THEN ' удалил '
+			 WHEN action_code=%d  THEN ' обновил контакт '
 			ELSE '' END,
 		CASE WHEN candidate_id > 0 THEN 
-				CASE WHEN kod_deystviya=%d THEN CONCAT(' с кандидатом ', can.name)
+				CASE WHEN action_code=%d THEN CONCAT(' с кандидатом ', can.name)
 				ELSE CONCAT(' кандидата ', can.name) END
 			 WHEN vacancy_id > 0 THEN CONCAT(' вакансию компании ', companies.name)
 			ELSE '' END,
 			' ', 
-		CASE WHEN kod_deystviya=%d THEN '' ELSE logs.text END) as text, 
+		CASE WHEN action_code=%d THEN '' ELSE logs.text END) as text, 
 		logs.create_at as date, 
 		companies.id as compId, companies.name as compName, vacancies.id as vacId, 
 		CONCAT_WS(' - ', platforms.name, seniorities.name) as vac
@@ -55,7 +55,7 @@ func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string, code int32) {
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create",
-			"kod_deystviya"),
+			"action_code"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId,
 			text,
 			time.Now(),
@@ -65,7 +65,7 @@ func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32
 func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, companyId, vacancyId int32, text string, code int32) {
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "candidate_id", "company_id", "vacancy_id", "text", "date_create",
-			"kod_deystviya"),
+			"action_code"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId, companyId, vacancyId,
 			text,
 			time.Now(),
@@ -75,7 +75,7 @@ func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateI
 func toLogCandidateStatus(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, vacancyId int32, text string, code int32) {
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "candidate_id", "vacancy_id", "text", "date_create",
-			"kod_deystviya"),
+			"action_code"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId, vacancyId,
 			text,
 			time.Now(),

@@ -6,7 +6,7 @@ create table logs
     company_id integer,
     vacancy_id integer,
     text text not null,
-    kod_deystviya integer not null,
+    action_code integer not null,
     date_create date not null,
     create_at timestamp with time zone not null default CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
