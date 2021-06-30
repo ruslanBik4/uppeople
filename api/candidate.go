@@ -142,14 +142,20 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 	table, _ := db.NewVacancies_to_candidates(DB)
 	i, err := table.Update(ctx,
 		dbEngine.ColumnsForSelect("status"),
-		dbEngine.WhereForSelect("candidate_id", "company_id"),
-		dbEngine.ArgsForSelect(u.Status, u.Candidate_id, u.Company_id),
+		dbEngine.WhereForSelect("candidate_id", "vacancy_id"),
+		dbEngine.ArgsForSelect(u.Status, u.Candidate_id, u.Vacancy_id),
 	)
 	if err != nil {
 		return createErrResult(err)
 	}
 
-	toLogCandidateVacancy(ctx, DB, u.Candidate_id, u.Company_id, u.Vacancy_id, " изменил статус  кандидата ", CODE_LOG_UPDATE)
+	if i == 0 {
+		return map[string]string{
+			"candidate_id, vacancy_id": "can't find record for this primary",
+		}, apis.ErrWrongParamsList
+	}
+
+	toLogCandidateStatus(ctx, DB, u.Candidate_id, u.Vacancy_id, " изменил статус  кандидата ", CODE_LOG_UPDATE)
 
 	switch u.Status {
 	case 2:
@@ -175,6 +181,7 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 		// 	));
 
 	}
+
 	return createResult(i)
 }
 

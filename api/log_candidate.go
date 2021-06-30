@@ -72,6 +72,16 @@ func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateI
 			code))
 }
 
+func toLogCandidateStatus(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, vacancyId int32, text string, code int32) {
+	toLog(ctx, DB,
+		dbEngine.ColumnsForSelect("user_id", "candidate_id", "vacancy_id", "text", "date_create",
+			"kod_deystviya"),
+		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId, vacancyId,
+			text,
+			time.Now(),
+			code))
+}
+
 func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.BuildSqlOptions) {
 	log, _ := db.NewLogs(DB)
 	_, err := log.Insert(ctx, columns, args)
