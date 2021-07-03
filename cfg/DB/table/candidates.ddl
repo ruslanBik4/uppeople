@@ -20,7 +20,7 @@ create table candidates
     id_languages integer not null default 0,
     file character varying not null default '',
     avatar bytea,
-    seniority_id integer not null default 1,
+    seniority_id integer not null,
     date_follow_up date,
     vacancies integer[],
     PRIMARY KEY (id)
