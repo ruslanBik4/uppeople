@@ -6,14 +6,11 @@ package api
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
-	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
@@ -247,14 +244,4 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	}
 
 	return v, nil
-}
-
-func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create",
-			"action_code"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
-			text,
-			time.Now(),
-			code))
 }
