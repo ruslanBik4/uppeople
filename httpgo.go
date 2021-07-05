@@ -91,9 +91,10 @@ func init() {
 		for key, route := range dbRoutes {
 			dbRoutes[key].WithCors = true
 			if strings.HasSuffix(key, "put") {
+				fnc := route.Fnc
 				dbRoutes[key].Fnc = func(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					ctx.SetUserValue("recruter_id", auth.GetUserID(ctx))
-					return route.Fnc(ctx)
+					return fnc(ctx)
 				}
 			}
 		}
