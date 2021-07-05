@@ -88,8 +88,14 @@ func init() {
 	ctxApis.AddValue(crud.PathVersion, "/api/"+strings.Split(Version, ".")[0])
 	dbRoutes := crud.RoutesFromDB(ctxApis)
 	if dbRoutes != nil {
-		for key := range dbRoutes {
+		for key, route := range dbRoutes {
 			dbRoutes[key].WithCors = true
+			if strings.HasSuffix(key, "put") {
+				dbRoutes[key].Fnc = func(ctx *fasthttp.RequestCtx) (interface{}, error) {
+					ctx.SetUserValue("recruter_id", auth.GetUserID(ctx))
+					return route.Fnc(ctx)
+				}
+			}
 		}
 		badRoutings := a.AddRoutes(dbRoutes)
 		if len(badRoutings) > 0 {
