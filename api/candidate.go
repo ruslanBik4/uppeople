@@ -373,7 +373,8 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					Valid:  true,
 				},
 			},
-			Id: vacancy["id"].(int32),
+			Id:         vacancy["id"].(int32),
+			Vacancy_id: vacancy["id"].(int32),
 			Status_vac: &db.StatusForVacsFields{
 				Id:     vacancy["status_id"].(int32),
 				Status: vacancy["status"].(string),
