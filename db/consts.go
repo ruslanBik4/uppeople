@@ -70,6 +70,7 @@ const TABLE_WP_TERM_META = "wp_termmeta"
 const TABLE_WP_TERMS = "wp_terms"
 const TABLE_WP_USER_META = "wp_usermeta"
 const TABLE_WP_USERS = "wp_users"
+const TABLE_LOG_ACTIONS = "log_actions"
 
 //Tag values
 const TAG_FIRST_CONTACT = "first contact"
@@ -111,6 +112,27 @@ const SENIORITY_JUN_MID = "Jun-Mid"
 const SENIORITY_MID_SEN = "Mid-Sen"
 const SENIORITY_SEN_LEAD = "Sen-Lead"
 
+//Languages values
+const LANG_BEGGINER = "Beginner"
+const LANG_ELEMENTARY = "Elementary"
+const LANG_PRE_INT = "Pre-Intermediate"
+const LANG_INT = "Intermediate"
+const LANG_UPPER_INT = "Upper Intermediate"
+const LANG_ADVANCED = "Advanced"
+const LANG_PROF = "Proficiency"
+const LANG_UNDEF = "undefined"
+
+//LogActions values
+const LOG_UPDATE = "CODE_LOG_UPDATE"
+const LOG_INSERT = "CODE_LOG_INSERT"
+const LOG_PEFORM = "CODE_LOG_PEFORM"
+const LOG_DELETE = "CODE_LOG_DELETE"
+const LOG_RE_CONTACT = "CODE_LOG_RE_CONTACT"
+const LOG_ADD_COMMENT = "CODE_ADD_COMMENT"
+const LOG_DEL_COMMENT = "CODE_DEL_COMMENT"
+const LOG_SEND_CV = "CODE_SEND_CV"
+const LOG_APPOINT_INTERVIEW = "CODE_APPOINT_INTERVIEW"
+
 //Consts for table values
 var (
 	tagIds            TagIdMap
@@ -118,9 +140,11 @@ var (
 	statusesForVacIds StatusForVacIdMap
 	seniorityIds      SeniorityIdMap
 	platformIds       PlatformsIdMap
+	logActionsIds     LogActionsIdMap
+	languagesIds      LanguagesIdMap
 )
 
-// Consts forgetter handlerds
+// Consts for getter handlerds
 var (
 	tagsSelected        SelectedUnits
 	reasonsSelected     SelectedUnits
@@ -128,4 +152,6 @@ var (
 	statusesVacSelected SelectedUnits
 	senioritySelected   SelectedUnits
 	platformsSelected   SelectedUnits
+	logActionsSelected  SelectedUnits
+	languagesSelected   SelectedUnits
 )

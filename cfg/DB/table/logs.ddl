@@ -28,3 +28,11 @@ alter table logs
 --     add constraint logs_vacancy_id_fk
 --         foreign key (vacancy_id) references vacancies
 --             on update cascade on delete cascade;
+
+update logs
+set action_code=108
+where logs.text LIKE '% назначил %';
+
+update logs
+set action_code=107
+where logs.text LIKE '% CV %';

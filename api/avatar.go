@@ -83,7 +83,7 @@ func HandleAddAvatar(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogCandidate(ctx, DB, id, "avatar", CODE_LOG_UPDATE)
+		toLogCandidate(ctx, DB, id, "avatar", db.GetLogUpdateId())
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)

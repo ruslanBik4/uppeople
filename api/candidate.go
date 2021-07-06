@@ -123,7 +123,7 @@ func HandleReContactCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, "", CODE_LOG_RE_CONTACT)
+	toLogCandidate(ctx, DB, id, "", db.GetLogReContactId())
 
 	return nil, nil
 }
@@ -155,7 +155,9 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 		}, apis.ErrWrongParamsList
 	}
 
-	toLogCandidateStatus(ctx, DB, u.Candidate_id, u.Vacancy_id, " изменил статус  кандидата ", CODE_LOG_UPDATE)
+	text := "новый статус кандидата по вакансии " + db.GetTagFromId(u.Status).Name
+
+	toLogCandidateStatus(ctx, DB, u.Candidate_id, u.Vacancy_id, text, db.GetLogUpdateId())
 
 	switch u.Status {
 	case 2:
@@ -194,6 +196,11 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	DB, table, _ := getTableCommentsForCandidates(ctx)
+	text := ""
+	err := table.SelectOneAndScan(ctx, &text,
+		dbEngine.ColumnsForSelect("text_comment"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id))
 
 	i, err := table.Delete(ctx,
 		dbEngine.WhereForSelect("id"),
@@ -203,8 +210,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	// todo: logs
-	toLogCandidate(ctx, DB, id, "", CODE_DEL_COMMENT)
+	toLogCandidate(ctx, DB, id, text, db.GetLogDelCommentId())
 
 	return createResult(i)
 }
@@ -227,7 +233,7 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, text, CODE_ADD_COMMENT)
+	toLogCandidate(ctx, DB, id, text, db.GetLogAddCommentId())
 
 	return createResult(i)
 }
@@ -456,7 +462,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	u.Id = int32(id)
-	toLogCandidate(ctx, DB, u.Id, u.Comments, CODE_LOG_INSERT)
+	toLogCandidate(ctx, DB, u.Id, u.Comments, db.GetLogInsertId())
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
 	//putVacancies(ctx, u, DB)
@@ -504,7 +510,7 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	toLogCandidate(ctx, DB, u.CandidateId,
-		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment), 102)
+		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment), db.GetLogPerformId())
 
 	return createResult(i)
 }
@@ -534,7 +540,7 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, "", CODE_LOG_DELETE)
+	toLogCandidate(ctx, DB, id, "", db.GetLogDeleteId())
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
@@ -650,6 +656,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
+		// TODO: add tags, seniorities etc., parse from const maps
 		text := ""
 		for i, col := range columns {
 			if i > 0 {
@@ -658,7 +665,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 			text += fmt.Sprintf("%s=%v", col, args[i])
 		}
-		toLogCandidate(ctx, DB, id, text, CODE_LOG_UPDATE)
+		toLogCandidate(ctx, DB, id, text, db.GetLogUpdateId())
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)

@@ -23,7 +23,7 @@ const (
 	CODE_APPOINT_INTERVIEW = 108
 )
 
-const LOG_VIEW = "get_log($1)"
+const LOG_VIEW = "select * from get_log($1, $2)"
 
 const (
 	EMAIL_TEXT = `<p><span style="font-size: 14px;">Colleagues,

@@ -74,6 +74,16 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 		logs.ErrorLog(err, "on init PlatformIds")
 	}
 
+	err = initLanguagesIds(ctx, db)
+	if err != nil {
+		logs.ErrorLog(err, "on init LanguagesIds")
+	}
+
+	err = initLogActionsIds(ctx, db)
+	if err != nil {
+		logs.ErrorLog(err, "on init LogActionsIds")
+	}
+
 	return db
 }
 
