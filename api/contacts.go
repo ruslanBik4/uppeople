@@ -83,7 +83,7 @@ func HandleAddContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 	}
 
-	toLogCompany(ctx, DB, idCompany, " добавил новый контакт  "+u.Name, CODE_LOG_UPDATE)
+	toLogCompany(ctx, DB, idCompany, " новый контакт "+u.Name, db.GetLogUpdateId())
 
 	u.Id = int32(idC)
 
@@ -137,7 +137,7 @@ func HandleEditContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		}
 	}
 
-	toLogCompany(ctx, DB, idCompany, " edit контакт  "+u.Name, CODE_LOG_UPDATE)
+	toLogCompany(ctx, DB, idCompany, " изменил контакт "+u.Name, db.GetLogUpdateId())
 
 	u.Id = int32(idC)
 
@@ -162,7 +162,7 @@ func HandleDeleteContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, id, " удалил контакт  ", CODE_LOG_DELETE)
+	toLogCompany(ctx, DB, id, " удалил контакт ", db.GetLogDeleteId())
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 

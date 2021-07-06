@@ -133,7 +133,7 @@ func HandleAddLogo(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, id, "logo", CODE_LOG_UPDATE)
+	toLogCompany(ctx, DB, id, "logo", db.GetLogUpdateId())
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil

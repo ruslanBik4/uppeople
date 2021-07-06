@@ -656,14 +656,27 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		// TODO: add tags, seniorities etc., parse from const maps
 		text := ""
 		for i, col := range columns {
 			if i > 0 {
 				text += ", "
 			}
+			switch col {
+			case "tag_id":
+				text += fmt.Sprintf("status=%v", db.GetTagFromId(args[i].(int32)).Name)
 
-			text += fmt.Sprintf("%s=%v", col, args[i])
+			case "language":
+				text += fmt.Sprintf("language=%v", db.GetLanguageFromId(args[i].(int32)).Name)
+
+			case "seniority_id":
+				text += fmt.Sprintf("seniority=%v", db.GetSeniorityFromId(args[i].(int32)).Name)
+
+			case "platforms":
+				text += fmt.Sprintf("platform=%v", db.GetPlatformFromId(args[i].(int32)).Name)
+
+			default:
+				text += fmt.Sprintf("%s=%v", col, args[i])
+			}
 		}
 		toLogCandidate(ctx, DB, id, text, db.GetLogUpdateId())
 	}

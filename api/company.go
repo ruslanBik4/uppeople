@@ -59,7 +59,7 @@ func HandleAddCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, int32(id), "", CODE_LOG_INSERT)
+	toLogCompany(ctx, DB, int32(id), "", db.GetLogInsertId())
 
 	return createResult(id)
 }
@@ -87,7 +87,7 @@ func HandleAddCommentForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, id, "add comment "+text, CODE_LOG_UPDATE)
+	toLogCompany(ctx, DB, id, text, db.GetLogAddCommentId())
 
 	return createResult(i)
 }
@@ -148,7 +148,7 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, int32(i), "", CODE_LOG_UPDATE)
+	toLogCompany(ctx, DB, int32(i), "", db.GetLogUpdateId())
 
 	return createResult(i)
 }
