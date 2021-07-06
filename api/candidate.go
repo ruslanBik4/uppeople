@@ -312,7 +312,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	platformName := platform.Record.Name
-	seniority := db.GetSeniorityFromId(table.Record.Seniority_id)
+	seniority := db.GetSeniorityFromId(table.Record.SeniorityId)
 
 	maps := make(map[string]interface{}, 0)
 	maps["companies"], err = DB.Conn.SelectToMaps(ctx,
@@ -331,8 +331,8 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
 	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, name, platformName, table.Record.Link,
-		seniority.Name, table.Record.Language, table.Record.Salary)
-
+		seniority.Name, "table.Record.IdLanguages", table.Record.Salary)
+	// todo add langueages cache
 	return maps, nil
 }
 
@@ -379,7 +379,8 @@ func HandleViewCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					Valid:  true,
 				},
 			},
-			Id: vacancy["id"].(int32),
+			Id:         vacancy["id"].(int32),
+			Vacancy_id: vacancy["id"].(int32),
 			Status_vac: &db.StatusForVacsFields{
 				Id:     vacancy["status_id"].(int32),
 				Status: vacancy["status"].(string),
@@ -608,10 +609,10 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			"status",
 			"tag_id",
 			"comments",
-			"text_rezume",
+			"cv",
 			"experience",
 			"education",
-			"language",
+			"id_languages",
 			"file",
 			// "avatar",
 			"seniority_id",
@@ -630,14 +631,14 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Status,
 			u.Tag_id,
 			u.Comments,
-			u.Text_rezume,
+			u.Cv,
 			u.Experience,
 			u.Education,
-			u.Language,
+			u.IdLanguages,
 			u.File,
 			// u.Avatar,
-			u.Seniority_id,
-			u.Date_follow_up,
+			u.SeniorityId,
+			u.DateFollowUp,
 			u.Vacancies,
 		}
 	}

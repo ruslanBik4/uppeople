@@ -20,19 +20,21 @@ create table candidates
     id_languages integer not null default 0,
     file character varying not null default '',
     avatar bytea,
-    seniority_id integer not null default 1,
+    seniority_id integer not null,
     date_follow_up date,
     vacancies integer[],
     PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE candidates IS 'list of candidates';
+COMMENT ON COLUMN candidates.email IS 'Email {"pattern": "email"}';
+COMMENT ON COLUMN candidates.phone IS 'Mobil phone {"pattern": "phone"}';
 COMMENT ON COLUMN candidates.id_languages IS 'Language {"suggestions":"/api/main/returnOptionsForSelects", "multiple":true,"suggestions_params":{"name":"languages"}}';
 COMMENT ON COLUMN candidates.platforms IS 'Platform {"suggestions":"/api/main/returnOptionsForSelects", "multiple":true,"suggestions_params":{"name":"platforms"}}';
 COMMENT ON COLUMN candidates.recruter_id IS 'Recruiter name {"suggestions":"/api/main/returnOptionsForSelects","suggestions_params":{"name":"recruiters"}} read_only';
 COMMENT ON COLUMN candidates.seniority_id IS 'Seniority {"suggestions":"/api/main/returnOptionsForSelects","suggestions_params":{"name":"seniorities"}}';
-COMMENT ON COLUMN candidates.tag_id IS 'Tag {"suggestions":"/api/main/returnOptionsForSelects","suggestions_params":{"name":"tags"}} read_only';
-COMMENT ON COLUMN candidates.linkedin IS 'LInkedin page  read_only';
+COMMENT ON COLUMN candidates.tag_id IS 'Tag {"suggestions":"/api/main/returnOptionsForSelects","suggestions_params":{"name":"tags"}}';
+COMMENT ON COLUMN candidates.linkedin IS 'Linkedin page';
 COMMENT ON COLUMN candidates.date_follow_up IS 'Date follow  read_only';
 COMMENT ON COLUMN candidates.vacancies IS 'Vacancies {"suggestions":"/api/get_recruiter_vacancies","multiple":true,"suggestions_params":{"name":"vacancies"}}';
 

@@ -49,7 +49,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		&view.Recruiter,
 		dbEngine.ColumnsForSelect("name"),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(record.Recruter_id),
+		dbEngine.ArgsForSelect(record.RecruterId),
 	)
 	if err != nil && err != pgx.ErrNoRows {
 		logs.ErrorLog(err, "users.SelectOneAndScan")
@@ -75,7 +75,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		view.TagColor = view.Tags.Color
 	}
 
-	view.Seniority = db.GetSeniorityFromId(record.Seniority_id).Name
+	view.Seniority = db.GetSeniorityFromId(record.SeniorityId).Name
 
 	view.ViewCandidate.Vacancies, err = DB.Conn.SelectToMaps(ctx,
 		SQL_VIEW_CANDIDATE_VACANCIES,

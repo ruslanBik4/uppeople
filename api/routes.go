@@ -96,6 +96,7 @@ var (
 			Params: []apis.InParam{
 				ParamID,
 			},
+			WithCors: true,
 		},
 		"/api/main/addNewCompany": {
 			Fnc:      HandleAddCompany,

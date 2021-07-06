@@ -17,29 +17,29 @@ type Candidates struct {
 }
 
 type CandidatesFields struct {
-	Id             int32          `json:"id"`
-	Platforms      []int32        `json:"platforms"`
-	Name           string         `json:"name"`
-	Salary         int32          `json:"salary"`
-	Email          string         `json:"email"`
-	Phone          string         `json:"phone"`
-	Skype          string         `json:"skype"`
-	Link           string         `json:"link"`
-	Linkedin       sql.NullString `json:"linkedin"`
-	Status         string         `json:"status"`
-	Tag_id         int32          `json:"tag_id"`
-	Comments       string         `json:"comment"`
-	Date           time.Time      `json:"date"`
-	Recruter_id    int32          `json:"recruter_id"`
-	Text_rezume    string         `json:"resume"`
-	Experience     string         `json:"experience"`
-	Education      string         `json:"education"`
-	Language       string         `json:"language"`
-	File           string         `json:"file"`
-	Avatar         []byte         `json:"avatar"`
-	Seniority_id   int32          `json:"seniority_id"`
-	Date_follow_up *time.Time     `json:"date_follow_up"`
-	Vacancies      []int32        `json:"vacancies"`
+	Id           int32          `json:"id"`
+	Platforms    []int32        `json:"platforms"`
+	Name         string         `json:"name"`
+	Salary       int32          `json:"salary"`
+	Email        string         `json:"email"`
+	Phone        string         `json:"phone"`
+	Skype        string         `json:"skype"`
+	Link         string         `json:"link"`
+	Linkedin     sql.NullString `json:"linkedin"`
+	Status       string         `json:"status"`
+	Tag_id       int32          `json:"tag_id"`
+	Comments     string         `json:"comment"`
+	Date         time.Time      `json:"date"`
+	RecruterId   int32          `json:"recruter_id"`
+	Cv           string         `json:"cv"`
+	Experience   string         `json:"experience"`
+	Education    string         `json:"education"`
+	IdLanguages  int32          `json:"id_languages"`
+	File         string         `json:"file"`
+	Avatar       []byte         `json:"avatar"`
+	SeniorityId  int32          `json:"seniority_id"`
+	DateFollowUp *time.Time     `json:"date_follow_up"`
+	Vacancies    []int32        `json:"vacancies"`
 }
 
 func (r *CandidatesFields) RefColValue(name string) interface{} {
@@ -84,10 +84,10 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 		return &r.Date
 
 	case "recruter_id":
-		return &r.Recruter_id
+		return &r.RecruterId
 
 	case "text_rezume":
-		return &r.Text_rezume
+		return &r.Cv
 
 	case "experience":
 		return &r.Experience
@@ -95,8 +95,8 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "education":
 		return &r.Education
 
-	case "language":
-		return &r.Language
+	case "id_languages":
+		return &r.IdLanguages
 
 	case "file":
 		return &r.File
@@ -105,10 +105,10 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 		return &r.Avatar
 
 	case "seniority_id":
-		return &r.Seniority_id
+		return &r.SeniorityId
 
 	case "date_follow_up":
-		return &r.Date_follow_up
+		return &r.DateFollowUp
 
 	case "vacancies":
 		return &r.Vacancies
@@ -160,10 +160,10 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 		return r.Date
 
 	case "recruter_id":
-		return r.Recruter_id
+		return r.RecruterId
 
 	case "text_rezume":
-		return r.Text_rezume
+		return r.Cv
 
 	case "experience":
 		return r.Experience
@@ -171,8 +171,8 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "education":
 		return r.Education
 
-	case "language":
-		return r.Language
+	case "id_languages":
+		return r.IdLanguages
 
 	case "file":
 		return r.File
@@ -181,10 +181,10 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 		return r.Avatar
 
 	case "seniority_id":
-		return r.Seniority_id
+		return r.SeniorityId
 
 	case "date_follow_up":
-		return r.Date_follow_up
+		return r.DateFollowUp
 
 	case "vacancies":
 		return r.Vacancies
