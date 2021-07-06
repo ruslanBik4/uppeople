@@ -21,9 +21,10 @@ return query
 
                    ELSE '' END,
                CASE WHEN log_actions.is_insert_text = 1 THEN CONCAT(' ', logs.text) ELSE '' END
-               ) as text
+               ) as text,
+           logs.create_at as date
 
-		from logs left Join companies on (logs.company_id = companies.id)
+    from logs left Join companies on (logs.company_id = companies.id)
 			left join vacancies ON (logs.vacancy_id = vacancies.id)
 			join users ON (logs.user_id = users.id)
 			join candidates can ON (logs.candidate_id = can.id)
