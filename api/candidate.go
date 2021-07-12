@@ -123,7 +123,7 @@ func HandleReContactCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, "", db.GetLogReContactId())
+	toLogCandidateRecontact(ctx, DB, id, "")
 
 	return nil, nil
 }
@@ -157,7 +157,7 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 
 	text := "новый статус кандидата по вакансии " + db.GetTagFromId(u.Status).Name
 
-	toLogCandidateStatus(ctx, DB, u.Candidate_id, u.Vacancy_id, text, db.GetLogUpdateId())
+	toLogCandidateUpdateStatus(ctx, DB, u.Candidate_id, u.Vacancy_id, text)
 
 	switch u.Status {
 	case 2:
@@ -210,7 +210,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, text, db.GetLogDelCommentId())
+	toLogCandidateDelComment(ctx, DB, id, text)
 
 	return createResult(i)
 }
@@ -233,7 +233,7 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, text, db.GetLogAddCommentId())
+	toLogCandidateAddComment(ctx, DB, id, text)
 
 	return createResult(i)
 }
@@ -463,7 +463,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	u.Id = int32(id)
-	toLogCandidate(ctx, DB, u.Id, u.Comments, db.GetLogInsertId())
+	toLogCandidateInsert(ctx, DB, u.Id, u.Comments)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
 	//putVacancies(ctx, u, DB)
@@ -510,8 +510,8 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, u.CandidateId,
-		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment), db.GetLogPerformId())
+	toLogCandidatePerform(ctx, DB, u.CandidateId,
+		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment))
 
 	return createResult(i)
 }
@@ -541,7 +541,7 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, "", db.GetLogDeleteId())
+	toLogCandidateDelete(ctx, DB, id, "")
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
@@ -679,7 +679,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				text += fmt.Sprintf("%s=%v", col, args[i])
 			}
 		}
-		toLogCandidate(ctx, DB, id, text, db.GetLogUpdateId())
+		toLogCandidateUpdate(ctx, DB, id, text)
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
