@@ -93,6 +93,22 @@ func toLogCompanyPerform(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId in
 	toLogCompany(ctx, DB, companyId, text, db.GetLogPerformId())
 }
 
+func toLogVacancyInsert(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
+	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogInsertId())
+}
+
+func toLogVacancyUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
+	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogUpdateId())
+}
+
+func toLogVacancyPerform(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
+	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogPerformId())
+}
+
+func toLogVacancyDelete(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
+	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogDeleteId())
+}
+
 func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, vacancyId int32, text string) {
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "candidate_id", "vacancy_id", "text", "date_create",
@@ -128,6 +144,16 @@ func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, te
 		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create",
 			"action_code"),
 		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
+			text,
+			time.Now(),
+			code))
+}
+
+func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string, code int32) {
+	toLog(ctx, DB,
+		dbEngine.ColumnsForSelect("user_id", "company_id", "vacancy_id", "text", "date_create",
+			"action_code"),
+		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId, vacancyId,
 			text,
 			time.Now(),
 			code))
