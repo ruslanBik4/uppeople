@@ -113,7 +113,7 @@ func HandleEditStatusVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		text := fmt.Sprintf("status=%d", u.Id)
+		text := fmt.Sprintf("{\"status\"=%d}", u.Id)
 		toLogVacancyUpdate(ctx, DB, u.SelectCompany.Id, u.Id, text)
 	}
 
@@ -182,16 +182,7 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		text := ""
-		for i, col := range columns {
-			if i > 0 {
-				text += ", "
-			}
-
-			text += fmt.Sprintf("%s=%v", col, args[i])
-		}
-
-		toLogVacancyUpdate(ctx, DB, u.SelectCompany.Id, id, text)
+		toLogVacancyUpdate(ctx, DB, u.SelectCompany.Id, id, loLogUpdateValues(columns, args))
 	}
 
 	return createResult(i)

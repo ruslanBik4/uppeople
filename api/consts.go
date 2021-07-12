@@ -11,18 +11,6 @@ const (
 	SYSTEM_PATH = "systemPath"
 )
 
-const (
-	CODE_LOG_UPDATE        = 100
-	CODE_LOG_INSERT        = 101
-	CODE_LOG_PEFORM        = 102
-	CODE_LOG_DELETE        = 103
-	CODE_LOG_RE_CONTACT    = 104
-	CODE_ADD_COMMENT       = 105
-	CODE_DEL_COMMENT       = 106
-	CODE_SEND_CV           = 107
-	CODE_APPOINT_INTERVIEW = 108
-)
-
 const LOG_VIEW = "select * from get_log($1, $2)"
 
 const (

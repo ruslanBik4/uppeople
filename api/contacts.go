@@ -137,7 +137,7 @@ func HandleEditContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		}
 	}
 
-	toLogCompanyUpdate(ctx, DB, idCompany, " изменил контакт "+u.Name)
+	toLogCompanyUpdate(ctx, DB, idCompany, " контакт "+u.Name)
 
 	u.Id = int32(idC)
 

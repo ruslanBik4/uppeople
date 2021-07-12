@@ -168,9 +168,9 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
        count(*) FILTER ( WHERE action_code = $3 )
 from logs
 where age(date_create) < interval '7 day' and user_id = $4`,
-				CODE_LOG_INSERT,
-				CODE_LOG_UPDATE,
-				CODE_LOG_PEFORM,
+				db.GetLogInsertId(),
+				db.GetLogUpdateId(),
+				db.GetLogPerformId(),
 				users.Record.Id,
 			)
 			if err != nil {

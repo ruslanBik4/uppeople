@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION get_log_test(Id integer, isCand bool)
+CREATE OR REPLACE FUNCTION get_log(Id integer, isCand bool)
     RETURNS table(
                      logId integer,
                      text text,
@@ -26,7 +26,44 @@ select logs.id as logId,
                                   ' в компанию ', companies.name)
 
                   ELSE '' END,
-              CASE WHEN log_actions.is_insert_text = true THEN CONCAT(' ', logs.text) ELSE '' END
+              CASE WHEN log_actions.is_insert_text = true THEN
+                       CASE WHEN (log_actions.name = 'CODE_LOG_UPDATE'
+                           AND logs.text LIKE '{%}'
+                           AND logs.text::json is not null)
+                                THEN
+
+                                (SELECT DISTINCT array_to_string(array_agg(CONCAT(
+                                        CASE
+                                            WHEN jst.key::text = 'platform_id' THEN 'platform'
+                                            WHEN jst.key::text = 'seniority_id' THEN 'seniority'
+                                            WHEN jst.key::text = 'id_languages' THEN 'language_level'
+                                            WHEN jst.key::text = 'tag_id' THEN 'tag/reject_reason'
+                                            WHEN jst.key::text = 'vacancy_id' THEN 'по вакансии'
+                                            ELSE jst.key::text END,
+                                        '=',
+                                        CASE
+                                            WHEN jst.key = 'platform_id' THEN (select name from platforms ps where ps.id = jst.value::text::integer)
+                                                    WHEN jst.key = 'seniority_id' THEN (select name from seniorities ss where ss.id = jst.value::text::integer)
+                                                    WHEN jst.key = 'id_languages' THEN (select name from languages ls where ls.id = jst.value::text::integer)
+                                                    WHEN jst.key = 'tag_id' THEN (select name from tags ts where ts.id = jst.value::text::integer)
+                                                    WHEN jst.key = 'vacancy_id'
+                                                        THEN (select CONCAT(
+                                                                             platforms.name,
+                                                                             ', ',
+                                                                             seniorities.name,
+                                                                             CASE WHEN vacancies.name is not null THEN CONCAT(' (', vacancies.name, ')') ELSE '' END,
+                                                                             ' в компании ',
+                                                                             companies.name)
+                                                              FROM vacancies
+                                                                       left join companies on (vacancies.company_id = companies.id)
+                                                                       left Join platforms ON (vacancies.platform_id = platforms.id)
+                                                                       left Join seniorities ON (vacancies.seniority_id = seniorities.id))
+                                                    ELSE jst.value::text END
+                                            )), ', ')
+                                 FROM json_each(logs.text::json) jst)
+
+                            ELSE CONCAT(' ', logs.text) END
+                   ELSE '' END
            ) as text,
        logs.create_at as date
 

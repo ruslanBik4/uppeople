@@ -5,6 +5,7 @@
 package api
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -165,4 +166,30 @@ func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.Bui
 	if err != nil {
 		logs.ErrorLog(err, "toLog")
 	}
+}
+
+func loLogUpdateValues(columns []string, args []interface{}) string {
+	if len(columns) > 0 {
+		text := "{"
+		for i, col := range columns {
+			if i > 0 && i < len(columns)-1 {
+				text += ", "
+			}
+			switch args[i].(type) {
+			case int32:
+				text += fmt.Sprintf("\""+"%s\":%v", col, args[i])
+			case string:
+				text += fmt.Sprintf("\""+"%s\":\"%v\"", col, args[i])
+			case time.Time:
+				text += fmt.Sprintf("\""+"%s\":\"%v\"", col, args[i])
+
+			default:
+				text += fmt.Sprintf("\""+"%s\":\"%v\"", col, args[i])
+			}
+		}
+		text += "}"
+		return text
+	}
+
+	return ""
 }

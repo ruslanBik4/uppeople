@@ -657,29 +657,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		text := ""
-		for i, col := range columns {
-			if i > 0 {
-				text += ", "
-			}
-			switch col {
-			case "tag_id":
-				text += fmt.Sprintf("status=%v", db.GetTagFromId(args[i].(int32)).Name)
-
-			case "language":
-				text += fmt.Sprintf("language=%v", db.GetLanguageFromId(args[i].(int32)).Name)
-
-			case "seniority_id":
-				text += fmt.Sprintf("seniority=%v", db.GetSeniorityFromId(args[i].(int32)).Name)
-
-			case "platforms":
-				text += fmt.Sprintf("platform=%v", db.GetPlatformFromId(args[i].(int32)).Name)
-
-			default:
-				text += fmt.Sprintf("%s=%v", col, args[i])
-			}
-		}
-		toLogCandidateUpdate(ctx, DB, id, text)
+		toLogCandidateUpdate(ctx, DB, id, loLogUpdateValues(columns, args))
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
