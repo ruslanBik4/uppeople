@@ -38,7 +38,7 @@ func toLogCandidateInsert(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId
 	toLogCandidate(ctx, DB, candidateId, text, db.GetLogInsertId())
 }
 
-func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string) {
+func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text map[string]interface{}) {
 	toLogCandidate(ctx, DB, candidateId, text, db.GetLogUpdateId())
 }
 
@@ -120,7 +120,7 @@ func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candi
 			db.GetLogUpdateId()))
 }
 
-func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string, code int32) {
+func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text interface{}, code int32) {
 	toLog(ctx, DB,
 		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create",
 			"action_code"),

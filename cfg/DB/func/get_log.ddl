@@ -42,10 +42,10 @@ select logs.id as logId,
                                             ELSE jst.key::text END,
                                         '=',
                                         CASE
-                                            WHEN jst.key = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms where id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities where id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages where id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags where id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key = 'vacancy_id'
                                                 THEN (select CONCAT(
                                                                      platforms.name,
@@ -59,7 +59,9 @@ select logs.id as logId,
                                                                left Join platforms ON (vacancies.platform_id = platforms.id)
                                                                left Join seniorities ON (vacancies.seniority_id = seniorities.id)
                                                       where vacancies.id = jst.value::text::integer)
-                                            ELSE jst.value::text END
+
+
+                                                    ELSE jst.value::text END
                                             )), ', ')
 
                                  FROM json_each(logs.text::json) jst)
@@ -76,7 +78,7 @@ from logs left Join companies on (logs.company_id = companies.id)
     left Join platforms ON (vacancies.platform_id = platforms.id)
     left Join seniorities ON (vacancies.seniority_id = seniorities.id)
     left Join log_actions ON (logs.action_code = log_actions.id)
-where (logs.candidate_id = $1 AND $2 = true) or (logs.company_id = $1 AND $2 = false)
+where (logs.candidate_id = $1 AND $2) or (logs.company_id = $1 AND NOT $2)
 order by logs.create_at DESC
 ;
 END;
