@@ -34,7 +34,7 @@ select logs.id as logId,
 
                                 (SELECT DISTINCT array_to_string(array_agg(CONCAT(
                                         CASE
-                                            WHEN jst.key::text = 'platform_id' THEN 'platform'
+                                            WHEN jst.key::text = 'platform_id' THEN 'platforms'
                                             WHEN jst.key::text = 'seniority_id' THEN 'seniority'
                                             WHEN jst.key::text = 'id_languages' THEN 'language_level'
                                             WHEN jst.key::text = 'tag_id' THEN 'tag/reject_reason'
@@ -42,24 +42,26 @@ select logs.id as logId,
                                             ELSE jst.key::text END,
                                         '=',
                                         CASE
-                                            WHEN jst.key = 'platform_id' THEN (select name from platforms ps where ps.id = jst.value::text::integer)
-                                                    WHEN jst.key = 'seniority_id' THEN (select name from seniorities ss where ss.id = jst.value::text::integer)
-                                                    WHEN jst.key = 'id_languages' THEN (select name from languages ls where ls.id = jst.value::text::integer)
-                                                    WHEN jst.key = 'tag_id' THEN (select name from tags ts where ts.id = jst.value::text::integer)
-                                                    WHEN jst.key = 'vacancy_id'
-                                                        THEN (select CONCAT(
-                                                                             platforms.name,
-                                                                             ', ',
-                                                                             seniorities.name,
-                                                                             CASE WHEN vacancies.name is not null THEN CONCAT(' (', vacancies.name, ')') ELSE '' END,
-                                                                             ' в компании ',
-                                                                             companies.name)
-                                                              FROM vacancies
-                                                                       left join companies on (vacancies.company_id = companies.id)
-                                                                       left Join platforms ON (vacancies.platform_id = platforms.id)
-                                                                       left Join seniorities ON (vacancies.seniority_id = seniorities.id))
-                                                    ELSE jst.value::text END
+                                            WHEN jst.key = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms where id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities where id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages where id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags where id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key = 'vacancy_id'
+                                                THEN (select CONCAT(
+                                                                     platforms.name,
+                                                                     ', ',
+                                                                     seniorities.name,
+                                                                     CASE WHEN vacancies.name is not null THEN CONCAT(' (', vacancies.name, ')') ELSE '' END,
+                                                                     ' в компании ',
+                                                                     companies.name)
+                                                      FROM vacancies
+                                                               left join companies on (vacancies.company_id = companies.id)
+                                                               left Join platforms ON (vacancies.platform_id = platforms.id)
+                                                               left Join seniorities ON (vacancies.seniority_id = seniorities.id)
+                                                      where vacancies.id = jst.value::text::integer)
+                                            ELSE jst.value::text END
                                             )), ', ')
+
                                  FROM json_each(logs.text::json) jst)
 
                             ELSE CONCAT(' ', logs.text) END
