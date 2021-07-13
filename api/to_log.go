@@ -5,7 +5,6 @@
 package api
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
@@ -14,6 +13,14 @@ import (
 
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
+)
+
+var (
+	columnsForCandidateLog        = []string{"user_id", "candidate_id", "text", "action_code", "date_create"}
+	columnsForCandidateVacancyLog = []string{"user_id", "candidate_id", "company_id", "vacancy_id", "text", "action_code", "date_create"}
+	columnsForVacancyLog          = []string{"user_id", "company_id", "vacancy_id", "text", "action_code", "date_create"}
+	columnsForCompanyLog          = []string{"user_id", "company_id", "text", "action_code", "date_create"}
+	columnsForCandidateStatusLog  = []string{"user_id", "candidate_id", "vacancy_id", "text", "action_code", "date_create"}
 )
 
 func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -74,7 +81,7 @@ func toLogCompanyInsert(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int
 	toLogCompany(ctx, DB, companyId, text, db.GetLogInsertId())
 }
 
-func toLogCompanyUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string) {
+func toLogCompanyUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text map[string]interface{}) {
 	toLogCompany(ctx, DB, companyId, text, db.GetLogUpdateId())
 }
 
@@ -98,7 +105,7 @@ func toLogVacancyInsert(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, va
 	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogInsertId())
 }
 
-func toLogVacancyUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
+func toLogVacancyUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text map[string]interface{}) {
 	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogUpdateId())
 }
 
@@ -110,86 +117,46 @@ func toLogVacancyDelete(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, va
 	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogDeleteId())
 }
 
-func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, vacancyId int32, text string) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "candidate_id", "vacancy_id", "text", "date_create",
-			"action_code"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId, vacancyId,
-			text,
-			time.Now(),
-			db.GetLogUpdateId()))
+func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
+	args = append(args, db.GetLogUpdateId())
+	toLog(ctx, DB, columnsForCandidateStatusLog, args)
 }
 
-func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text interface{}, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "candidate_id", "text", "date_create",
-			"action_code"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId,
-			text,
-			time.Now(),
-			code))
+func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
+	toLog(ctx, DB, columnsForCandidateLog, args)
 }
 
-func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, companyId, vacancyId int32, text string, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "candidate_id", "company_id", "vacancy_id", "text", "date_create",
-			"action_code"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), candidateId, companyId, vacancyId,
-			text,
-			time.Now(),
-			code))
+func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
+	toLog(ctx, DB, columnsForCandidateVacancyLog, args)
 }
 
-func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create",
-			"action_code"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
-			text,
-			time.Now(),
-			code))
+func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
+	toLog(ctx, DB, columnsForCompanyLog, args)
 }
 
-func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "company_id", "vacancy_id", "text", "date_create",
-			"action_code"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId, vacancyId,
-			text,
-			time.Now(),
-			code))
+func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
+	toLog(ctx, DB, columnsForVacancyLog, args)
 }
 
-func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns, args dbEngine.BuildSqlOptions) {
-	log, _ := db.NewLogs(DB)
-	_, err := log.Insert(ctx, columns, args)
+func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns []string, args []interface{}) {
+	logsTab, _ := db.NewLogs(DB)
+	finalArgs := make([]interface{}, 0)
+	finalArgs = append(finalArgs, auth.GetUserID(ctx), args, time.Now())
+
+	_, err := logsTab.Insert(ctx,
+		dbEngine.ColumnsForSelect(columns...),
+		dbEngine.ArgsForSelect(finalArgs...))
 	if err != nil {
 		logs.ErrorLog(err, "toLog")
 	}
 }
 
-func loLogUpdateValues(columns []string, args []interface{}) string {
+func loLogUpdateValues(columns []string, args []interface{}) (ret map[string]interface{}) {
 	if len(columns) > 0 {
-		text := "{"
+		ret = make(map[string]interface{}, len(columns))
 		for i, col := range columns {
-			if i > 0 && i < len(columns)-1 {
-				text += ", "
-			}
-			switch args[i].(type) {
-			case int32:
-				text += fmt.Sprintf("\""+"%s\":%v", col, args[i])
-			case string:
-				text += fmt.Sprintf("\""+"%s\":\"%v\"", col, args[i])
-			case time.Time:
-				text += fmt.Sprintf("\""+"%s\":\"%v\"", col, args[i])
-
-			default:
-				text += fmt.Sprintf("\""+"%s\":\"%v\"", col, args[i])
-			}
+			ret[col] = args[i]
 		}
-		text += "}"
-		return text
 	}
-
-	return ""
+	return
 }
