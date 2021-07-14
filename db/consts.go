@@ -155,3 +155,5 @@ var (
 	logActionsSelected  SelectedUnits
 	languagesSelected   SelectedUnits
 )
+
+var LogsTable *Logs

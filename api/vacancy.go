@@ -113,7 +113,7 @@ func HandleEditStatusVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogVacancyUpdate(ctx, DB, u.SelectCompany.Id, u.Id, map[string]interface{}{"status": u.Id})
+		toLogVacancyUpdate(ctx, u.SelectCompany.Id, u.Id, map[string]interface{}{"status": u.Id})
 	}
 
 	return createResult(i)
@@ -181,7 +181,7 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogVacancyUpdate(ctx, DB, u.SelectCompany.Id, id, loLogUpdateValues(columns, args))
+		toLogVacancyUpdate(ctx, u.SelectCompany.Id, id, loLogUpdateValues(columns, args))
 	}
 
 	return createResult(i)
@@ -232,7 +232,7 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogVacancyInsert(ctx, DB, u.SelectCompany.Id, int32(i), u.Description)
+	toLogVacancyInsert(ctx, u.SelectCompany.Id, int32(i), u.Description)
 
 	return createResult(i)
 }
@@ -265,7 +265,7 @@ func HandleDeleteVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogVacancyDelete(ctx, DB, table.Record.CompanyId, id, table.Record.Name.String)
+	toLogVacancyDelete(ctx, table.Record.CompanyId, id, table.Record.Name.String)
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil

@@ -41,109 +41,108 @@ func HandleReturnLogsForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return DB.Conn.SelectToMaps(ctx, LOG_VIEW, ctx.UserValue("company_id"), false)
 }
 
-func toLogCandidateInsert(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string) {
-	toLogCandidate(ctx, DB, candidateId, text, db.GetLogInsertId())
+func toLogCandidateInsert(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
+	toLogCandidate(ctx, candidateId, text, db.GetLogInsertId())
 }
 
-func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text map[string]interface{}) {
-	toLogCandidate(ctx, DB, candidateId, text, db.GetLogUpdateId())
+func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, candidateId int32, text map[string]interface{}) {
+	toLogCandidate(ctx, candidateId, text, db.GetLogUpdateId())
 }
 
-func toLogCandidatePerform(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string) {
-	toLogCandidate(ctx, DB, candidateId, text, db.GetLogPerformId())
+func toLogCandidatePerform(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
+	toLogCandidate(ctx, candidateId, text, db.GetLogPerformId())
 }
 
-func toLogCandidateDelete(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string) {
-	toLogCandidate(ctx, DB, candidateId, text, db.GetLogDeleteId())
+func toLogCandidateDelete(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
+	toLogCandidate(ctx, candidateId, text, db.GetLogDeleteId())
 }
 
-func toLogCandidateRecontact(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string) {
-	toLogCandidate(ctx, DB, candidateId, text, db.GetLogReContactId())
+func toLogCandidateRecontact(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
+	toLogCandidate(ctx, candidateId, text, db.GetLogReContactId())
 }
 
-func toLogCandidateAddComment(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string) {
-	toLogCandidate(ctx, DB, candidateId, text, db.GetLogAddCommentId())
+func toLogCandidateAddComment(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
+	toLogCandidate(ctx, candidateId, text, db.GetLogAddCommentId())
 }
 
-func toLogCandidateDelComment(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId int32, text string) {
-	toLogCandidate(ctx, DB, candidateId, text, db.GetLogDelCommentId())
+func toLogCandidateDelComment(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
+	toLogCandidate(ctx, candidateId, text, db.GetLogDelCommentId())
 }
 
-func toLogCandidateSendCV(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, companyId, vacancyId int32, text string) {
-	toLogCandidateVacancy(ctx, DB, candidateId, companyId, vacancyId, text, db.GetLogSendCVId())
+func toLogCandidateSendCV(ctx *fasthttp.RequestCtx, candidateId, companyId, vacancyId int32, text string) {
+	toLogCandidateVacancy(ctx, candidateId, companyId, vacancyId, text, db.GetLogSendCVId())
 }
 
-func toLogCandidateAppointInterview(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, candidateId, companyId, vacancyId int32, text string) {
-	toLogCandidateVacancy(ctx, DB, candidateId, companyId, vacancyId, text, db.GetLogAppointInterviewId())
+func toLogCandidateAppointInterview(ctx *fasthttp.RequestCtx, candidateId, companyId, vacancyId int32, text string) {
+	toLogCandidateVacancy(ctx, candidateId, companyId, vacancyId, text, db.GetLogAppointInterviewId())
 }
 
-func toLogCompanyInsert(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string) {
-	toLogCompany(ctx, DB, companyId, text, db.GetLogInsertId())
+func toLogCompanyInsert(ctx *fasthttp.RequestCtx, companyId int32, text string) {
+	toLogCompany(ctx, companyId, text, db.GetLogInsertId())
 }
 
-func toLogCompanyUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text map[string]interface{}) {
-	toLogCompany(ctx, DB, companyId, text, db.GetLogUpdateId())
+func toLogCompanyUpdate(ctx *fasthttp.RequestCtx, companyId int32, text map[string]interface{}) {
+	toLogCompany(ctx, companyId, text, db.GetLogUpdateId())
 }
 
-func toLogCompanyAddComment(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string) {
-	toLogCompany(ctx, DB, companyId, text, db.GetLogAddCommentId())
+func toLogCompanyAddComment(ctx *fasthttp.RequestCtx, companyId int32, text string) {
+	toLogCompany(ctx, companyId, text, db.GetLogAddCommentId())
 }
 
-func toLogCompanyDelComment(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string) {
-	toLogCompany(ctx, DB, companyId, text, db.GetLogDelCommentId())
+func toLogCompanyDelComment(ctx *fasthttp.RequestCtx, companyId int32, text string) {
+	toLogCompany(ctx, companyId, text, db.GetLogDelCommentId())
 }
 
-func toLogCompanyDelete(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string) {
-	toLogCompany(ctx, DB, companyId, text, db.GetLogDeleteId())
+func toLogCompanyDelete(ctx *fasthttp.RequestCtx, companyId int32, text string) {
+	toLogCompany(ctx, companyId, text, db.GetLogDeleteId())
 }
 
-func toLogCompanyPerform(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string) {
-	toLogCompany(ctx, DB, companyId, text, db.GetLogPerformId())
+func toLogCompanyPerform(ctx *fasthttp.RequestCtx, companyId int32, text string) {
+	toLogCompany(ctx, companyId, text, db.GetLogPerformId())
 }
 
-func toLogVacancyInsert(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
-	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogInsertId())
+func toLogVacancyInsert(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text string) {
+	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogInsertId())
 }
 
-func toLogVacancyUpdate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text map[string]interface{}) {
-	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogUpdateId())
+func toLogVacancyUpdate(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text map[string]interface{}) {
+	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogUpdateId())
 }
 
-func toLogVacancyPerform(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
-	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogPerformId())
+func toLogVacancyPerform(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text string) {
+	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogPerformId())
 }
 
-func toLogVacancyDelete(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string) {
-	toLogVacancy(ctx, DB, companyId, vacancyId, text, db.GetLogDeleteId())
+func toLogVacancyDelete(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text string) {
+	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogDeleteId())
 }
 
-func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
+func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, args ...interface{}) {
 	args = append(args, db.GetLogUpdateId())
-	toLog(ctx, DB, columnsForCandidateStatusLog, args)
+	toLog(ctx, columnsForCandidateStatusLog, args)
 }
 
-func toLogCandidate(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
-	toLog(ctx, DB, columnsForCandidateLog, args)
+func toLogCandidate(ctx *fasthttp.RequestCtx, args ...interface{}) {
+	toLog(ctx, columnsForCandidateLog, args)
 }
 
-func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
-	toLog(ctx, DB, columnsForCandidateVacancyLog, args)
+func toLogCandidateVacancy(ctx *fasthttp.RequestCtx, args ...interface{}) {
+	toLog(ctx, columnsForCandidateVacancyLog, args)
 }
 
-func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
-	toLog(ctx, DB, columnsForCompanyLog, args)
+func toLogCompany(ctx *fasthttp.RequestCtx, args ...interface{}) {
+	toLog(ctx, columnsForCompanyLog, args)
 }
 
-func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, args ...interface{}) {
-	toLog(ctx, DB, columnsForVacancyLog, args)
+func toLogVacancy(ctx *fasthttp.RequestCtx, args ...interface{}) {
+	toLog(ctx, columnsForVacancyLog, args)
 }
 
-func toLog(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, columns []string, args []interface{}) {
-	logsTab, _ := db.NewLogs(DB)
+func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 	finalArgs := make([]interface{}, 0)
 	finalArgs = append(finalArgs, auth.GetUserID(ctx), args, time.Now())
 
-	_, err := logsTab.Insert(ctx,
+	_, err := db.LogsTable.Insert(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.ArgsForSelect(finalArgs...))
 	if err != nil {

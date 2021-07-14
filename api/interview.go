@@ -112,7 +112,7 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 				logs.ErrorLog(TagIdDateNotUpdatedOnSendCV, " for candidate id %d", id)
 			}
 
-			toLogCandidateSendCV(ctx, DB, id, int32(u.CompId), int32(vacID), "")
+			toLogCandidateSendCV(ctx, id, int32(u.CompId), int32(vacID), "")
 		}
 	}
 
@@ -264,7 +264,7 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return createErrResult(err)
 	}
 
-	toLogCandidateAppointInterview(ctx, DB, id, u.SelectedCompany.Id, vacID, "")
+	toLogCandidateAppointInterview(ctx, id, u.SelectedCompany.Id, vacID, "")
 
 	tableCTC, _ := db.NewCandidates_to_companies(DB)
 	_, err = tableCTC.Upsert(ctx,

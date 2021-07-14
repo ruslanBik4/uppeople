@@ -123,7 +123,7 @@ func HandleReContactCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidateRecontact(ctx, DB, id, "")
+	toLogCandidateRecontact(ctx, id, "")
 
 	return nil, nil
 }
@@ -157,7 +157,7 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 
 	text := "новый статус кандидата по вакансии " + db.GetTagFromId(u.Status).Name
 
-	toLogCandidateUpdateStatus(ctx, DB, u.Candidate_id, u.Vacancy_id, text)
+	toLogCandidateUpdateStatus(ctx, u.Candidate_id, u.Vacancy_id, text)
 
 	switch u.Status {
 	case 2:
@@ -195,7 +195,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	DB, table, _ := getTableCommentsForCandidates(ctx)
+	table, _ := getTableCommentsForCandidates(ctx)
 	text := ""
 	err := table.SelectOneAndScan(ctx, &text,
 		dbEngine.ColumnsForSelect("text_comment"),
@@ -210,7 +210,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidateDelComment(ctx, DB, id, text)
+	toLogCandidateDelComment(ctx, id, text)
 
 	return createResult(i)
 }
@@ -223,7 +223,7 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	DB, table, _ := getTableCommentsForCandidates(ctx)
+	table, _ := getTableCommentsForCandidates(ctx)
 	text := string(ctx.Request.Body())
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect("candidate_id", "comments"),
@@ -233,20 +233,20 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidateAddComment(ctx, DB, id, text)
+	toLogCandidateAddComment(ctx, id, text)
 
 	return createResult(i)
 }
 
-func getTableCommentsForCandidates(ctx *fasthttp.RequestCtx) (*dbEngine.DB, *db.Comments_for_candidates, error) {
+func getTableCommentsForCandidates(ctx *fasthttp.RequestCtx) (*db.Comments_for_candidates, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
-		return nil, nil, dbEngine.ErrDBNotFound
+		return nil, dbEngine.ErrDBNotFound
 	}
 
 	table, _ := db.NewComments_for_candidates(DB)
 
-	return DB, table, nil
+	return table, nil
 }
 
 func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -463,7 +463,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	u.Id = int32(id)
-	toLogCandidateInsert(ctx, DB, u.Id, u.Comments)
+	toLogCandidateInsert(ctx, u.Id, u.Comments)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
 	//putVacancies(ctx, u, DB)
@@ -510,7 +510,7 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidatePerform(ctx, DB, u.CandidateId,
+	toLogCandidatePerform(ctx, u.CandidateId,
 		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment))
 
 	return createResult(i)
@@ -541,7 +541,7 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidateDelete(ctx, DB, id, "")
+	toLogCandidateDelete(ctx, id, "")
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
@@ -657,7 +657,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogCandidateUpdate(ctx, DB, id, loLogUpdateValues(columns, args))
+		toLogCandidateUpdate(ctx, id, loLogUpdateValues(columns, args))
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
