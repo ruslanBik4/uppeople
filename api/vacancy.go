@@ -181,7 +181,7 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogVacancyUpdate(ctx, u.SelectCompany.Id, id, loLogUpdateValues(columns, args))
+		toLogVacancyUpdate(ctx, u.SelectCompany.Id, id, toLogUpdateValues(columns, args))
 	}
 
 	return createResult(i)

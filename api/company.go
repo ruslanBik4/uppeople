@@ -87,7 +87,9 @@ func HandleAddCommentForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompanyAddComment(ctx, id, text)
+	if i > 0 {
+		toLogCompanyAddComment(ctx, id, text)
+	}
 
 	return createResult(i)
 }
@@ -148,7 +150,7 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompanyUpdate(ctx, int32(i), loLogUpdateValues(columns, args))
+	toLogCompanyUpdate(ctx, int32(i), toLogUpdateValues(columns, args))
 
 	return createResult(i)
 }

@@ -160,7 +160,9 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 		"vacancy_id":     u.Vacancy_id,
 	}
 
-	toLogCandidateUpdateStatus(ctx, u.Candidate_id, u.Vacancy_id, text)
+	if i > 0 {
+		toLogCandidateUpdateStatus(ctx, u.Candidate_id, u.Vacancy_id, text)
+	}
 
 	switch u.Status {
 	case 2:
@@ -660,11 +662,9 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogCandidateUpdate(ctx, id, loLogUpdateValues(columns, args))
+		toLogCandidateUpdate(ctx, id, toLogUpdateValues(columns, args))
+		ctx.SetStatusCode(fasthttp.StatusAccepted)
 	}
-
-	ctx.SetStatusCode(fasthttp.StatusAccepted)
-	// putVacancies(ctx, u, DB)
 
 	return nil, nil
 }

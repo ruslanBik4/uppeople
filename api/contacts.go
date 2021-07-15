@@ -162,7 +162,7 @@ func HandleDeleteContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		return createErrResult(err)
 	}
 
-	toLogCompanyDelete(ctx, id, " удалил контакт ")
+	toLogCompanyDelete(ctx, id, fmt.Sprintf(" удалил контакт %d", id))
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 

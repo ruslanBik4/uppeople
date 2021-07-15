@@ -150,7 +150,7 @@ func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 	}
 }
 
-func loLogUpdateValues(columns []string, args []interface{}) (ret map[string]interface{}) {
+func toLogUpdateValues(columns []string, args []interface{}) (ret map[string]interface{}) {
 	if len(columns) > 0 {
 		ret = make(map[string]interface{}, len(columns))
 		for i, col := range columns {
