@@ -155,7 +155,10 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 		}, apis.ErrWrongParamsList
 	}
 
-	text := "новый статус кандидата по вакансии " + db.GetTagFromId(u.Status).Name
+	text := map[string]interface{}{
+		"status_for_vac": u.Status,
+		"vacancy_id":     u.Vacancy_id,
+	}
 
 	toLogCandidateUpdateStatus(ctx, u.Candidate_id, u.Vacancy_id, text)
 

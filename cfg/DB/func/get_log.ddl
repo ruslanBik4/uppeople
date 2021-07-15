@@ -39,14 +39,16 @@ select logs.id as logId,
                                             WHEN jst.key::text = 'id_languages' THEN 'language_level'
                                             WHEN jst.key::text = 'tag_id' THEN 'tag/reject_reason'
                                             WHEN jst.key::text = 'vacancy_id' THEN 'по вакансии'
+                                            WHEN jst.key::text = 'status_for_vac' THEN 'cтатус по вакансии'
                                             ELSE jst.key::text END,
                                         '=',
                                         CASE
-                                            WHEN jst.key = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key = 'vacancy_id'
+                                            WHEN jst.key::tex = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::tex = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::tex = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::tex = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'status_for_vac' THEN (select array_to_string(array_agg(status), ', ') from status_for_vacs sv where sv.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::tex = 'vacancy_id'
                                                 THEN (select CONCAT(
                                                                      platforms.name,
                                                                      ', ',
