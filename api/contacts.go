@@ -73,17 +73,19 @@ func HandleAddContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if !u.IsChecked {
 		table, _ := db.NewContacts_to_platforms(DB)
 		for _, val := range u.SelectPlatforms {
-			_, err := table.Insert(ctx,
+			i, err := table.Insert(ctx,
 				dbEngine.ColumnsForSelect("contact_id", "platform_id"),
 				dbEngine.ArgsForSelect(idC, val.Id),
 			)
 			if err != nil {
 				logs.ErrorLog(err, "NewContacts_to_platforms %s", val.Label)
 			}
+
+			if i > 0 {
+				toLogCompanyUpdate(ctx, idCompany, map[string]interface{}{"contact_id": idC, "platform_id": val.Id})
+			}
 		}
 	}
-
-	toLogCompany(ctx, DB, idCompany, " добавил новый контакт  "+u.Name, CODE_LOG_UPDATE)
 
 	u.Id = int32(idC)
 
@@ -126,7 +128,7 @@ func HandleEditContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	if !u.IsChecked {
 		table, _ := db.NewContacts_to_platforms(DB)
 		for _, val := range u.SelectPlatforms {
-			_, err := table.Insert(ctx,
+			i, err := table.Insert(ctx,
 				dbEngine.ColumnsForSelect("contact_id", "platform_id"),
 				dbEngine.ArgsForSelect(u.Id, val.Id),
 				dbEngine.InsertOnConflictDoNothing(),
@@ -134,10 +136,12 @@ func HandleEditContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 			if err != nil {
 				logs.ErrorLog(err, "NewContacts_to_platforms %s", val.Label)
 			}
+
+			if i > 0 {
+				toLogCompanyUpdate(ctx, idCompany, map[string]interface{}{"contact_id": u.Id, "platform_id": val.Id})
+			}
 		}
 	}
-
-	toLogCompany(ctx, DB, idCompany, " edit контакт  "+u.Name, CODE_LOG_UPDATE)
 
 	u.Id = int32(idC)
 
@@ -162,7 +166,7 @@ func HandleDeleteContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, id, " удалил контакт  ", CODE_LOG_DELETE)
+	toLogCompanyDelete(ctx, id, fmt.Sprintf(" удалил контакт %d", id))
 
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 

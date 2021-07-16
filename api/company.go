@@ -6,14 +6,11 @@ package api
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
-	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
 )
 
@@ -62,7 +59,7 @@ func HandleAddCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, int32(id), "", CODE_LOG_INSERT)
+	toLogCompanyInsert(ctx, int32(id), "")
 
 	return createResult(id)
 }
@@ -90,7 +87,9 @@ func HandleAddCommentForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, id, "add comment "+text, CODE_LOG_UPDATE)
+	if i > 0 {
+		toLogCompanyAddComment(ctx, id, text)
+	}
 
 	return createResult(i)
 }
@@ -151,7 +150,7 @@ func HandleEditCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCompany(ctx, DB, int32(i), "", CODE_LOG_UPDATE)
+	toLogCompanyUpdate(ctx, int32(i), toLogUpdateValues(columns, args))
 
 	return createResult(i)
 }
@@ -247,14 +246,4 @@ func HandleInformationForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	}
 
 	return v, nil
-}
-
-func toLogCompany(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId int32, text string, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "company_id", "text", "date_create",
-			"kod_deystviya"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId,
-			text,
-			time.Now(),
-			code))
 }

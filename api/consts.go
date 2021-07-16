@@ -11,15 +11,7 @@ const (
 	SYSTEM_PATH = "systemPath"
 )
 
-const (
-	CODE_LOG_UPDATE     = 100
-	CODE_LOG_INSERT     = 101
-	CODE_LOG_PEFORM     = 102
-	CODE_LOG_DELETE     = 103
-	CODE_LOG_RE_CONTACT = 104
-	CODE_ADD_COMMENT    = 104
-	CODE_DEL_COMMENT    = 104
-)
+const LOG_VIEW = "select * from get_log($1, $2)"
 
 const (
 	EMAIL_TEXT = `<p><span style="font-size: 14px;">Colleagues,

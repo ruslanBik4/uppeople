@@ -83,10 +83,9 @@ func HandleAddAvatar(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogCandidate(ctx, DB, id, "avatar", CODE_LOG_UPDATE)
+		toLogCandidateUpdate(ctx, id, map[string]interface{}{"avatar": "new"})
+		ctx.SetStatusCode(fasthttp.StatusAccepted)
 	}
-
-	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
 }
@@ -122,19 +121,22 @@ func HandleAddLogo(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			logo,
 			id,
 		}
-		_, err = table.Update(ctx,
+		var i int64
+		i, err = table.Update(ctx,
 			dbEngine.ColumnsForSelect("logo"),
 			dbEngine.WhereForSelect("id"),
 			dbEngine.ArgsForSelect(args...),
 		)
 
+		if i > 0 {
+			toLogCompanyUpdate(ctx, id, map[string]interface{}{"logo": "new"})
+			ctx.SetStatusCode(fasthttp.StatusAccepted)
+		}
+
 	}
 	if err != nil {
 		return createErrResult(err)
 	}
-
-	toLogCompany(ctx, DB, id, "logo", CODE_LOG_UPDATE)
-	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
 }

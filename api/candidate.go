@@ -123,7 +123,7 @@ func HandleReContactCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, "", CODE_LOG_RE_CONTACT)
+	toLogCandidateRecontact(ctx, id, "")
 
 	return nil, nil
 }
@@ -155,7 +155,14 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 		}, apis.ErrWrongParamsList
 	}
 
-	toLogCandidateStatus(ctx, DB, u.Candidate_id, u.Vacancy_id, " изменил статус  кандидата ", CODE_LOG_UPDATE)
+	text := map[string]interface{}{
+		"status_for_vac": u.Status,
+		"vacancy_id":     u.Vacancy_id,
+	}
+
+	if i > 0 {
+		toLogCandidateUpdateStatus(ctx, u.Candidate_id, u.Vacancy_id, text)
+	}
 
 	switch u.Status {
 	case 2:
@@ -193,7 +200,12 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	DB, table, _ := getTableCommentsForCandidates(ctx)
+	table, _ := getTableCommentsForCandidates(ctx)
+	text := ""
+	err := table.SelectOneAndScan(ctx, &text,
+		dbEngine.ColumnsForSelect("text_comment"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id))
 
 	i, err := table.Delete(ctx,
 		dbEngine.WhereForSelect("id"),
@@ -203,8 +215,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	// todo: logs
-	toLogCandidate(ctx, DB, id, "", CODE_DEL_COMMENT)
+	toLogCandidateDelComment(ctx, id, text)
 
 	return createResult(i)
 }
@@ -217,7 +228,7 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}, apis.ErrWrongParamsList
 	}
 
-	DB, table, _ := getTableCommentsForCandidates(ctx)
+	table, _ := getTableCommentsForCandidates(ctx)
 	text := string(ctx.Request.Body())
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect("candidate_id", "comments"),
@@ -227,20 +238,20 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, text, CODE_ADD_COMMENT)
+	toLogCandidateAddComment(ctx, id, text)
 
 	return createResult(i)
 }
 
-func getTableCommentsForCandidates(ctx *fasthttp.RequestCtx) (*dbEngine.DB, *db.Comments_for_candidates, error) {
+func getTableCommentsForCandidates(ctx *fasthttp.RequestCtx) (*db.Comments_for_candidates, error) {
 	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
 	if !ok {
-		return nil, nil, dbEngine.ErrDBNotFound
+		return nil, dbEngine.ErrDBNotFound
 	}
 
 	table, _ := db.NewComments_for_candidates(DB)
 
-	return DB, table, nil
+	return table, nil
 }
 
 func HandleCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -457,7 +468,7 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	u.Id = int32(id)
-	toLogCandidate(ctx, DB, u.Id, u.Comments, CODE_LOG_INSERT)
+	toLogCandidateInsert(ctx, u.Id, u.Comments)
 
 	ctx.SetStatusCode(fasthttp.StatusCreated)
 	//putVacancies(ctx, u, DB)
@@ -504,8 +515,8 @@ func HandleFollowUpCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, u.CandidateId,
-		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment), 102)
+	toLogCandidatePerform(ctx, u.CandidateId,
+		fmt.Sprintf("Follow-Up: %v . Comment: %s", u.DateFollowUp, u.Comment))
 
 	return createResult(i)
 }
@@ -535,7 +546,7 @@ func HandleDeleteCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidate(ctx, DB, id, "", CODE_LOG_DELETE)
+	toLogCandidateDelete(ctx, id, "")
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
@@ -651,19 +662,9 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		text := ""
-		for i, col := range columns {
-			if i > 0 {
-				text += ", "
-			}
-
-			text += fmt.Sprintf("%s=%v", col, args[i])
-		}
-		toLogCandidate(ctx, DB, id, text, CODE_LOG_UPDATE)
+		toLogCandidateUpdate(ctx, id, toLogUpdateValues(columns, args))
+		ctx.SetStatusCode(fasthttp.StatusAccepted)
 	}
-
-	ctx.SetStatusCode(fasthttp.StatusAccepted)
-	// putVacancies(ctx, u, DB)
 
 	return nil, nil
 }

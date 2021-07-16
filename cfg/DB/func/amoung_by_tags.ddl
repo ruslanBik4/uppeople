@@ -15,7 +15,7 @@ DECLARE reContact integer = 0;
 BEGIN
     select count(*)
      from logs
-     where kod_deystviya = 104
+     where action_code = 104
        and create_at ::date between COALESCE(sDate, NOW() - interval '1 month') and COALESCE( eDate, now() )
        and (companyID = 0 OR company_id = companyID)
        and (vacancyId = 0 OR vacancy_id = vacancyId)

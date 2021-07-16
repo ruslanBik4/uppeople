@@ -17,15 +17,15 @@ type Logs struct {
 }
 
 type LogsFields struct {
-	Id            int64         `json:"id"`
-	User_id       sql.NullInt64 `json:"user_id"`
-	Candidate_id  sql.NullInt64 `json:"candidate_id"`
-	Company_id    sql.NullInt64 `json:"company_id"`
-	Vacancy_id    sql.NullInt64 `json:"vacancy_id"`
-	Text          string        `json:"text"`
-	Kod_deystviya int64         `json:"kod_deystviya"`
-	Date_create   time.Time     `json:"date_create"`
-	create_at     time.Time     `json:"create_at"`
+	Id          int64         `json:"id"`
+	UserId      sql.NullInt64 `json:"user_id"`
+	CandidateId sql.NullInt64 `json:"candidate_id"`
+	CompanyId   sql.NullInt64 `json:"company_id"`
+	VacancyId   sql.NullInt64 `json:"vacancy_id"`
+	Text        string        `json:"text"`
+	ActionCode  int64         `json:"action_code"`
+	DateCreate  time.Time     `json:"date_create"`
+	create_at   time.Time     `json:"create_at"`
 }
 
 func (r *LogsFields) RefColValue(name string) interface{} {
@@ -34,25 +34,25 @@ func (r *LogsFields) RefColValue(name string) interface{} {
 		return &r.Id
 
 	case "user_id":
-		return &r.User_id
+		return &r.UserId
 
 	case "candidate_id":
-		return &r.Candidate_id
+		return &r.CandidateId
 
 	case "company_id":
-		return &r.Company_id
+		return &r.CompanyId
 
 	case "vacancy_id":
-		return &r.Vacancy_id
+		return &r.VacancyId
 
 	case "text":
 		return &r.Text
 
-	case "kod_deystviya":
-		return &r.Kod_deystviya
+	case "action_code":
+		return &r.ActionCode
 
 	case "date_create":
-		return &r.Date_create
+		return &r.DateCreate
 
 	case "create_at":
 		return &r.create_at
@@ -68,25 +68,25 @@ func (r *LogsFields) ColValue(name string) interface{} {
 		return r.Id
 
 	case "user_id":
-		return r.User_id
+		return r.UserId
 
 	case "candidate_id":
-		return r.Candidate_id
+		return r.CandidateId
 
 	case "company_id":
-		return r.Company_id
+		return r.CompanyId
 
 	case "vacancy_id":
-		return r.Vacancy_id
+		return r.VacancyId
 
 	case "text":
 		return r.Text
 
-	case "kod_deystviya":
-		return r.Kod_deystviya
+	case "action_code":
+		return r.ActionCode
 
 	case "date_create":
-		return r.Date_create
+		return r.DateCreate
 
 	case "create_at":
 		return r.create_at

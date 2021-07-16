@@ -5,7 +5,9 @@ package db
 import (
 	"database/sql"
 
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -18,7 +20,10 @@ type Languages struct {
 type LanguagesFields struct {
 	Id   int32  `json:"id"`
 	Name string `json:"name"`
+	Abbr string `json:"abbr"`
 }
+
+type LanguagesIdMap map[string]LanguagesFields
 
 func (r *LanguagesFields) RefColValue(name string) interface{} {
 	switch name {
@@ -27,6 +32,9 @@ func (r *LanguagesFields) RefColValue(name string) interface{} {
 
 	case "name":
 		return &r.Name
+
+	case "abbr":
+		return &r.Abbr
 
 	default:
 		return nil
@@ -40,6 +48,9 @@ func (r *LanguagesFields) ColValue(name string) interface{} {
 
 	case "name":
 		return r.Name
+
+	case "abbr":
+		return r.Abbr
 
 	default:
 		return nil
@@ -129,4 +140,113 @@ func (t *Languages) Update(ctx context.Context, Options ...dbEngine.BuildSqlOpti
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetBegginerId() int32 {
+	if language, ok := languagesIds[LANG_BEGGINER]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_BEGGINER))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+
+func GetElementaryId() int32 {
+	if language, ok := languagesIds[LANG_ELEMENTARY]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_ELEMENTARY))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+
+func GetPreIntermediateId() int32 {
+	if language, ok := languagesIds[LANG_PRE_INT]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_PRE_INT))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+
+func GetIntermediateId() int32 {
+	if language, ok := languagesIds[LANG_INT]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_INT))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+func GetUpperIntermediateId() int32 {
+	if language, ok := languagesIds[LANG_UPPER_INT]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_UPPER_INT))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+
+func GetAdvancedId() int32 {
+	if language, ok := languagesIds[LANG_ADVANCED]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_ADVANCED))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+
+func GetProficiencyId() int32 {
+	if language, ok := languagesIds[LANG_PROF]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_PROF))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+
+func GetUndefLanguagerId() int32 {
+	if language, ok := languagesIds[LANG_UNDEF]; !ok {
+		logs.ErrorLog(errors.Errorf("Language \"%s\" not found in database", LANG_UNDEF))
+		return -1
+	} else {
+		return language.Id
+	}
+}
+
+func GetLanguageFromId(id int32) *LanguagesFields {
+	for _, language := range languagesIds {
+		if language.Id == id {
+			return &language
+		}
+	}
+
+	return nil
+}
+
+func GetLanguagesAsSelectedUnits() SelectedUnits {
+	return languagesSelected
+}
+
+func initLanguagesIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	languagesIds = LanguagesIdMap{}
+	languagesTable, err := NewLanguages(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_LANGUAGES)
+		return err
+	}
+
+	err = languagesTable.SelectSelfScanEach(ctx,
+		func(record *LanguagesFields) error {
+			languagesIds[record.Name] = *record
+			languagesSelected = append(languagesSelected, NewSelectedUnit(record.Id, record.Name))
+			return nil
+		},
+		dbEngine.OrderBy("id"),
+	)
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading languages from db to languagesIds(db.LanguagesIdMap)")
+	}
+
+	return
 }

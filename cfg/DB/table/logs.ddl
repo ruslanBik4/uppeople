@@ -6,7 +6,7 @@ create table logs
     company_id integer,
     vacancy_id integer,
     text text not null,
-    kod_deystviya integer not null,
+    action_code integer not null,
     date_create date not null,
     create_at timestamp with time zone not null default CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
@@ -28,3 +28,11 @@ alter table logs
 --     add constraint logs_vacancy_id_fk
 --         foreign key (vacancy_id) references vacancies
 --             on update cascade on delete cascade;
+
+update logs
+set action_code=108
+where logs.text LIKE '% назначил %';
+
+update logs
+set action_code=107
+where logs.text LIKE '% CV %';

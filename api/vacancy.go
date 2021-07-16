@@ -6,13 +6,11 @@ package api
 
 import (
 	"fmt"
-	"reflect"
-	"time"
-
 	"github.com/jackc/pgx/v4"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/valyala/fasthttp"
+	"reflect"
 
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
@@ -115,8 +113,7 @@ func HandleEditStatusVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		text := fmt.Sprintf("status=%d", u.Id)
-		toLogVacancy(ctx, DB, u.SelectCompany.Id, u.Id, text, CODE_LOG_UPDATE)
+		toLogVacancyUpdate(ctx, u.SelectCompany.Id, u.Id, map[string]interface{}{"status": u.Id})
 	}
 
 	return createResult(i)
@@ -184,16 +181,7 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		text := ""
-		for i, col := range columns {
-			if i > 0 {
-				text += ", "
-			}
-
-			text += fmt.Sprintf("%s=%v", col, args[i])
-		}
-
-		toLogVacancy(ctx, DB, u.SelectCompany.Id, id, text, CODE_LOG_UPDATE)
+		toLogVacancyUpdate(ctx, u.SelectCompany.Id, id, toLogUpdateValues(columns, args))
 	}
 
 	return createResult(i)
@@ -244,7 +232,7 @@ func HandleAddVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogVacancy(ctx, DB, u.SelectCompany.Id, int32(i), u.Description, CODE_LOG_INSERT)
+	toLogVacancyInsert(ctx, u.SelectCompany.Id, int32(i), u.Description)
 
 	return createResult(i)
 }
@@ -277,7 +265,7 @@ func HandleDeleteVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogVacancy(ctx, DB, table.Record.CompanyId, id, table.Record.Name.String, CODE_LOG_DELETE)
+	toLogVacancyDelete(ctx, table.Record.CompanyId, id, table.Record.Name.String)
 	ctx.SetStatusCode(fasthttp.StatusAccepted)
 
 	return nil, nil
@@ -295,14 +283,4 @@ func (d *DTOVacancy) GetValue() interface{} {
 
 func (d *DTOVacancy) NewValue() interface{} {
 	return &DTOVacancy{}
-}
-
-func toLogVacancy(ctx *fasthttp.RequestCtx, DB *dbEngine.DB, companyId, vacancyId int32, text string, code int32) {
-	toLog(ctx, DB,
-		dbEngine.ColumnsForSelect("user_id", "company_id", "vacancy_id", "text", "date_create",
-			"kod_deystviya"),
-		dbEngine.ArgsForSelect(auth.GetUserID(ctx), companyId, vacancyId,
-			text,
-			time.Now(),
-			code))
 }

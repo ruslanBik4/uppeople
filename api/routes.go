@@ -48,6 +48,13 @@ var (
 		Req:  false,
 		Type: apis.NewTypeInParam(types.String),
 	}
+	ParamCoID = apis.InParam{
+		Name:     "company_id",
+		Desc:     "id of company",
+		DefValue: apis.ApisValues(apis.ChildRoutePath),
+		Req:      true,
+		Type:     apis.NewTypeInParam(types.Int32),
+	}
 )
 
 var (
@@ -546,6 +553,14 @@ var (
 			NeedAuth: true,
 			Params: []apis.InParam{
 				ParamID,
+			},
+		},
+		"/api/admin/returnLogsForCompany/": {
+			Fnc:      HandleReturnLogsForCompany,
+			Desc:     "show logs of company",
+			NeedAuth: true,
+			Params: []apis.InParam{
+				ParamCoID,
 			},
 		},
 		// "/api/main/returnAllCandidates/": {
