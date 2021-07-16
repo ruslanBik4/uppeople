@@ -7,6 +7,7 @@ package api
 import (
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
@@ -16,11 +17,11 @@ import (
 )
 
 var (
-	columnsForCandidateLog        = []string{"user_id", "candidate_id", "text", "action_code", "date_create"}
-	columnsForCandidateVacancyLog = []string{"user_id", "candidate_id", "company_id", "vacancy_id", "text", "action_code", "date_create"}
-	columnsForVacancyLog          = []string{"user_id", "company_id", "vacancy_id", "text", "action_code", "date_create"}
-	columnsForCompanyLog          = []string{"user_id", "company_id", "text", "action_code", "date_create"}
-	columnsForCandidateStatusLog  = []string{"user_id", "candidate_id", "vacancy_id", "text", "action_code", "date_create"}
+	columnsForCandidateLog        = []string{"candidate_id", "action_code", "text", "user_id", "date_create"}
+	columnsForCandidateVacancyLog = []string{"candidate_id", "company_id", "vacancy_id", "action_code", "text", "user_id", "date_create"}
+	columnsForVacancyLog          = []string{"company_id", "vacancy_id", "action_code", "text", "user_id", "date_create"}
+	columnsForCompanyLog          = []string{"company_id", "action_code", "text", "user_id", "date_create"}
+	columnsForCandidateStatusLog  = []string{"candidate_id", "vacancy_id", "action_code", "text", "user_id", "date_create"}
 )
 
 func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -42,82 +43,83 @@ func HandleReturnLogsForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func toLogCandidateInsert(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
-	toLogCandidate(ctx, candidateId, text, db.GetLogInsertId())
+	toLogCandidate(ctx, candidateId, db.GetLogInsertId(), text)
 }
 
 func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, candidateId int32, text map[string]interface{}) {
-	toLogCandidate(ctx, candidateId, text, db.GetLogUpdateId())
+	toLogCandidate(ctx, candidateId, db.GetLogUpdateId(), text)
 }
 
 func toLogCandidatePerform(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
-	toLogCandidate(ctx, candidateId, text, db.GetLogPerformId())
+	toLogCandidate(ctx, candidateId, db.GetLogPerformId(), text)
 }
 
 func toLogCandidateDelete(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
-	toLogCandidate(ctx, candidateId, text, db.GetLogDeleteId())
+	toLogCandidate(ctx, candidateId, db.GetLogDeleteId(), text)
 }
 
 func toLogCandidateRecontact(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
-	toLogCandidate(ctx, candidateId, text, db.GetLogReContactId())
+	toLogCandidate(ctx, candidateId, db.GetLogReContactId(), text)
 }
 
 func toLogCandidateAddComment(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
-	toLogCandidate(ctx, candidateId, text, db.GetLogAddCommentId())
+	toLogCandidate(ctx, candidateId, db.GetLogAddCommentId(), text)
 }
 
 func toLogCandidateDelComment(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
-	toLogCandidate(ctx, candidateId, text, db.GetLogDelCommentId())
+	toLogCandidate(ctx, candidateId, db.GetLogDelCommentId(), text)
 }
 
 func toLogCandidateSendCV(ctx *fasthttp.RequestCtx, candidateId, companyId, vacancyId int32, text string) {
-	toLogCandidateVacancy(ctx, candidateId, companyId, vacancyId, text, db.GetLogSendCVId())
+	toLogCandidateVacancy(ctx, candidateId, companyId, vacancyId, db.GetLogSendCVId(), text)
 }
 
 func toLogCandidateAppointInterview(ctx *fasthttp.RequestCtx, candidateId, companyId, vacancyId int32, text string) {
-	toLogCandidateVacancy(ctx, candidateId, companyId, vacancyId, text, db.GetLogAppointInterviewId())
+	toLogCandidateVacancy(ctx, candidateId, companyId, vacancyId, db.GetLogAppointInterviewId(), text)
 }
 
 func toLogCompanyInsert(ctx *fasthttp.RequestCtx, companyId int32, text string) {
-	toLogCompany(ctx, companyId, text, db.GetLogInsertId())
+	toLogCompany(ctx, companyId, db.GetLogInsertId(), text)
 }
 
 func toLogCompanyUpdate(ctx *fasthttp.RequestCtx, companyId int32, text map[string]interface{}) {
-	toLogCompany(ctx, companyId, text, db.GetLogUpdateId())
+	toLogCompany(ctx, companyId, db.GetLogUpdateId(), text)
 }
 
 func toLogCompanyAddComment(ctx *fasthttp.RequestCtx, companyId int32, text string) {
-	toLogCompany(ctx, companyId, text, db.GetLogAddCommentId())
+	toLogCompany(ctx, companyId, db.GetLogAddCommentId(), text)
 }
 
 func toLogCompanyDelComment(ctx *fasthttp.RequestCtx, companyId int32, text string) {
-	toLogCompany(ctx, companyId, text, db.GetLogDelCommentId())
+	toLogCompany(ctx, companyId, db.GetLogDelCommentId(), text)
 }
 
 func toLogCompanyDelete(ctx *fasthttp.RequestCtx, companyId int32, text string) {
-	toLogCompany(ctx, companyId, text, db.GetLogDeleteId())
+	toLogCompany(ctx, companyId, db.GetLogDeleteId(), text)
 }
 
 func toLogCompanyPerform(ctx *fasthttp.RequestCtx, companyId int32, text string) {
-	toLogCompany(ctx, companyId, text, db.GetLogPerformId())
+	toLogCompany(ctx, companyId, db.GetLogPerformId(), text)
 }
 
 func toLogVacancyInsert(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text string) {
-	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogInsertId())
+	toLogVacancy(ctx, companyId, vacancyId, db.GetLogInsertId(), text)
 }
 
 func toLogVacancyUpdate(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text map[string]interface{}) {
-	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogUpdateId())
+	toLogVacancy(ctx, companyId, vacancyId, db.GetLogUpdateId(), text)
 }
 
 func toLogVacancyPerform(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text string) {
-	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogPerformId())
+	toLogVacancy(ctx, companyId, vacancyId, db.GetLogPerformId(), text)
 }
 
 func toLogVacancyDelete(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, text string) {
-	toLogVacancy(ctx, companyId, vacancyId, text, db.GetLogDeleteId())
+	toLogVacancy(ctx, companyId, vacancyId, db.GetLogDeleteId(), text)
 }
 
 func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, args ...interface{}) {
+	// TODO: fix
 	args = append(args, db.GetLogUpdateId())
 	toLog(ctx, columnsForCandidateStatusLog, args)
 }
@@ -139,13 +141,17 @@ func toLogVacancy(ctx *fasthttp.RequestCtx, args ...interface{}) {
 }
 
 func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
-	finalArgs := make([]interface{}, 0)
-	finalArgs = append(finalArgs, auth.GetUserID(ctx), args, time.Now())
+	textBytes, err := jsoniter.Marshal(args[len(args)-1])
+	if err != nil {
+		logs.ErrorLog(err, "toLog marshaling text to json")
+	}
+	args = append(args[:len(args)-1], string(textBytes),
+		auth.GetUserID(ctx), time.Now())
 
 	go func() {
 		_, err := db.LogsTable.Insert(ctx,
 			dbEngine.ColumnsForSelect(columns...),
-			dbEngine.ArgsForSelect(finalArgs...))
+			dbEngine.ArgsForSelect(args...))
 
 		if err != nil {
 			logs.ErrorLog(err, "toLog")
