@@ -34,7 +34,7 @@ select logs.id as logId,
 
                                 (SELECT DISTINCT array_to_string(array_agg(CONCAT(
                                         CASE
-                                            WHEN jst.key::text = 'platform_id' THEN 'platforms'
+                                            WHEN jst.key::text = 'platforms' THEN 'platforms'
                                             WHEN jst.key::text = 'seniority_id' THEN 'seniority'
                                             WHEN jst.key::text = 'id_languages' THEN 'language_level'
                                             WHEN jst.key::text = 'tag_id' THEN 'tag/reject_reason'
@@ -44,7 +44,7 @@ select logs.id as logId,
                                             ELSE jst.key::text END,
                                         '=',
                                         CASE
-                                            WHEN jst.key::text = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'platforms' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(json_array_castint(jst.value)))
