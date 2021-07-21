@@ -35,6 +35,7 @@ select logs.id as logId,
                                 (SELECT DISTINCT array_to_string(array_agg(CONCAT(
                                         CASE
                                             WHEN jst.key::text = 'platforms' THEN 'platforms'
+                                            WHEN jst.key::text = 'platform_id' THEN 'platforms'
                                             WHEN jst.key::text = 'seniority_id' THEN 'seniority'
                                             WHEN jst.key::text = 'id_languages' THEN 'language_level'
                                             WHEN jst.key::text = 'tag_id' THEN 'tag/reject_reason'
@@ -46,28 +47,29 @@ select logs.id as logId,
                                         '=',
                                         CASE
                                             WHEN jst.key::text = 'platforms' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'status_for_vac' THEN (select array_to_string(array_agg(status), ', ') from status_for_vacs sv where sv.id = ANY(json_array_castint(jst.value)))
                                             WHEN jst.key::text = 'contact_id' THEN (select array_to_string(array_agg(name), ', ') from contacts cs where cs.id = ANY(json_array_castint(jst.value)))
-                                            WHEN (jst.key::text = 'vacancy_id' || jst.key::text = 'vacancies')
-                                                THEN (select CONCAT(
-                                                                     platforms.name,
-                                                                     ', ',
-                                                                     seniorities.name,
-                                                                     CASE WHEN vacancies.name is not null THEN CONCAT(' (', vacancies.name, ')') ELSE '' END,
-                                                                     ' в компании ',
-                                                                     companies.name)
-                                                      FROM vacancies
-                                                               left join companies on (vacancies.company_id = companies.id)
-                                                               left Join platforms ON (vacancies.platform_id = platforms.id)
-                                                               left Join seniorities ON (vacancies.seniority_id = seniorities.id)
-                                                      where vacancies.id = jst.value::text::integer)
+                                            WHEN (jst.key::text = 'vacancy_id' OR jst.key::text = 'vacancies')
+                                                THEN (select array_to_string(array_agg(CONCAT(
+                                                    pss.name,
+                                                    ', ',
+                                                    sss.name,
+                                                    CASE WHEN vs.name is not null THEN CONCAT(' (', vs.name, ')') ELSE '' END,
+                                                    ' в компании ',
+                                                    css.name)), ', ')
+                                                      FROM vacancies vs
+                                                               left join companies css on (vs.company_id = css.id)
+                                                               left Join platforms pss ON (vs.platform_id = pss.id)
+                                                               left Join seniorities sss ON (vs.seniority_id = sss.id)
+                                                      where vs.id = ANY(json_array_castint(jst.value)))
 
 
-                                                    ELSE jst.value::text END
-                                            )), ', ')
+                                            ELSE jst.value::text END
+                                    )), ', ')
 
                                  FROM json_each(logs.text::json) jst)
 
