@@ -202,9 +202,10 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	table, _ := getTableCommentsForCandidates(ctx)
-	var returnVal []interface{}
-	err := table.SelectOneAndScan(ctx, &returnVal,
-		dbEngine.ColumnsForSelect("comments", "candidate_id"),
+	text := ""
+	candidateId := int32(0)
+	err := table.SelectOneAndScan(ctx, &text,
+		dbEngine.ColumnsForSelect("comments"),
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id))
 
@@ -212,8 +213,10 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(errors.Wrap(err, "comment not found"))
 	}
 
-	text := returnVal[0].(string)
-	candidateId := returnVal[1].(int32)
+	err = table.SelectOneAndScan(ctx, &candidateId,
+		dbEngine.ColumnsForSelect("candidate_id"),
+		dbEngine.WhereForSelect("id"),
+		dbEngine.ArgsForSelect(id))
 
 	i, err := table.Delete(ctx,
 		dbEngine.WhereForSelect("id"),
