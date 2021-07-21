@@ -193,6 +193,11 @@ func HandleUpdateStatusCandidates(ctx *fasthttp.RequestCtx) (interface{}, error)
 	return createResult(i)
 }
 
+type commentIdsStruct struct {
+	CandidateId int32  `json:"candidate_id"`
+	Text        string `json:"text_comment"`
+}
+
 func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamID.Name).(int32)
 	if !ok {
@@ -202,9 +207,9 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	table, _ := getTableCommentsForCandidates(ctx)
-	var returnVal []interface{}
-	text := ""
-	err := table.SelectOneAndScan(ctx, &returnVal,
+
+	scanSrtuct := commentIdsStruct{0, ""}
+	err := table.SelectOneAndScan(ctx, &scanSrtuct,
 		dbEngine.ColumnsForSelect("text_comment", "candidate_id"),
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id))
@@ -212,9 +217,6 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if err != nil {
 		return createErrResult(errors.Wrap(err, "comment not found"))
 	}
-
-	text = returnVal[0].(string)
-	candidateId := returnVal[1].(int32)
 
 	i, err := table.Delete(ctx,
 		dbEngine.WhereForSelect("id"),
@@ -224,7 +226,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidateDelComment(ctx, candidateId, text)
+	toLogCandidateDelComment(ctx, scanSrtuct.CandidateId, scanSrtuct.Text)
 
 	return createResult(i)
 }
