@@ -230,6 +230,7 @@ func HandleAddCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	table, _ := getTableCommentsForCandidates(ctx)
 	text := string(ctx.Request.Body())
+	text = strings.Replace(text, "\"", "", -1)
 	i, err := table.Insert(ctx,
 		dbEngine.ColumnsForSelect("candidate_id", "comments"),
 		dbEngine.ArgsForSelect(id, text),
