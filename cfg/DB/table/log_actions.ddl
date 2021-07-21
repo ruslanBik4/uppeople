@@ -19,7 +19,7 @@ create unique index log_actions_name_idx
 
 INSERT INTO log_actions (id, name, text_before_cand, for_candidate, for_company, text_after_cand, is_insert_text)
 VALUES
-       (100, 'CODE_LOG_UPDATE', ' обновил/дополнил', ' у кандидата ', ' у компании ', ' следующую информацию:', true),
+       (100, 'CODE_LOG_UPDATE', ' обновил', ' у кандидата ', ' у компании ', ' следующую информацию:', true),
        (101, 'CODE_LOG_INSERT', ' добавил', ' кандидата ', ' компанию ', '', false),
        (102, 'CODE_LOG_PEFORM', ' совершил', ' по кандидату ', ' по компании ', ' следующее действие:', true),
        (103, 'CODE_LOG_DELETE', ' удалил', ' кандидата ', ' контакт с компанией ', '', false),
