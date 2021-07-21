@@ -118,9 +118,8 @@ func toLogVacancyDelete(ctx *fasthttp.RequestCtx, companyId, vacancyId int32, te
 	toLogVacancy(ctx, companyId, vacancyId, db.GetLogDeleteId(), text)
 }
 
-func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, args ...interface{}) {
-	// TODO: fix
-	args = append(args, db.GetLogUpdateId())
+func toLogCandidateUpdateStatus(ctx *fasthttp.RequestCtx, candidateId, vacancyId int32, text string) {
+	args := []interface{}{candidateId, vacancyId, db.GetLogUpdateId(), text}
 	toLog(ctx, columnsForCandidateStatusLog, args)
 }
 
