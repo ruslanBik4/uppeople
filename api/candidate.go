@@ -210,7 +210,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	scanSrtuct := commentIdsStruct{0, ""}
 	err := table.SelectOneAndScan(ctx, &scanSrtuct,
-		dbEngine.ColumnsForSelect("text_comment", "candidate_id"),
+		dbEngine.ColumnsForSelect("comments", "candidate_id"),
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id))
 
