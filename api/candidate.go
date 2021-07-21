@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgconn"
+	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
@@ -201,11 +202,19 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	table, _ := getTableCommentsForCandidates(ctx)
+	var returnVal []interface{}
 	text := ""
-	err := table.SelectOneAndScan(ctx, &text,
-		dbEngine.ColumnsForSelect("text_comment"),
+	err := table.SelectOneAndScan(ctx, &returnVal,
+		dbEngine.ColumnsForSelect("text_comment", "candidate_id"),
 		dbEngine.WhereForSelect("id"),
 		dbEngine.ArgsForSelect(id))
+
+	if err != nil {
+		return createErrResult(errors.Wrap(err, "comment not found"))
+	}
+
+	text = returnVal[0].(string)
+	candidateId := returnVal[1].(int32)
 
 	i, err := table.Delete(ctx,
 		dbEngine.WhereForSelect("id"),
@@ -215,7 +224,7 @@ func HandleRmCommentsCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	toLogCandidateDelComment(ctx, id, text)
+	toLogCandidateDelComment(ctx, candidateId, text)
 
 	return createResult(i)
 }
