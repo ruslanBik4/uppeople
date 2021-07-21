@@ -146,6 +146,7 @@ func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 	}
 	args = append(args[:len(args)-1], string(textBytes),
 		auth.GetUserID(ctx), time.Now())
+	logs.StatusLog(args)
 
 	go func() {
 		_, err := db.LogsTable.Insert(ctx,

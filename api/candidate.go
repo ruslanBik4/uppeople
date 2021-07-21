@@ -594,9 +594,59 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			if stopColumns[name] {
 				continue
 			}
-
 			newValue := u.ColValue(name)
+
 			if !EmptyValue(newValue) && (strings.HasPrefix(col.Type(), "_") || oldData.ColValue(name) != newValue) {
+				if name == "vacancies" || name == "platforms" {
+					val, ok := oldData.ColValue(name).([]interface{})
+					newVal, newOk := newValue.([]interface{})
+
+					if !ok || !newOk {
+						continue
+					}
+					finalValue := make([]interface{}, 0)
+					var oldIntVal, newIntVal []int32
+					for _, i_val := range val {
+						if check_val, ok := i_val.(int32); ok {
+							oldIntVal = append(oldIntVal, check_val)
+						}
+					}
+
+					for _, i_val := range newVal {
+						if check_val, ok := i_val.(int32); ok {
+							newIntVal = append(newIntVal, check_val)
+						}
+					}
+
+					for _, ii_val := range newIntVal {
+						for _, jj_val := range oldIntVal {
+							if ii_val == jj_val {
+								continue
+							} else {
+								finalValue = append(finalValue, ii_val)
+								break
+							}
+						}
+					}
+
+					for _, kk_val := range oldIntVal {
+						for _, ll_val := range newIntVal {
+							if kk_val == ll_val {
+								continue
+							} else {
+								finalValue = append(finalValue, kk_val)
+								break
+							}
+						}
+					}
+
+					if len(finalValue) > 0 {
+						columns = append(columns, name)
+						args = append(args, finalValue)
+					}
+
+				}
+
 				columns = append(columns, name)
 				args = append(args, newValue)
 			}
