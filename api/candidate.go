@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgconn"
 	"github.com/pkg/errors"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
@@ -470,23 +469,10 @@ func HandleAddCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return createErrResult(err)
 	}
 
-	if id <= 0 {
-		err = db.LastErr
-		if err != (*pgconn.PgError)(nil) {
-			return createErrResult(err)
-		}
-
-		return DB.Conn.LastRowAffected(), apis.ErrWrongParamsList
-	}
-
 	u.Id = int32(id)
-	toLogCandidateInsert(ctx, u.Id, u.Comments)
-
 	ctx.SetStatusCode(fasthttp.StatusCreated)
-	//putVacancies(ctx, u, DB)
 
 	return id, nil
-
 }
 
 type FollowUpDTO struct {

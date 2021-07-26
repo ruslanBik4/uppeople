@@ -6,6 +6,7 @@ create table logs
     company_id integer,
     vacancy_id integer,
     text text not null,
+    changed jsonb,
     action_code integer not null,
     date_create date not null,
     create_at timestamp with time zone not null default CURRENT_TIMESTAMP,
@@ -30,9 +31,9 @@ alter table logs
 --             on update cascade on delete cascade;
 
 update logs
-set action_code=108
+set action_code=(select id from log_actions where name = 'CODE_APPOINT_INTERVIEW')
 where logs.text LIKE '% назначил %';
 
 update logs
-set action_code=107
+set action_code=(select id from log_actions where name = 'CODE_SEND_CV')
 where logs.text LIKE '% CV %';

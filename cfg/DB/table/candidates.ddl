@@ -28,7 +28,7 @@ create table candidates
 
 COMMENT ON TABLE candidates IS 'list of candidates';
 COMMENT ON COLUMN candidates.email IS 'Email {"pattern": "email"}';
-COMMENT ON COLUMN candidates.phone IS 'Mobil phone {"pattern": "phone"}';
+COMMENT ON COLUMN candidates.phone IS 'Mobil phone';
 COMMENT ON COLUMN candidates.id_languages IS 'Language {"suggestions":"/api/main/returnOptionsForSelects", "multiple":true,"suggestions_params":{"name":"languages"}}';
 COMMENT ON COLUMN candidates.platforms IS 'Platform {"suggestions":"/api/main/returnOptionsForSelects", "multiple":true,"suggestions_params":{"name":"platforms"}}';
 COMMENT ON COLUMN candidates.recruter_id IS 'Recruiter name {"suggestions":"/api/main/returnOptionsForSelects","suggestions_params":{"name":"recruiters"}} read_only';
