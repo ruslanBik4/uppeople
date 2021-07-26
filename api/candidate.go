@@ -586,6 +586,14 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		"avatar":      true,
 		"status":      true,
 	}
+
+	checkNewValueColumns := map[string]bool{
+		"vacancies": true,
+		"platforms": true,
+	}
+
+	changedValuesForLog := make(map[string]interface{}, 0)
+
 	if oldData != nil {
 		for _, col := range table.Columns() {
 			name := col.Name()
@@ -595,54 +603,41 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			newValue := u.ColValue(name)
 
 			if !EmptyValue(newValue) && (strings.HasPrefix(col.Type(), "_") || oldData.ColValue(name) != newValue) {
-				if name == "vacancies" || name == "platforms" {
-					val, ok := oldData.ColValue(name).([]interface{})
-					newVal, newOk := newValue.([]interface{})
+				if checkNewValueColumns[name] {
+					val, ok := oldData.ColValue(name).([]int32)
+					newVal, newOk := newValue.([]int32)
 
-					if !ok || !newOk {
-						continue
-					}
-					finalValue := make([]interface{}, 0)
-					var oldIntVal, newIntVal []int32
-					for _, i_val := range val {
-						if check_val, ok := i_val.(int32); ok {
-							oldIntVal = append(oldIntVal, check_val)
-						}
-					}
+					if ok && newOk {
+						finalValue := make([]int32, 0)
 
-					for _, i_val := range newVal {
-						if check_val, ok := i_val.(int32); ok {
-							newIntVal = append(newIntVal, check_val)
-						}
-					}
-
-					for _, ii_val := range newIntVal {
-						for _, jj_val := range oldIntVal {
-							if ii_val == jj_val {
-								continue
-							} else {
+						for _, ii_val := range newVal {
+							found := false
+							for _, jj_val := range val {
+								if ii_val == jj_val {
+									found = true
+									break
+								}
+							}
+							if !found {
 								finalValue = append(finalValue, ii_val)
-								break
 							}
 						}
-					}
 
-					for _, kk_val := range oldIntVal {
-						for _, ll_val := range newIntVal {
-							if kk_val == ll_val {
-								continue
-							} else {
+						for _, kk_val := range val {
+							found := false
+							for _, ll_val := range newVal {
+								if kk_val == ll_val {
+									found = true
+									break
+								}
+							}
+							if !found {
 								finalValue = append(finalValue, kk_val)
-								break
 							}
 						}
-					}
 
-					if len(finalValue) > 0 {
-						columns = append(columns, name)
-						args = append(args, finalValue)
+						changedValuesForLog[name] = finalValue
 					}
-
 				}
 
 				columns = append(columns, name)
@@ -710,7 +705,26 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	if i > 0 {
-		toLogCandidateUpdate(ctx, id, toLogUpdateValues(columns, args))
+		logColumns := make([]string, 0)
+		logArgs := make([]interface{}, 0)
+		for j, _ := range columns {
+			if changedValuesForLog[columns[j]] != nil {
+				if list, ok := changedValuesForLog[columns[j]].([]int32); ok {
+					if len(list) > 0 {
+						logColumns = append(logColumns, columns[j])
+						logArgs = append(logArgs, changedValuesForLog[columns[j]])
+						continue
+					} else {
+						continue
+					}
+				}
+			}
+
+			logColumns = append(logColumns, columns[j])
+			logArgs = append(logArgs, args[j])
+		}
+
+		toLogCandidateUpdate(ctx, id, toLogUpdateValues(logColumns, logArgs))
 		ctx.SetStatusCode(fasthttp.StatusAccepted)
 	}
 
