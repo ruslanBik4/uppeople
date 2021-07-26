@@ -5,7 +5,7 @@ create table logs
     candidate_id integer,
     company_id integer,
     vacancy_id integer,
-    text text not null,
+    text text,
     changed jsonb,
     action_code integer not null,
     date_create date not null,
