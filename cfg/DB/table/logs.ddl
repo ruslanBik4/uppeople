@@ -37,3 +37,24 @@ where logs.text LIKE '% назначил %';
 update logs
 set action_code=(select id from log_actions where name = 'CODE_SEND_CV')
 where logs.text LIKE '% CV %';
+
+update logs
+set changed=(
+    CASE WHEN text LIKE '%=%' THEN
+             (SELECT CONCAT('{',
+                            array_to_string(
+                                    array_agg(
+                                            CONCAT('"',
+                                                   REPLACE(
+                                                           CASE
+                                                               WHEN val LIKE '%[%]%'
+                                                                   THEN REPLACE(val, ' ', ',')
+                                                               WHEN substring(val from '(?<==)[^\]]+') ~ '^\d+(\.\d)?$' THEN val
+                                                               ELSE CONCAT(REPLACE(val, '=', '="'), '"') END
+                                                       , '=', '":')
+                                                )
+                                        ), ','), '}')::jsonb
+              FROM
+                  regexp_split_to_table('tag_id=1, seniority_id=2, vacancies=[137]', E', ') as x(val))
+         ELSE to_jsonb(text) END)
+where logs.text IS NOT NULL AND logs.changed IS NULL;
