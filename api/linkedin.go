@@ -191,7 +191,7 @@ func HandleGetRecruiterVacancieslinkEdin(ctx *fasthttp.RequestCtx) (interface{},
 	data, err := DB.Conn.SelectToMaps(ctx,
 		`select id, platform_id, user_ids, label as name,  label,  value
 from select_vacancies
-where $1=ANY(user_ids)`,
+where $1=ANY(user_ids) AND status <= 1`,
 		auth.GetUserData(ctx).Id,
 	)
 	if err != nil {

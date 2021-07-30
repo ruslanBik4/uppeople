@@ -42,10 +42,6 @@ func HandleReturnLogsForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	return DB.Conn.SelectToMaps(ctx, LOG_VIEW, ctx.UserValue("company_id"), false)
 }
 
-func toLogCandidateInsert(ctx *fasthttp.RequestCtx, candidateId int32, text string) {
-	toLogCandidate(ctx, candidateId, db.GetLogInsertId(), text)
-}
-
 func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, candidateId int32, text map[string]interface{}) {
 	toLogCandidate(ctx, candidateId, db.GetLogUpdateId(), text)
 }
