@@ -724,7 +724,9 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			logArgs = append(logArgs, args[j])
 		}
 
-		toLogCandidateUpdate(ctx, id, toLogUpdateValues(logColumns, logArgs))
+		if len(logColumns) > 0 {
+			toLogCandidateUpdate(ctx, id, toLogUpdateValues(logColumns, logArgs))
+		}
 		ctx.SetStatusCode(fasthttp.StatusAccepted)
 	}
 

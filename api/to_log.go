@@ -7,7 +7,6 @@ package api
 import (
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
@@ -17,11 +16,11 @@ import (
 )
 
 var (
-	columnsForCandidateLog        = []string{"candidate_id", "action_code", "text", "user_id", "date_create"}
-	columnsForCandidateVacancyLog = []string{"candidate_id", "company_id", "vacancy_id", "action_code", "text", "user_id", "date_create"}
-	columnsForVacancyLog          = []string{"company_id", "vacancy_id", "action_code", "text", "user_id", "date_create"}
-	columnsForCompanyLog          = []string{"company_id", "action_code", "text", "user_id", "date_create"}
-	columnsForCandidateStatusLog  = []string{"candidate_id", "vacancy_id", "action_code", "text", "user_id", "date_create"}
+	columnsForCandidateLog        = []string{"candidate_id", "action_code", "changed", "user_id", "date_create"}
+	columnsForCandidateVacancyLog = []string{"candidate_id", "company_id", "vacancy_id", "action_code", "changed", "user_id", "date_create"}
+	columnsForVacancyLog          = []string{"company_id", "vacancy_id", "action_code", "changed", "user_id", "date_create"}
+	columnsForCompanyLog          = []string{"company_id", "action_code", "changed", "user_id", "date_create"}
+	columnsForCandidateStatusLog  = []string{"candidate_id", "vacancy_id", "action_code", "changed", "user_id", "date_create"}
 )
 
 func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -136,11 +135,7 @@ func toLogVacancy(ctx *fasthttp.RequestCtx, args ...interface{}) {
 }
 
 func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
-	textBytes, err := jsoniter.Marshal(args[len(args)-1])
-	if err != nil {
-		logs.ErrorLog(err, "toLog marshaling text to json")
-	}
-	args = append(args[:len(args)-1], string(textBytes),
+	args = append(args,
 		auth.GetUserID(ctx), time.Now())
 
 	go func() {

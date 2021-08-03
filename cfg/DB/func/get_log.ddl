@@ -28,8 +28,7 @@ select logs.id as logId,
                   ELSE '' END,
               CASE WHEN log_actions.is_insert_text = true THEN
                        CASE WHEN (log_actions.name = 'CODE_LOG_UPDATE'
-                           AND logs.text LIKE '{%}'
-                           AND logs.text::json is not null)
+                           AND logs.changed is not null AND jsonb_typeof(logs.changed) = 'object')
                                 THEN
 
                                 (SELECT DISTINCT array_to_string(array_agg(CONCAT(
@@ -46,13 +45,13 @@ select logs.id as logId,
                                             ELSE jst.key::text END,
                                         '=',
                                         CASE
-                                            WHEN jst.key::text = 'platforms' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'status_for_vac' THEN (select array_to_string(array_agg(status), ', ') from status_for_vacs sv where sv.id = ANY(json_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'contact_id' THEN (select array_to_string(array_agg(name), ', ') from contacts cs where cs.id = ANY(json_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'platforms' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'status_for_vac' THEN (select array_to_string(array_agg(status), ', ') from status_for_vacs sv where sv.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'contact_id' THEN (select array_to_string(array_agg(name), ', ') from contacts cs where cs.id = ANY(jsonb_array_castint(jst.value)))
                                             WHEN (jst.key::text = 'vacancy_id' OR jst.key::text = 'vacancies')
                                                 THEN (select array_to_string(array_agg(CONCAT(
                                                     pss.name,
@@ -65,13 +64,13 @@ select logs.id as logId,
                                                                left join companies css on (vs.company_id = css.id)
                                                                left Join platforms pss ON (vs.platform_id = pss.id)
                                                                left Join seniorities sss ON (vs.seniority_id = sss.id)
-                                                      where vs.id = ANY(json_array_castint(jst.value)))
+                                                      where vs.id = ANY(jsonb_array_castint(jst.value)))
 
 
                                             ELSE jst.value::text END
                                     )), ', ')
 
-                                 FROM json_each(logs.text::json) jst)
+                                 FROM jsonb_each(logs.changed::jsonb) jst)
 
                             ELSE CONCAT(' ', logs.text) END
                    ELSE '' END
