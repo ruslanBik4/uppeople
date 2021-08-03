@@ -40,7 +40,7 @@ where logs.text LIKE '% CV %';
 
 update logs
 set changed=(
-    CASE WHEN text LIKE '%=https:%' OR text LIKE '%comments=%' THEN to_jsonb(text)
+    CASE WHEN text LIKE '%=https:%' OR text LIKE '%comments=%' OR text LIKE '%details%' THEN null
          WHEN text LIKE '%=%' THEN
              (SELECT CONCAT('{',
                             array_to_string(
