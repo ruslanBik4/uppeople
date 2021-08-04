@@ -69,7 +69,7 @@ func NewCandidateView(ctx *fasthttp.RequestCtx,
 		}
 	}
 
-	view.Tags = db.GetTagFromId(record.Tag_id)
+	view.Tags = db.GetTagFromId(record.TagId)
 	if view.Tags != nil {
 		view.TagName = view.Tags.Name
 		view.TagColor = view.Tags.Color

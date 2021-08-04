@@ -27,7 +27,7 @@ type CandidatesFields struct {
 	Link         string         `json:"link"`
 	Linkedin     sql.NullString `json:"linkedin"`
 	Status       string         `json:"status"`
-	Tag_id       int32          `json:"tag_id"`
+	TagId        int32          `json:"tag_id"`
 	Comments     string         `json:"comment"`
 	Date         time.Time      `json:"date"`
 	RecruterId   int32          `json:"recruter_id"`
@@ -46,9 +46,6 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
-
-	case "platforms":
-		return &r.Platforms
 
 	case "name":
 		return &r.Name
@@ -75,7 +72,7 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 		return &r.Status
 
 	case "tag_id":
-		return &r.Tag_id
+		return &r.TagId
 
 	case "comments":
 		return &r.Comments
@@ -86,7 +83,7 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "recruter_id":
 		return &r.RecruterId
 
-	case "text_rezume":
+	case "cv":
 		return &r.Cv
 
 	case "experience":
@@ -113,6 +110,9 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "vacancies":
 		return &r.Vacancies
 
+	case "platforms":
+		return &r.Platforms
+
 	default:
 		return nil
 	}
@@ -122,9 +122,6 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
-
-	case "platforms":
-		return r.Platforms
 
 	case "name":
 		return r.Name
@@ -151,7 +148,7 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 		return r.Status
 
 	case "tag_id":
-		return r.Tag_id
+		return r.TagId
 
 	case "comments":
 		return r.Comments
@@ -162,7 +159,7 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "recruter_id":
 		return r.RecruterId
 
-	case "text_rezume":
+	case "cv":
 		return r.Cv
 
 	case "experience":
@@ -188,6 +185,9 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 
 	case "vacancies":
 		return r.Vacancies
+
+	case "platforms":
+		return r.Platforms
 
 	default:
 		return nil

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION get_log(Id integer, isCand bool)
+CREATE OR REPLACE FUNCTION get_log(id integer, isCand bool)
     RETURNS table(
                      logId integer,
                      text text,
@@ -8,8 +8,8 @@ CREATE OR REPLACE FUNCTION get_log(Id integer, isCand bool)
 AS
 $$
 BEGIN
-return query
-select logs.id as logId,
+    return query
+    select logs.id as logId,
        CONCAT('Рекрутер ',
               users.name,
               log_actions.text_before_cand,
@@ -26,12 +26,12 @@ select logs.id as logId,
                                   ' в компанию ', companies.name)
 
                   ELSE '' END,
-              CASE WHEN log_actions.is_insert_text = true THEN
+              CASE WHEN log_actions.is_insert_text THEN
                        CASE WHEN (log_actions.name = 'CODE_LOG_UPDATE'
                            AND logs.changed is not null AND jsonb_typeof(logs.changed) = 'object')
                                 THEN
 
-                                (SELECT DISTINCT array_to_string(array_agg(CONCAT(
+                                (SELECT DISTINCT string_agg(CONCAT(
                                         CASE
                                             WHEN jst.key::text = 'platforms' THEN 'platforms'
                                             WHEN jst.key::text = 'platform_id' THEN 'platforms'
@@ -68,7 +68,7 @@ select logs.id as logId,
 
 
                                             ELSE jst.value::text END
-                                    )), ', ')
+                                    ), ', ')
 
                                  FROM jsonb_each(logs.changed::jsonb) jst)
 
@@ -84,7 +84,7 @@ from logs left Join companies on (logs.company_id = companies.id)
     left Join platforms ON (vacancies.platform_id = platforms.id)
     left Join seniorities ON (vacancies.seniority_id = seniorities.id)
     left Join log_actions ON (logs.action_code = log_actions.id)
-where (logs.candidate_id = $1 AND $2) or (logs.company_id = $1 AND NOT $2)
+where ($2 AND logs.candidate_id = $1) or (NOT $2 AND logs.company_id = $1)
 order by logs.create_at DESC
 ;
 END;

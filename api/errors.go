@@ -18,7 +18,7 @@ var (
 	regKeyWrong   = regexp.MustCompile(`Key\s+\((\w+)\)=\((.+)\)([^.]+)`)
 	regDublicated = regexp.MustCompile(`duplicate key value violates unique constraint "(\w*)"`)
 
-	TagIdDateNotUpdatedOnSendCV = errors.New("Tag_id and date not updated on SendCV")
+	TagIdDateNotUpdatedOnSendCV = errors.New("TagId and date not updated on SendCV")
 )
 
 // todo: add code NoContent

@@ -569,7 +569,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	u.Id = id
-	if u.Tag_id == 0 {
+	if u.TagId == 0 {
 		return map[string]interface{}{
 			"tag_id": "required value",
 		}, apis.ErrWrongParamsList
@@ -677,7 +677,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Link,
 			u.Linkedin,
 			u.Status,
-			u.Tag_id,
+			u.TagId,
 			u.Comments,
 			u.Cv,
 			u.Experience,
@@ -707,7 +707,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if i > 0 {
 		logColumns := make([]string, 0)
 		logArgs := make([]interface{}, 0)
-		for j, _ := range columns {
+		for j := range columns {
 			if changedValuesForLog[columns[j]] != nil {
 				if list, ok := changedValuesForLog[columns[j]].([]int32); ok {
 					if len(list) > 0 {
