@@ -135,6 +135,10 @@ func toLogVacancy(ctx *fasthttp.RequestCtx, args ...interface{}) {
 }
 
 func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
+	if val, ok := args[len(args)-1].(string); ok {
+		args = append(args[:len(args)-1], map[string]string{"text": val})
+	}
+
 	args = append(args,
 		auth.GetUserID(ctx), time.Now())
 

@@ -42,8 +42,12 @@ BEGIN
                                             WHEN jst.key::text = 'vacancies' THEN 'по вакансиям'
                                             WHEN jst.key::text = 'status_for_vac' THEN 'cтатус по вакансии'
                                             WHEN jst.key::text = 'contact_id' THEN 'контакт'
+                                            WHEN jst.key::text = 'text' THEN ''
                                             ELSE jst.key::text END,
-                                        '=',
+
+                                        CASE
+                                            WHEN jst.key::text = 'text' THEN ''
+                                            ELSE '=' END,
                                         CASE
                                             WHEN jst.key::text = 'platforms' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
                                             WHEN jst.key::text = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
