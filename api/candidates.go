@@ -182,7 +182,7 @@ where candidates.id = candidate_id
 order by status desc
 fetch first 1 row only)`
 			case "Platform":
-				orderBy = `(select name from platforms where id = platform_id)`
+				orderBy = `(select name from platforms where id = platforms[0])`
 			case "Recruiter":
 				orderBy = `(select name from users where id = recruter_id)`
 			case "Tag/Reason":
