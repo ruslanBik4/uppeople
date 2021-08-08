@@ -22,7 +22,7 @@ BEGIN
                 coalesce(comments,''),
                 date,
                 recruter_id,
-                coalesce(text_rezume, ''),
+                coalesce(cv, ''),
                 coalesce(sfera,''),
                 coalesce(experience,''),
                 coalesce(education,''),
