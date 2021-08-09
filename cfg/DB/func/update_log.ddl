@@ -4,9 +4,7 @@ AS
 $$
 BEGIN
   update logs
-  set changed=
-      ; select
-    (CASE WHEN text LIKE '%=https:%' OR text LIKE '%comments=%' OR text is null OR text = '' THEN null
+  set changed=(CASE WHEN text LIKE '%=https:%' OR text LIKE '%comments=%' OR text is null OR text = '' THEN null
          WHEN text LIKE '%=%' THEN
              (SELECT Format('{%s}',
                         string_agg(
@@ -28,13 +26,13 @@ BEGIN
                                    , '=', '":')
                                 )
                         , ','))::jsonb
-              FROM regexp_split_to_table(text, '/, /') as x(val)
+              FROM regexp_split_to_table(text, ',\s*') as x(val)
               where val > '')
          WHEN text LIKE '{%}' THEN text::jsonb
          ELSE to_jsonb(text)
         END)
       from logs
-where logs.text IS NOT NULL AND logs.changed IS NULL;
+where logs.text is not null AND logs.changed IS NULL and vacancy_id is null;
 END;
 
 $$;
