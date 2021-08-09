@@ -347,7 +347,7 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	maps["subject"] = fmt.Sprintf("%s UPpeople CV %s - %s", time.Now().Format("02-01-2006"), platformName, name)
 	maps["emailTemplay"] = fmt.Sprintf(EMAIL_TEXT, name, platformName, table.Record.Link,
-		seniority.Name, "table.Record.IdLanguages", table.Record.Salary)
+		seniority.Name, db.GetLanguageFromId(table.Record.IdLanguages).Name, table.Record.Salary)
 	// todo add langueages cache
 	return maps, nil
 }

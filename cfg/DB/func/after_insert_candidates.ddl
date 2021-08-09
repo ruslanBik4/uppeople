@@ -5,7 +5,7 @@ AS
 $$
 BEGIN
   insert into logs (user_id, candidate_id,  changed, action_code)
-    VALUES (new.recruter_id, new.id, json_build_object('comment', new.comments),
+    VALUES (new.recruter_id, new.id, json_build_object('comment', new.comment),
             (select id from log_actions where name = 'CODE_LOG_INSERT'));
 
   return NEW;
