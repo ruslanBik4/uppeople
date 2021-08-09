@@ -8,7 +8,7 @@ create table logs
     text text,
     changed jsonb,
     action_code integer not null,
-    date_create date not null,
+    date_create date,
     create_at timestamp with time zone not null default CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
