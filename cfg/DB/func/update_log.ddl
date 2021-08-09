@@ -8,7 +8,7 @@ BEGIN
          WHEN text LIKE '%=%' THEN
              (SELECT Format('{%s}',
                         string_agg(
-                            Format('"%s',
+                            Format(E'"%s',
                                REPLACE(
                                        CASE
                                            WHEN val = '' THEN 'none":""'
