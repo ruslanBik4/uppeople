@@ -28,7 +28,7 @@ type CandidatesFields struct {
 	Linkedin     sql.NullString `json:"linkedin"`
 	Status       string         `json:"status"`
 	TagId        int32          `json:"tag_id"`
-	Comments     string         `json:"comment"`
+	Comment      string         `json:"comment"`
 	Date         time.Time      `json:"date"`
 	RecruterId   int32          `json:"recruter_id"`
 	Cv           string         `json:"cv"`
@@ -74,8 +74,8 @@ func (r *CandidatesFields) RefColValue(name string) interface{} {
 	case "tag_id":
 		return &r.TagId
 
-	case "comments":
-		return &r.Comments
+	case "comment":
+		return &r.Comment
 
 	case "date":
 		return &r.Date
@@ -150,8 +150,8 @@ func (r *CandidatesFields) ColValue(name string) interface{} {
 	case "tag_id":
 		return r.TagId
 
-	case "comments":
-		return r.Comments
+	case "comment":
+		return r.Comment
 
 	case "date":
 		return r.Date

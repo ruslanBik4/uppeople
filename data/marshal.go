@@ -21,12 +21,25 @@ func ReadNullString(ptr unsafe.Pointer, iter *jsoniter.Iterator) {
 	val := (*sql.NullString)(ptr)
 
 	switch t := iter.WhatIsNext(); t {
+	case jsoniter.NilValue:
+		val.Valid = !iter.ReadNil()
+		if val.Valid {
+			val.String = "wrong value, nil is not NULL!"
+		}
+
 	case jsoniter.StringValue:
 		src := iter.ReadString()
 		err := val.Scan(src)
 		if err != nil {
 			logs.ErrorLog(err, val, src)
 		}
+
+	case jsoniter.ArrayValue:
+		val.Valid = iter.ReadArrayCB(func(iterator *jsoniter.Iterator) bool {
+			val.String = iter.ReadString()
+			return true
+		})
+
 	case jsoniter.ObjectValue:
 		val.Valid = iter.ReadMapCB(func(iterator *jsoniter.Iterator, key string) bool {
 			switch strings.ToLower(key) {
@@ -41,11 +54,10 @@ func ReadNullString(ptr unsafe.Pointer, iter *jsoniter.Iterator) {
 				return false
 			}
 		})
+
 	default:
 		logs.ErrorLog(errors.New("unknown type"), t)
-
 	}
-
 }
 
 func init() {

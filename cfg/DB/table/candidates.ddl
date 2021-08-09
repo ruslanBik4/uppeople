@@ -11,7 +11,7 @@ create table candidates
     linkedin character varying default '',
     status character varying not null default '',
     tag_id integer not null default 1,
-    comments text not null default '',
+    comment text not null default '',
     date timestamp with time zone not null default CURRENT_TIMESTAMP,
     recruter_id integer not null default 1,
     cv text not null default '',

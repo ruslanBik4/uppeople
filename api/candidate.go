@@ -678,7 +678,7 @@ func HandleEditCandidate(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			u.Linkedin,
 			u.Status,
 			u.TagId,
-			u.Comments,
+			u.Comment,
 			u.Cv,
 			u.Experience,
 			u.Education,
