@@ -1,0 +1,17 @@
+POST https://{{host}}/api/auth/login
+Content-Type: application/json
+
+{"email":"{{username}}","password":"{{password}}"}
+
+> {%
+    client.global.set("auth_token", response.body.access_token);
+%}
+###
+GET https://{{host}}/api/admin/returnLogsForCand/18712
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+###
+GET https://{{host}}/api/admin/returnLogsForCompany/
+Authorization:Bearer {{auth_token}}
+Content-Type: application/json
+###

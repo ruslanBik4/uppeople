@@ -390,11 +390,11 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/rs/xid v1.2.1/go.mod h1:+uKXf+4Djp6Md1KODXJxgGQPKngRmWyn10oCKFzNHOQ=
 github.com/rs/zerolog v1.13.0/go.mod h1:YbFCdg8HfsridGWAh22vktObvhZbQsZXe4/zB0OKkWU=
 github.com/rs/zerolog v1.15.0/go.mod h1:xYTKnLHcpfU2225ny5qZjxnj9NvkumZYjJHlAThCjNc=
-github.com/ruslanBik4/dbEngine v1.0.1142/go.mod h1:518eN+pynYyvuJwv+5JxSqr1oT9vr5ePvvowVg+jcxw=
-github.com/ruslanBik4/dbEngine v1.0.1143 h1:jn9SpEQISsuN106m6aDvFTD1dYMy2FTzdFGUkRNwGmY=
-github.com/ruslanBik4/dbEngine v1.0.1143/go.mod h1:518eN+pynYyvuJwv+5JxSqr1oT9vr5ePvvowVg+jcxw=
-github.com/ruslanBik4/httpgo v1.1.10092 h1:0Hd8QuGsPknfH3JoKws5amql7p7+6jnBFQt1vyhc5Eg=
-github.com/ruslanBik4/httpgo v1.1.10092/go.mod h1:rwZ2cdrjUI2rawmVmzWtIW82FGsWR57XxRVVV2SBKPs=
+github.com/ruslanBik4/dbEngine v1.0.1145/go.mod h1:518eN+pynYyvuJwv+5JxSqr1oT9vr5ePvvowVg+jcxw=
+github.com/ruslanBik4/dbEngine v1.0.1146 h1:LoHWijO/Hm+m1d6bIFs8l40tQnAFbfhrSnyfOKiQUto=
+github.com/ruslanBik4/dbEngine v1.0.1146/go.mod h1:518eN+pynYyvuJwv+5JxSqr1oT9vr5ePvvowVg+jcxw=
+github.com/ruslanBik4/httpgo v1.1.10093 h1:SHI+a6jcopm5R757rX6KP1G81Eryb8NO0V2NUA8VvE4=
+github.com/ruslanBik4/httpgo v1.1.10093/go.mod h1:TlTdH95n+5QpEk4XVhWCPB8W/k/F2XpTkD9r6nyI61M=
 github.com/ruslanBik4/logs v0.0.0-20200927155213-df5cc6a3fa8e/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=
 github.com/ruslanBik4/logs v0.0.12 h1:NMpEwnYs6mewtxbh0mZQEre7/KZYUPxuvdo+NCvbsGc=
 github.com/ruslanBik4/logs v0.0.12/go.mod h1:XnNaAAM/rRbziKvIEAgWKJUF9b8DB9bvJWA4WwY0Las=

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION get_log(id integer, isCand bool)
+CREATE OR REPLACE FUNCTION get_log(_id integer, _isCand bool)
     RETURNS table(
                      logId integer,
                      text text,
@@ -19,11 +19,11 @@ BEGIN
               log_actions.text_after_cand,
               CASE
                   WHEN log_actions.name = 'CODE_SEND_CV' or log_actions.name = 'CODE_APPOINT_INTERVIEW'
-                      THEN CONCAT(' на вакансию ', platforms.name, ', ', seniorities.name,
+                      THEN Format(' на вакансию %s, %s %s  в компанию %L', platforms.name, seniorities.name,
                                   CASE WHEN vacancies.name is not null
-                                           THEN CONCAT(' (', vacancies.name, ')')
+                                           THEN Format(' (%s)', vacancies.name)
                                        ELSE '' END,
-                                  ' в компанию ', companies.name)
+                                  companies.name)
 
                   ELSE '' END,
               CASE WHEN log_actions.is_insert_text THEN
@@ -31,7 +31,8 @@ BEGIN
                            AND logs.changed is not null AND jsonb_typeof(logs.changed) = 'object')
                                 THEN
 
-                                (SELECT DISTINCT string_agg(CONCAT(
+                                (SELECT string_agg(Format(
+                                    ' %s%s %s',
                                         CASE
                                             WHEN jst.key::text = 'platforms' THEN 'platforms'
                                             WHEN jst.key::text = 'platform_id' THEN 'platforms'
@@ -47,27 +48,31 @@ BEGIN
 
                                         CASE
                                             WHEN jst.key::text = 'text' THEN ''
-                                            ELSE '=' END,
+                                            ELSE ': ' END,
                                         CASE
-                                            WHEN jst.key::text = 'platforms' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'platform_id' THEN (select array_to_string(array_agg(name), ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'seniority_id' THEN (select array_to_string(array_agg(name), ', ') from seniorities ss where ss.id = ANY(jsonb_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'id_languages' THEN (select array_to_string(array_agg(name), ', ') from languages ls where ls.id = ANY(jsonb_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'tag_id' THEN (select array_to_string(array_agg(name), ', ') from tags ts where ts.id = ANY(jsonb_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'status_for_vac' THEN (select array_to_string(array_agg(status), ', ') from status_for_vacs sv where sv.id = ANY(jsonb_array_castint(jst.value)))
-                                            WHEN jst.key::text = 'contact_id' THEN (select array_to_string(array_agg(name), ', ') from contacts cs where cs.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'platforms'
+                                                THEN (select string_agg(ps.name, ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'platform_id'
+                                                THEN (select string_agg(ps.name, ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'seniority_id'
+                                                THEN (select string_agg(ss.name, ', ') from seniorities ss where ss.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'id_languages'
+                                                THEN (select string_agg(ls.name, ', ') from languages ls where ls.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'tag_id'
+                                                THEN (select string_agg(ts.name, ', ') from tags ts where ts.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'status_for_vac'
+                                                THEN (select string_agg(sv.status, ', ') from status_for_vacs sv where sv.id = ANY(jsonb_array_castint(jst.value)))
+                                            WHEN jst.key::text = 'contact_id'
+                                                THEN (select string_agg(cs.name, ', ') from contacts cs where cs.id = ANY(jsonb_array_castint(jst.value)))
                                             WHEN (jst.key::text = 'vacancy_id' OR jst.key::text = 'vacancies')
-                                                THEN (select array_to_string(array_agg(CONCAT(
-                                                    pss.name,
-                                                    ', ',
-                                                    sss.name,
-                                                    CASE WHEN vs.name is not null THEN CONCAT(' (', vs.name, ')') ELSE '' END,
-                                                    ' в компании ',
-                                                    css.name)), ', ')
+                                                THEN (select string_agg(
+                                                        Format('%s, %s %s в компании %L',
+                                                        (select pss.name from platforms pss WHERE vs.platform_id = pss.id),
+                                                        (select sss.name FROM seniorities sss WHERE vs.seniority_id = sss.id),
+                                                        CASE WHEN vs.name is not null THEN Format(' (%s)', vs.name) ELSE '' END,
+                                                        (select css.name FROM companies css WHERE vs.company_id = css.id)
+                                                        ), ', ')
                                                       FROM vacancies vs
-                                                               left join companies css on (vs.company_id = css.id)
-                                                               left Join platforms pss ON (vs.platform_id = pss.id)
-                                                               left Join seniorities sss ON (vs.seniority_id = sss.id)
                                                       where vs.id = ANY(jsonb_array_castint(jst.value)))
 
 
@@ -88,7 +93,7 @@ from logs left Join companies on (logs.company_id = companies.id)
     left Join platforms ON (vacancies.platform_id = platforms.id)
     left Join seniorities ON (vacancies.seniority_id = seniorities.id)
     left Join log_actions ON (logs.action_code = log_actions.id)
-where ($2 AND logs.candidate_id = $1) or (NOT $2 AND logs.company_id = $1)
+where (_isCand AND logs.candidate_id = _id) or (NOT _isCand AND logs.company_id = _id)
 order by logs.create_at DESC
 ;
 END;

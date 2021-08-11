@@ -38,7 +38,7 @@ func HandleReturnLogsForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	return DB.Conn.SelectToMaps(ctx, LOG_VIEW, ctx.UserValue("company_id"), false)
+	return DB.Conn.SelectToMaps(ctx, LOG_VIEW, ctx.UserValue(ParamCompanyID.Name), false)
 }
 
 func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, candidateId int32, text map[string]interface{}) {

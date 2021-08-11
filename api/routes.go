@@ -48,7 +48,7 @@ var (
 		Req:  false,
 		Type: apis.NewTypeInParam(types.String),
 	}
-	ParamCoID = apis.InParam{
+	ParamCompanyID = apis.InParam{
 		Name:     "company_id",
 		Desc:     "id of company",
 		DefValue: apis.ApisValues(apis.ChildRoutePath),
@@ -547,22 +547,32 @@ var (
 				ParamID,
 			},
 		},
-		"/api/admin/returnLogsForCand/": {
-			Fnc:      HandleReturnLogsForCand,
-			Desc:     "show logs of candidate",
-			NeedAuth: true,
-			Params: []apis.InParam{
+		"/api/admin/returnLogsForCand/": apis.NewAPIRouteWithDBEngine(
+			"show logs of candidate",
+			apis.GET,
+			true,
+			[]apis.InParam{
 				ParamID,
+				{
+					Name:     "isCand",
+					DefValue: true,
+					Type:     apis.NewTypeInParam(types.Bool),
+				},
 			},
-		},
-		"/api/admin/returnLogsForCompany/": {
-			Fnc:      HandleReturnLogsForCompany,
-			Desc:     "show logs of company",
-			NeedAuth: true,
-			Params: []apis.InParam{
-				ParamCoID,
+			"get_log"),
+		"/api/admin/returnLogsForCompany/": apis.NewAPIRouteWithDBEngine(
+			"show logs of company",
+			apis.GET,
+			true,
+			[]apis.InParam{
+				ParamCompanyID,
+				{
+					Name:     "isCand",
+					DefValue: true,
+					Type:     apis.NewTypeInParam(types.Bool),
+				},
 			},
-		},
+			"get_log"),
 		// "/api/main/returnAllCandidates/": {
 		// 	Fnc:      HandleAllCandidates,
 		// 	Desc:     "show search results according range of characteristics",
