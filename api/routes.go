@@ -568,7 +568,7 @@ var (
 				ParamCompanyID,
 				{
 					Name:     "isCand",
-					DefValue: true,
+					DefValue: false,
 					Type:     apis.NewTypeInParam(types.Bool),
 				},
 			},
