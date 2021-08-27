@@ -6,6 +6,7 @@ create table users
     name character varying not null,
     email character varying not null,
     password character varying not null,
+    schema character varying,
     phone character varying not null default ''::character varying,
     image character varying default NULL::character varying,
     user_freelancers integer,

@@ -18,21 +18,29 @@ create table vacancies
     primary key (id)
 );
 
--- todo: https://commitfest.postgresql.org/17/1252/
--- todo: add foreign keys
+alter table vacancies
+    add constraint vacancies_seniorities_id_fk
+        foreign key (seniority_id) references public.seniorities
+            on update cascade on delete set default;
 
-create index idx_17194_vacancies_seniority_id_foreign
-    on vacancies (seniority_id);
+alter table vacancies
+    add constraint vacancies_company_id_fk
+        foreign key (company_id) references companies
+            on update cascade on delete set default;
 
-create index idx_17194_vacancies_status_foreign
-    on vacancies (status);
+alter table vacancies
+    add constraint vacancies_platform_id_fk
+        foreign key (platform_id) references public.platforms
+            on update cascade on delete set default;
 
-create index idx_17194_vacancies_location_id_foreign
-    on vacancies (location_id);
+alter table vacancies
+    add constraint vacancies_location_id_fk
+        foreign key (location_id) references public.location_for_vacancies
+            on update cascade on delete set default;
 
-create index idx_17194_vacancies_platform_id_foreign
-    on vacancies (platform_id);
+alter table vacancies
+    add constraint vacancies_status_fk
+        foreign key (status) references public.status_for_vacs
+            on update cascade on delete set default;
 
-create index idx_17194_vacancies_company_id_foreign
-    on vacancies (company_id);
 

@@ -55,15 +55,15 @@ create unique index candidates_linkedin_uindex
 
 alter table candidates
     add constraint candidates_seniorities_id_fk
-        foreign key (seniority_id) references seniorities
+        foreign key (seniority_id) references public.seniorities
             on update cascade on delete set default;
 
 alter table candidates
     add constraint candidates_tags_id_fk
-        foreign key (tag_id) references tags
+        foreign key (tag_id) references public.tags
             on update cascade on delete set default;
 
 alter table candidates
     add constraint candidates_id_languages_fk
-        foreign key (id_languages) references languages
+        foreign key (id_languages) references public.languages
             on update cascade on delete set default;

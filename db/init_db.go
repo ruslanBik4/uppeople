@@ -17,6 +17,7 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/dbEngine/dbEngine/psql"
 	"github.com/ruslanBik4/httpgo/apis"
+	"github.com/ruslanBik4/httpgo/auth"
 	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
@@ -40,7 +41,7 @@ var customTypes = map[string]*pgtype.DataType{
 }
 
 func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
-	conn := psql.NewConn(AfterConnect, nil, printNotice)
+	conn := psql.NewConn(AfterConnect, BeforeAcquire, printNotice)
 	ctx := context.WithValue(ctxApis, "dbURL", "")
 	ctx = context.WithValue(ctx, "fillSchema", true)
 	db, err := dbEngine.NewDB(ctx, conn)
@@ -92,6 +93,21 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 	return db
 }
 
+func BeforeAcquire(ctx context.Context, conn *pgx.Conn) bool {
+	schema := GetSchema(ctx)
+	if schema > "" {
+		tag, err := conn.Exec(ctx, "SET search_path TO "+schema)
+		if err != nil {
+			logs.ErrorLog(err, "SET search_path TO $1")
+			return false
+		}
+
+		logs.DebugLog(tag)
+	}
+
+	return true
+}
+
 func AfterConnect(ctx context.Context, conn *pgx.Conn) error {
 	// Override registered handler for point
 	if !initCustomTypes {
@@ -106,12 +122,21 @@ func AfterConnect(ctx context.Context, conn *pgx.Conn) error {
 	mess := "DB registered type (name, oid): "
 	for name, val := range customTypes {
 		conn.ConnInfo().RegisterDataType(*val)
-		mess += fmt.Sprintf("(%s,%v, %T) ", name, val.OID, val.Value)
+		mess += fmt.Sprintf("(%s, %v, %T) ", name, val.OID, val.Value)
 	}
 
 	logs.StatusLog(conn.PgConn().Conn().LocalAddr().String(), mess)
 
 	return nil
+}
+
+func GetSchema(ctx context.Context) string {
+	token, ok := ctx.Value(auth.UserValueToken).(interface{ GetSchema() string })
+	if ok {
+		return token.GetSchema()
+	}
+
+	return ""
 }
 
 func (dst CitextArray) MarshalJSON() ([]byte, error) {

@@ -31,8 +31,8 @@ BEGIN
          WHEN text LIKE '{%}' THEN text::jsonb
          ELSE to_jsonb(text)
         END)
-      from logs
-where logs.text is not null AND logs.changed IS NULL and vacancy_id is null;
+--     from logs
+    where logs.text is not null AND logs.changed IS NULL and vacancy_id is null;
 END;
 
 $$;

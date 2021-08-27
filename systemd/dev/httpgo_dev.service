@@ -7,6 +7,7 @@ Environment=PGPASSWORD=
 Environment=PGUSER=
 Environment=PGDATABASE_DEV=
 Environment=PGHOST=
+Environment=PGX_LOG=TRACE
 Environment=PGX_MAX_CONNS=100
 Environment=TBTOKEN=
 Environment=TBCHATID=

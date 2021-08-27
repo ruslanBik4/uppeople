@@ -10,15 +10,15 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/auth"
 	"github.com/ruslanBik4/logs"
-	"github.com/valyala/fasthttp"
-
 	"github.com/ruslanBik4/uppeople/db"
+	"github.com/valyala/fasthttp"
 )
 
 type lastEdit struct {
 	Candidate *db.CandidatesFields
 	Vacancy   *db.VacanciesFields
 }
+
 type User struct {
 	*db.UsersFields
 	Companies map[int32]map[string]string `json:"companies"`
@@ -47,6 +47,10 @@ func (u *User) IsAdmin() bool {
 
 func (u *User) GetUserID() int {
 	return int(u.Id)
+}
+
+func (u *User) GetSchema() string {
+	return u.Schema
 }
 
 func GetUserID(ctx *fasthttp.RequestCtx) int {
