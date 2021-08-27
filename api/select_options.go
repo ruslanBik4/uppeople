@@ -41,7 +41,7 @@ type selectOpt struct {
 func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {
 	s := selectOpt{
 		Companies:     getCompanies(ctx, DB),
-		Languages:     getLanguages(ctx, DB),
+		Languages:     db.GetLanguagesAsSelectedUnits(),
 		Platforms:     db.GetPlatformsAsSelectedUnits(),
 		Recruiters:    getRecruiters(ctx, DB),
 		Statuses:      db.GetStatusForVacAsSelectedUnits(),

@@ -104,7 +104,7 @@ func BeforeAcquire(ctx context.Context, conn *pgx.Conn) bool {
 		return false
 	}
 
-	logs.DebugLog(tag)
+	logs.DebugLog(tag.String())
 
 	return true
 }
