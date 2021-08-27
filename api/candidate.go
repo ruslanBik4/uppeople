@@ -317,17 +317,15 @@ func HandleInformationForSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	name := table.Record.Name
-	platform, _ := db.NewPlatforms(DB)
-	err = platform.SelectOneAndScan(ctx,
-		platform,
-		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(table.Record.Platforms),
-	)
-	if err != nil {
-		return createErrResult(err)
+
+	platformName := ""
+	for key, id := range table.Record.Platforms {
+		if key > 0 {
+			platformName += ", "
+		}
+		platformName += db.GetPlatformFromId(id).Name
 	}
 
-	platformName := platform.Record.Name
 	seniority := db.GetSeniorityFromId(table.Record.SeniorityId)
 
 	maps := make(map[string]interface{}, 0)
