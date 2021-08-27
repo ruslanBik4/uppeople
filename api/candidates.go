@@ -95,7 +95,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 					args = append(args, dto.SelectReason.Id)
 				} else {
 					where = append(where, `tag_id in (SELECT id 
-												FROM tags 
+												FROM public.tags 
 												WHERE parent_id=%s)`)
 					args = append(args, dto.SelectTag.Id)
 				}
@@ -182,13 +182,13 @@ where candidates.id = candidate_id
 order by status desc
 fetch first 1 row only)`
 			case "Platform":
-				orderBy = `(select name from platforms where id = ANY(platforms) order by 1 fetch first 1 row only)`
+				orderBy = `(select name from public.platforms where id = ANY(platforms) order by 1 fetch first 1 row only)`
 			case "Recruiter":
-				orderBy = `(select name from users where id = recruter_id)`
+				orderBy = `(select name from public.users where id = recruter_id)`
 			case "Tag/Reason":
-				orderBy = `(select name from tags where id = tag_id)`
+				orderBy = `(select name from public.tags where id = tag_id)`
 			case "Seniority":
-				orderBy = `(select name from seniorities where id = seniority_id)`
+				orderBy = `(select name from public.seniorities where id = seniority_id)`
 			case "Status":
 				orderBy = `(select status from vacancies_to_candidates where candidates.id = candidate_id
 order by status desc
