@@ -1,4 +1,4 @@
-CREATE TABLE comments_from_candidates
+CREATE TABLE comments_for_candidates
 (
     id           serial,
     user_id      integer default 1 not null,
@@ -9,9 +9,9 @@ CREATE TABLE comments_from_candidates
     PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE comments_from_candidates IS '';
+COMMENT ON TABLE comments_for_candidates IS '';
 
-alter table comments_from_candidates
+alter table comments_for_candidates
     add constraint comments_from_candidates_candidate_id_fk
         foreign key (candidate_id) references candidates
             on update cascade on delete set default;
