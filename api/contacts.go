@@ -9,7 +9,6 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 
 	"github.com/ruslanBik4/uppeople/db"
@@ -56,37 +55,25 @@ func HandleAddContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	allPlatforms := 0
+	var platforms []int32
 	if u.IsChecked {
-		allPlatforms = 1
+		for _, val := range u.SelectPlatforms {
+			platforms = append(platforms, val.Id)
+		}
 	}
 
 	contacts, _ := db.NewContacts(DB)
 	idC, err := contacts.Insert(ctx,
-		dbEngine.ColumnsForSelect("company_id", "name", "email", "phone", "skype", "all_platforms"),
-		dbEngine.ArgsForSelect(idCompany, u.Name, u.Email, u.Phone, u.Skype, allPlatforms),
+		dbEngine.ColumnsForSelect("company_id", "name", "email", "phone", "skype", "platforms"),
+		dbEngine.ArgsForSelect(idCompany, u.Name, u.Email, u.Phone, u.Skype, platforms),
 	)
 	if err != nil {
 		return createErrResult(err)
 	}
 
-	if !u.IsChecked {
-		table, _ := db.NewContacts_to_platforms(DB)
-		for _, val := range u.SelectPlatforms {
-			i, err := table.Insert(ctx,
-				dbEngine.ColumnsForSelect("contact_id", "platform_id"),
-				dbEngine.ArgsForSelect(idC, val.Id),
-			)
-			if err != nil {
-				logs.ErrorLog(err, "NewContacts_to_platforms %s", val.Label)
-			}
-
-			if i > 0 {
-				toLogCompanyUpdate(ctx, idCompany, map[string]interface{}{"contact_id": idC, "platform_id": val.Id})
-			}
-		}
+	if idC > 0 {
+		toLogCompanyUpdate(ctx, idCompany, map[string]interface{}{"contact_id": idC, "platforms": platforms})
 	}
-
 	u.Id = int32(idC)
 
 	return u, nil
@@ -110,40 +97,26 @@ func HandleEditContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
-	allPlatforms := 0
+	var platforms []int32
 	if u.IsChecked {
-		allPlatforms = 1
+		for _, val := range u.SelectPlatforms {
+			platforms = append(platforms, val.Id)
+		}
 	}
 
 	contacts, _ := db.NewContacts(DB)
-	idC, err := contacts.Update(ctx,
-		dbEngine.ColumnsForSelect("company_id", "name", "email", "phone", "skype", "all_platforms"),
+	i, err := contacts.Update(ctx,
+		dbEngine.ColumnsForSelect("company_id", "name", "email", "phone", "skype", "platforms"),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(idCompany, u.Name, u.Email, u.Phone, u.Skype, allPlatforms, u.Id),
+		dbEngine.ArgsForSelect(idCompany, u.Name, u.Email, u.Phone, u.Skype, platforms, u.Id),
 	)
 	if err != nil {
 		return createErrResult(err)
 	}
 
-	if !u.IsChecked {
-		table, _ := db.NewContacts_to_platforms(DB)
-		for _, val := range u.SelectPlatforms {
-			i, err := table.Insert(ctx,
-				dbEngine.ColumnsForSelect("contact_id", "platform_id"),
-				dbEngine.ArgsForSelect(u.Id, val.Id),
-				dbEngine.InsertOnConflictDoNothing(),
-			)
-			if err != nil {
-				logs.ErrorLog(err, "NewContacts_to_platforms %s", val.Label)
-			}
-
-			if i > 0 {
-				toLogCompanyUpdate(ctx, idCompany, map[string]interface{}{"contact_id": u.Id, "platform_id": val.Id})
-			}
-		}
+	if i > 0 {
+		toLogCompanyUpdate(ctx, idCompany, map[string]interface{}{"contact_id": u.Id, "platforms": platforms})
 	}
-
-	u.Id = int32(idC)
 
 	return u, nil
 }
@@ -204,9 +177,8 @@ func HandleViewContactForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) 
 		nil,
 		&v.SelectPlatforms,
 		`select p.id, p.name as label, p.name as value 
-			from contacts_to_platforms c join platforms p on p.id=platform_id
-			where contact_id=$1`,
-		id,
+			from public.platforms p where p.id=ANY($1)`,
+		contacts.Record.Platforms,
 	)
 	if err != nil {
 		return createErrResult(err)

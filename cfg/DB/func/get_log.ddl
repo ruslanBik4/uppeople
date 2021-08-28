@@ -19,7 +19,7 @@ BEGIN
                   log_actions.text_after_cand,
                   CASE
                       WHEN log_actions.name = 'CODE_SEND_CV' or log_actions.name = 'CODE_APPOINT_INTERVIEW'
-                          THEN Format(' на вакансию %s, %s%s, %s в компанию %L', platforms.name, seniorities.name,
+                          THEN Format(' на вакансию %s, %s%s, %s в компанию %L', p.name, seniorities.name,
                                       CASE WHEN vacancies.name is not null
                                                THEN Format(' (%s) ', vacancies.name)
                                            ELSE '' END,
@@ -52,24 +52,24 @@ BEGIN
                                                                    ELSE ': ' END,
                                                                CASE
                                                                    WHEN jst.key::text = 'platforms'
-                                                                       THEN (select string_agg(ps.name, ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
+                                                                       THEN (select string_agg(ps.name, ', ') from public.platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
                                                                    WHEN jst.key::text = 'platform_id'
-                                                                       THEN (select string_agg(ps.name, ', ') from platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
+                                                                       THEN (select string_agg(ps.name, ', ') from public.platforms ps where ps.id = ANY(jsonb_array_castint(jst.value)))
                                                                    WHEN jst.key::text = 'seniority_id'
-                                                                       THEN (select string_agg(ss.name, ', ') from seniorities ss where ss.id = ANY(jsonb_array_castint(jst.value)))
+                                                                       THEN (select string_agg(ss.name, ', ') from public.seniorities ss where ss.id = ANY(jsonb_array_castint(jst.value)))
                                                                    WHEN jst.key::text = 'id_languages'
-                                                                       THEN (select string_agg(ls.name, ', ') from languages ls where ls.id = ANY(jsonb_array_castint(jst.value)))
+                                                                       THEN (select string_agg(ls.name, ', ') from public.languages ls where ls.id = ANY(jsonb_array_castint(jst.value)))
                                                                    WHEN jst.key::text = 'tag_id'
-                                                                       THEN (select string_agg(ts.name, ', ') from tags ts where ts.id = ANY(jsonb_array_castint(jst.value)))
+                                                                       THEN (select string_agg(ts.name, ', ') from public.tags ts where ts.id = ANY(jsonb_array_castint(jst.value)))
                                                                    WHEN jst.key::text = 'status_for_vac'
-                                                                       THEN (select string_agg(sv.status, ', ') from status_for_vacs sv where sv.id = ANY(jsonb_array_castint(jst.value)))
+                                                                       THEN (select string_agg(sv.status, ', ') from public.status_for_vacs sv where sv.id = ANY(jsonb_array_castint(jst.value)))
                                                                    WHEN jst.key::text = 'contact_id'
                                                                        THEN (select string_agg(cs.name, ', ') from contacts cs where cs.id = ANY(jsonb_array_castint(jst.value)))
                                                                    WHEN (jst.key::text = 'vacancy_id' OR jst.key::text = 'vacancies')
                                                                        THEN (select string_agg(
                                                                                             Format('%s, %s %s в компании %L',
-                                                                                                   (select pss.name from platforms pss WHERE vs.platform_id = pss.id),
-                                                                                                   (select sss.name FROM seniorities sss WHERE vs.seniority_id = sss.id),
+                                                                                                   (select pss.name from public.platforms pss WHERE vs.platform_id = pss.id),
+                                                                                                   (select sss.name FROM public.seniorities sss WHERE vs.seniority_id = sss.id),
                                                                                                    CASE WHEN vs.name is not null THEN Format(' (%s)', vs.name) ELSE '' END,
                                                                                                    (select css.name FROM companies css WHERE vs.company_id = css.id)
                                                                                                 ), ', ')
@@ -89,12 +89,12 @@ BEGIN
 
     from logs left Join companies on (logs.company_id = companies.id)
         left join vacancies ON (logs.vacancy_id = vacancies.id)
-        join users ON (logs.user_id = users.id)
+        join public.users ON (logs.user_id = users.id)
         join candidates can ON (logs.candidate_id = can.id)
-        left Join platforms ON (vacancies.platform_id = platforms.id)
-        left Join seniorities ON (vacancies.seniority_id = seniorities.id)
-        left Join location_for_vacancies lfv on vacancies.location_id = lfv.id
-        left Join log_actions ON (logs.action_code = log_actions.id)
+        left Join public.platforms p ON (vacancies.platform_id = p.id)
+        left Join public.seniorities ON (vacancies.seniority_id = seniorities.id)
+        left Join public.location_for_vacancies lfv on vacancies.location_id = lfv.id
+        left Join public.log_actions ON (logs.action_code = log_actions.id)
 where (_isCand AND logs.candidate_id = _id) or (NOT _isCand AND logs.company_id = _id)
 order by logs.create_at DESC
 ;

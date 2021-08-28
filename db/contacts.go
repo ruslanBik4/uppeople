@@ -16,15 +16,15 @@ type Contacts struct {
 }
 
 type ContactsFields struct {
-	Id            int64          `json:"id"`
-	Company_id    sql.NullInt64  `json:"company_id"`
-	Name          sql.NullString `json:"name"`
-	Email         sql.NullString `json:"email"`
-	Phone         sql.NullString `json:"phone"`
-	Skype         sql.NullString `json:"skype"`
-	Default       sql.NullInt64  `json:"default"`
-	All_platforms sql.NullInt64  `json:"all_platforms"`
-	Not_visible   sql.NullInt64  `json:"not_visible"`
+	Id         int64          `json:"id"`
+	Company_id sql.NullInt64  `json:"company_id"`
+	Name       sql.NullString `json:"name"`
+	Email      sql.NullString `json:"email"`
+	Phone      sql.NullString `json:"phone"`
+	Skype      sql.NullString `json:"skype"`
+	Default    sql.NullInt64  `json:"default"`
+	Platforms  []int32        `json:"platforms"`
+	NotVisible sql.NullInt64  `json:"not_visible"`
 }
 
 func (r *ContactsFields) RefColValue(name string) interface{} {
@@ -50,11 +50,11 @@ func (r *ContactsFields) RefColValue(name string) interface{} {
 	case "default_contact":
 		return &r.Default
 
-	case "all_platforms":
-		return &r.All_platforms
+	case "platforms":
+		return &r.Platforms
 
 	case "not_visible":
-		return &r.Not_visible
+		return &r.NotVisible
 
 	default:
 		return nil
@@ -84,11 +84,11 @@ func (r *ContactsFields) ColValue(name string) interface{} {
 	case "default_contact":
 		return r.Default
 
-	case "all_platforms":
-		return r.All_platforms
+	case "platforms":
+		return r.Platforms
 
 	case "not_visible":
-		return r.Not_visible
+		return r.NotVisible
 
 	default:
 		return nil

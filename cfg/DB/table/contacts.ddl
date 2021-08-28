@@ -7,7 +7,7 @@ CREATE TABLE contacts
     phone           character varying,
     skype           character varying,
     default_contact integer,
-    all_platforms   integer,
+    platforms   integer[],
     not_visible     integer,
     PRIMARY KEY (id)
 );

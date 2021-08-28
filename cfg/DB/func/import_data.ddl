@@ -65,9 +65,9 @@ BEGIN
                 seniority_id,
                 coalesce(salary,0),
                 coalesce(location_id,0)
-         from vacancies_tmp
-            where status > 1)
+         from vacancies_tmp)
     on conflict do nothing ;
+
     PERFORM setval('vacancies_id_seq'::regclass, (select max(id) from vacancies));
 
 
