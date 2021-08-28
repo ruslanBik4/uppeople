@@ -50,9 +50,11 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		dbEngine.Offset(offset),
 	}
 
-	sqlVacancy := "select count(*) from vacancies where company_id=$1"
-	sqlRecruiters := "SELECT array_agg(user_id) FROM vacancies_to_candidates WHERE company_id=$1"
-	sqlCandidates := "select count(distinct candidate_id) from candidates_to_companies where company_id=$1"
+	// sqlVacancy := "select count(*) from vacancies where company_id=$1"
+	sqlRecruiters := `SELECT array_agg(user_id) recruiters, count(distinct vacancy_id) vacancies, count(distinct candidate_id) candidates
+FROM vacancies_to_candidates 
+WHERE company_id=$1`
+	// sqlCandidates := "select count(distinct candidate_id) from candidates_to_companies where company_id=$1"
 	dto, ok := ctx.UserValue(apis.JSONParams).(*SearchCompany)
 	if ok {
 		args := make([]interface{}, 0)
@@ -78,8 +80,8 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			FROM vacancies
 			WHERE status=%s)`)
 			args = append(args, []int32{0, 1})
-			fActive := " AND status=ANY(array[0,1])"
-			sqlVacancy += fActive
+			// fActive := " AND status=ANY(array[0,1])"
+			// sqlVacancy += fActive
 			// sqlCandidates += fActive
 
 		}
@@ -98,25 +100,25 @@ func HandleAllCompanies(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			elem := &ViewCompany{
 				CompaniesFields: record,
 			}
+			// err := DB.Conn.SelectOneAndScan(ctx,
+			// 	&elem,
+			// 	sqlVacancy,
+			// 	record.Id,
+			// )
+			// if err != nil {
+			// 	return errors.Wrap(err, sqlVacancy)
+			// }
+			// err = DB.Conn.SelectOneAndScan(ctx,
+			// 	&elem.Candidates,
+			// 	sqlCandidates,
+			// 	record.Id,
+			// )
+			// if err != nil {
+			// 	return errors.Wrap(err, sqlCandidates)
+			// }
+			//
 			err := DB.Conn.SelectOneAndScan(ctx,
-				&elem.Vacancies,
-				sqlVacancy,
-				record.Id,
-			)
-			if err != nil {
-				return errors.Wrap(err, sqlVacancy)
-			}
-			err = DB.Conn.SelectOneAndScan(ctx,
-				&elem.Candidates,
-				sqlCandidates,
-				record.Id,
-			)
-			if err != nil {
-				return errors.Wrap(err, sqlCandidates)
-			}
-
-			err = DB.Conn.SelectOneAndScan(ctx,
-				&elem.Recruiters,
+				&elem,
 				sqlRecruiters,
 				record.Id,
 			)

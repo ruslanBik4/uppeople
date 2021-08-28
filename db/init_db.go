@@ -104,7 +104,9 @@ func BeforeAcquire(ctx context.Context, conn *pgx.Conn) bool {
 		return false
 	}
 
-	logs.DebugLog(tag.String(), schema)
+	if schema > "" {
+		logs.DebugLog(tag.String(), schema)
+	}
 
 	return true
 }

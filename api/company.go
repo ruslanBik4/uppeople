@@ -6,6 +6,7 @@ package api
 
 import (
 	"fmt"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
@@ -22,6 +23,24 @@ type ViewCompany struct {
 	Contacts   []*db.ContactsFields `json:"contacts,omitempty"`
 	Managers   []*db.UsersFields    `json:"managers,omitempty"`
 	Recruiters []int32              `json:"recruiters"`
+}
+
+func (c ViewCompany) GetFields(columns []dbEngine.Column) []interface{} {
+	res := make([]interface{}, len(columns))
+	for i, col := range columns {
+		switch col.Name() {
+		case "candidates":
+			res[i] = &c.Candidates
+		case "vacancies":
+			res[i] = &c.Vacancies
+		case "recruiters":
+			res[i] = &c.Recruiters
+		default:
+			res[i] = c.RefColValue(col.Name())
+		}
+	}
+
+	return res
 }
 
 func HandleAddCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
