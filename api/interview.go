@@ -314,7 +314,7 @@ func HandleInviteOnInterviewView(ctx *fasthttp.RequestCtx) (interface{}, error) 
   (select json_agg(json_build_object('email', t.email, 'id',t.id, 'all_platforms', t.platforms is null,
            'platforms', t.platforms, 'name', t.name))
              from contacts t 
-           WHERE t.company_id = c.id AND (platforms is null OR platform_id && $1)) as contacts,
+           WHERE t.company_id = c.id AND (platforms is null OR platforms && $1)) as contacts,
   (select json_agg(json_build_object('id', v.id,
 		   'platform', (select p.name  from public.platforms p where p.id = v.platform_id),
 		   'location', (select l.name   from public.location_for_vacancies l where v.location_id = l.id),

@@ -72,9 +72,9 @@ const SEND_CV_COMPANIES_SQL = `SELECT id as comp_id, c.name, send_details,
              from contacts t 
            WHERE t.company_id = c.id AND (platforms is null OR platforms && $1)) as contacts,
   (select json_agg(json_build_object('id', v.id,
-		   'platform', (select p.name  from platforms p where p.id = v.platform_id),
-		   'location', (select l.name   from location_for_vacancies l where v.location_id = l.id),
-           'seniority', (select s.name from seniorities s where s.id = v.seniority_id),
+		   'platform', (select p.name  from public.platforms p where p.id = v.platform_id),
+		   'location', (select l.name   from public.location_for_vacancies l where v.location_id = l.id),
+           'seniority', (select s.name from public.seniorities s where s.id = v.seniority_id),
            'salary', v.salary, 
 			'name', v.name, 
 			'user_ids', v.user_ids)) as vacancy

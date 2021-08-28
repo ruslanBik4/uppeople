@@ -75,14 +75,14 @@ func HandleReturnAllVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	sql := `select v.id, company_id, CONCAT(c.name, ' (', platforms.name, ') ',
-		(select s.status from statuses s where s.id = v.status)
+		(select s.status from public.statuses s where s.id = v.status)
 ) as name`
 	if dto.WithRecruiters {
 		sql += `, (SELECT array_agg(distinct user_id) as recruiter_id
                             FROM vacancies_to_candidates
                             WHERE vacancy_id = v.id) as recruiters`
 	}
-	sql += ` from vacancies v left join platforms on v.platform_id=platforms.id
+	sql += ` from vacancies v left join public.platforms on v.platform_id=platforms.id
 	left join companies c on v.company_id = c.id
 `
 	return DB.Conn.SelectToMaps(ctx, sql+where+" order by v.status")
@@ -154,11 +154,11 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 		case "Company":
 			orderBy = `(select name from companies where id = company_id)`
 		case "Platform":
-			orderBy = `(select name from platforms where id = platform_id)`
+			orderBy = `(select name from public.platforms where id = platform_id)`
 		case "Location":
-			orderBy = `(select name from location_for_vacancies where id = location_id)`
+			orderBy = `(select name from public.location_for_vacancies where id = location_id)`
 		case "Seniority":
-			orderBy = `(select name from seniorities where id = seniority_id)`
+			orderBy = `(select name from public.seniorities where id = seniority_id)`
 		case "Contacts":
 			orderBy = `coalesce(email, phone, skype)`
 		case "Date":
