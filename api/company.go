@@ -25,7 +25,7 @@ type ViewCompany struct {
 	Recruiters []int32              `json:"recruiters"`
 }
 
-func (c ViewCompany) GetFields(columns []dbEngine.Column) []interface{} {
+func (c *ViewCompany) GetFields(columns []dbEngine.Column) []interface{} {
 	res := make([]interface{}, len(columns))
 	for i, col := range columns {
 		switch col.Name() {
