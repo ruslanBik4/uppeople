@@ -95,8 +95,11 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 
 func BeforeAcquire(ctx context.Context, conn *pgx.Conn) bool {
 	schema := GetSchema(ctx)
+	changeSchema := true
 	if schema == "" {
 		schema = "public"
+
+		changeSchema = false
 	}
 	tag, err := conn.Exec(ctx, "SET search_path TO "+schema)
 	if err != nil {
@@ -104,7 +107,7 @@ func BeforeAcquire(ctx context.Context, conn *pgx.Conn) bool {
 		return false
 	}
 
-	if schema > "" {
+	if changeSchema {
 		logs.DebugLog(tag.String(), schema)
 	}
 

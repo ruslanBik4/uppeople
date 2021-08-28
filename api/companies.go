@@ -118,7 +118,7 @@ WHERE company_id=$1`
 			// }
 			//
 			err := DB.Conn.SelectOneAndScan(ctx,
-				&elem,
+				elem,
 				sqlRecruiters,
 				record.Id,
 			)

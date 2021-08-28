@@ -38,6 +38,7 @@ func (c *ViewCompany) GetFields(columns []dbEngine.Column) []interface{} {
 		default:
 			res[i] = c.RefColValue(col.Name())
 		}
+		logs.DebugLog(col.Name())
 	}
 
 	return res
