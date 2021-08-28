@@ -40,7 +40,7 @@ alter table vacancies
 
 alter table vacancies
     add constraint vacancies_status_fk
-        foreign key (status) references public.status_for_vacs
+        foreign key (status) references public.statuses
             on update cascade on delete set default;
 
 

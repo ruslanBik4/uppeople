@@ -116,15 +116,6 @@ func HandleSendCV(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		}
 	}
 
-	table, _ := db.NewCandidates_to_companies(DB)
-	_, err := table.Upsert(ctx,
-		dbEngine.ColumnsForSelect("company_id", "candidate_id", "visible"),
-		dbEngine.ArgsForSelect(u.CompId, id, 0),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-
 	for _, val := range u.CheckedEmailsEntries {
 		s, ok := val[1].(bool)
 		if ok && s {
@@ -265,15 +256,6 @@ func HandleInviteOnInterviewSend(ctx *fasthttp.RequestCtx) (interface{}, error) 
 	}
 
 	toLogCandidateAppointInterview(ctx, id, u.SelectedCompany.Id, vacID, "")
-
-	tableCTC, _ := db.NewCandidates_to_companies(DB)
-	_, err = tableCTC.Upsert(ctx,
-		dbEngine.ColumnsForSelect("company_id", "candidate_id", "visible"),
-		dbEngine.ArgsForSelect(u.SelectedCompany.Id, id, 0),
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
 
 	for _, val := range u.SelectedContacts {
 		logs.DebugLog("send mail")
