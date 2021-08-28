@@ -194,7 +194,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	}
 
 	companies, _ := db.NewCompanies(DB)
-	locs, _ := db.NewLocation_for_vacancies(DB)
+	locs, _ := db.NewLocationForVacancies(DB)
 	err := vacancies.SelectSelfScanEach(ctx,
 		func(record *db.VacanciesFields) error {
 			view := VacanciesView{

@@ -27,36 +27,6 @@ func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUni
 	return res
 }
 
-func getLocations(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
-	statUses, _ := db.NewLocation_for_vacancies(DB)
-
-	err := statUses.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.OrderBy("name"),
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
-func getLanguages(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
-
-	err := DB.Conn.SelectAndScanEach(ctx,
-		nil,
-		&res,
-		"select id, name as label, LOWER(name) as value from languages order by name",
-	)
-	if err != nil {
-		logs.ErrorLog(err, "	")
-	}
-
-	return res
-}
-
 func getRecruiters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
 	users, _ := db.NewUsers(DB)
 

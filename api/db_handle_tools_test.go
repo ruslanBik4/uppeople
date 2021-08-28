@@ -143,27 +143,6 @@ func Test_getCompanies(t *testing.T) {
 	}
 }
 
-func Test_getLocations(t *testing.T) {
-	type args struct {
-		ctx *fasthttp.RequestCtx
-		DB  *dbEngine.DB
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantRes db.SelectedUnits
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if gotRes := getLocations(tt.args.ctx, tt.args.DB); !reflect.DeepEqual(gotRes, tt.wantRes) {
-				t.Errorf("getLocations() = %v, want %v", gotRes, tt.wantRes)
-			}
-		})
-	}
-}
-
 func Test_getRecruiters(t *testing.T) {
 	type args struct {
 		ctx *fasthttp.RequestCtx

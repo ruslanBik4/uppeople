@@ -132,6 +132,15 @@ const LOG_DEL_COMMENT = "CODE_DEL_COMMENT"
 const LOG_SEND_CV = "CODE_SEND_CV"
 const LOG_APPOINT_INTERVIEW = "CODE_APPOINT_INTERVIEW"
 
+//Locations values
+const LOCATION_REMOTE = "Remote"
+const LOCATION_KYIV = "Kyiv"
+const LOCATION_LVIV = "Lviv"
+const LOCATION_ODESSA = "Odessa"
+const LOCATION_KHARKIV = "Kharkiv"
+const LOCATION_DNIPRO = "Dnipro"
+const LOCATION_NOPE = "Nope"
+
 //Consts for table values
 var (
 	tagIds            TagIdMap
@@ -141,6 +150,7 @@ var (
 	platformIds       PlatformsIdMap
 	logActionsIds     LogActionsIdMap
 	languagesIds      LanguagesIdMap
+	locationsIds      LocationsIdMap
 )
 
 // Consts for getter handlerds
@@ -153,6 +163,7 @@ var (
 	platformsSelected   SelectedUnits
 	logActionsSelected  SelectedUnits
 	languagesSelected   SelectedUnits
+	locationsSelected   SelectedUnits
 )
 
 var LogsTable *Logs

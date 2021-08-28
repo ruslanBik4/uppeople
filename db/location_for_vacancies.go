@@ -4,23 +4,27 @@ package db
 
 import (
 	"database/sql"
-
-	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"golang.org/x/net/context"
+
+	"github.com/pkg/errors"
+	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 )
 
-type Location_for_vacancies struct {
+type LocationForVacancies struct {
 	dbEngine.Table
-	Record *Location_for_vacanciesFields
+	Record *LocationForVacanciesFields
 	rows   sql.Rows
 }
 
-type Location_for_vacanciesFields struct {
-	Id   int64          `json:"id"`
-	Name sql.NullString `json:"name"`
+type LocationForVacanciesFields struct {
+	Id   int32  `json:"id"`
+	Name string `json:"name"`
 }
 
-func (r *Location_for_vacanciesFields) RefColValue(name string) interface{} {
+type LocationsIdMap map[string]LocationForVacanciesFields
+
+func (r *LocationForVacanciesFields) RefColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return &r.Id
@@ -33,7 +37,7 @@ func (r *Location_for_vacanciesFields) RefColValue(name string) interface{} {
 	}
 }
 
-func (r *Location_for_vacanciesFields) ColValue(name string) interface{} {
+func (r *LocationForVacanciesFields) ColValue(name string) interface{} {
 	switch name {
 	case "id":
 		return r.Id
@@ -46,23 +50,23 @@ func (r *Location_for_vacanciesFields) ColValue(name string) interface{} {
 	}
 }
 
-func NewLocation_for_vacancies(db *dbEngine.DB) (*Location_for_vacancies, error) {
+func NewLocationForVacancies(db *dbEngine.DB) (*LocationForVacancies, error) {
 	table, ok := db.Tables[TABLE_LOCATION_FOR_VACANCIES]
 	if !ok {
 		return nil, dbEngine.ErrNotFoundTable{Table: TABLE_LOCATION_FOR_VACANCIES}
 	}
 
-	return &Location_for_vacancies{
+	return &LocationForVacancies{
 		Table: table,
 	}, nil
 }
 
-func (t *Location_for_vacancies) NewRecord() *Location_for_vacanciesFields {
-	t.Record = &Location_for_vacanciesFields{}
+func (t *LocationForVacancies) NewRecord() *LocationForVacanciesFields {
+	t.Record = &LocationForVacanciesFields{}
 	return t.Record
 }
 
-func (t *Location_for_vacancies) GetFields(columns []dbEngine.Column) []interface{} {
+func (t *LocationForVacancies) GetFields(columns []dbEngine.Column) []interface{} {
 	if len(columns) == 0 {
 		columns = t.Columns()
 	}
@@ -76,7 +80,7 @@ func (t *Location_for_vacancies) GetFields(columns []dbEngine.Column) []interfac
 	return v
 }
 
-func (t *Location_for_vacancies) SelectSelfScanEach(ctx context.Context, each func(record *Location_for_vacanciesFields) error, Options ...dbEngine.BuildSqlOptions) error {
+func (t *LocationForVacancies) SelectSelfScanEach(ctx context.Context, each func(record *LocationForVacanciesFields) error, Options ...dbEngine.BuildSqlOptions) error {
 	return t.SelectAndScanEach(ctx,
 		func() error {
 			if each != nil {
@@ -87,7 +91,7 @@ func (t *Location_for_vacancies) SelectSelfScanEach(ctx context.Context, each fu
 		}, t, Options...)
 }
 
-func (t *Location_for_vacancies) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *LocationForVacancies) Insert(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		columns := make([]string, len(t.Columns()))
@@ -103,7 +107,7 @@ func (t *Location_for_vacancies) Insert(ctx context.Context, Options ...dbEngine
 	return t.Table.Insert(ctx, Options...)
 }
 
-func (t *Location_for_vacancies) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
+func (t *LocationForVacancies) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) (int64, error) {
 	if len(Options) == 0 {
 		v := make([]interface{}, len(t.Columns()))
 		priV := make([]interface{}, 0)
@@ -129,4 +133,105 @@ func (t *Location_for_vacancies) Update(ctx context.Context, Options ...dbEngine
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func GetRemoteId() int32 {
+	if location, ok := locationsIds[LOCATION_REMOTE]; !ok {
+		logs.ErrorLog(errors.Errorf("Location \"%s\" not found in database", LOCATION_REMOTE))
+		return -1
+	} else {
+		return location.Id
+	}
+}
+
+func GetKyivId() int32 {
+	if location, ok := locationsIds[LOCATION_KYIV]; !ok {
+		logs.ErrorLog(errors.Errorf("Location \"%s\" not found in database", LOCATION_KYIV))
+		return -1
+	} else {
+		return location.Id
+	}
+}
+
+func GetLvivId() int32 {
+	if location, ok := locationsIds[LOCATION_LVIV]; !ok {
+		logs.ErrorLog(errors.Errorf("Location \"%s\" not found in database", LOCATION_LVIV))
+		return -1
+	} else {
+		return location.Id
+	}
+}
+
+func GetOdessaId() int32 {
+	if location, ok := locationsIds[LOCATION_ODESSA]; !ok {
+		logs.ErrorLog(errors.Errorf("Location \"%s\" not found in database", LOCATION_ODESSA))
+		return -1
+	} else {
+		return location.Id
+	}
+}
+
+func GetKharkivId() int32 {
+	if location, ok := locationsIds[LOCATION_KHARKIV]; !ok {
+		logs.ErrorLog(errors.Errorf("Location \"%s\" not found in database", LOCATION_KHARKIV))
+		return -1
+	} else {
+		return location.Id
+	}
+}
+
+func GetDniproId() int32 {
+	if location, ok := locationsIds[LOCATION_DNIPRO]; !ok {
+		logs.ErrorLog(errors.Errorf("Location \"%s\" not found in database", LOCATION_DNIPRO))
+		return -1
+	} else {
+		return location.Id
+	}
+}
+
+func GetNopeLocationId() int32 {
+	if location, ok := locationsIds[LOCATION_NOPE]; !ok {
+		logs.ErrorLog(errors.Errorf("Location \"%s\" not found in database", LOCATION_NOPE))
+		return -1
+	} else {
+		return location.Id
+	}
+}
+
+func GetLocationFromId(id int32) *LocationForVacanciesFields {
+	for _, location := range locationsIds {
+		if location.Id == id {
+			return &location
+		}
+	}
+
+	return nil
+}
+
+func GetLocationsAsSelectedUnits() SelectedUnits {
+	return locationsSelected
+}
+
+func initLocationsIds(ctx context.Context, db *dbEngine.DB) (err error) {
+	locationsIds = LocationsIdMap{}
+	locationsTable, err := NewLocationForVacancies(db)
+	if err != nil {
+		logs.ErrorLog(err, "cannot get %s table", TABLE_LOCATION_FOR_VACANCIES)
+		return err
+	}
+
+	err = locationsTable.SelectSelfScanEach(ctx,
+		func(record *LocationForVacanciesFields) error {
+			locationsIds[record.Name] = *record
+			locationsSelected = append(locationsSelected, NewSelectedUnit(record.Id, record.Name))
+			return nil
+		},
+		dbEngine.OrderBy("id"),
+	)
+
+	if err != nil {
+		logs.ErrorLog(err, "while reading locations from db to locationsIds(db.LocationsIdMap)")
+	}
+
+	return
 }

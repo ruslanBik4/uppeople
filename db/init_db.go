@@ -85,6 +85,11 @@ func GetDB(ctxApis apis.CtxApis) *dbEngine.DB {
 		logs.ErrorLog(err, "on init LogActionsIds")
 	}
 
+	err = initLocationsIds(ctx, db)
+	if err != nil {
+		logs.ErrorLog(err, "on init LocationsIds")
+	}
+
 	LogsTable, err = NewLogs(db)
 	if err != nil {
 		logs.ErrorLog(err, "on init LogsTable")
