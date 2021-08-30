@@ -73,9 +73,9 @@ func HandleGetCandidatesByVacancies(ctx *fasthttp.RequestCtx) (interface{}, erro
 				count(candidate_id) as quantity
 		FROM vacancies_to_candidates vtc
 				LEFT JOIN vacancies v ON v.id=vtc.vacancy_id
-				LEFT JOIN platforms p ON p.id=v.platform_id
+				LEFT JOIN public.platforms p ON p.id=v.platform_id
 				LEFT JOIN companies c ON c.id=vtc.company_id
-				LEFT JOIN users u ON u.id=vtc.user_id
+				LEFT JOIN public.users u ON u.id=vtc.user_id
 				WHERE v.status IN (0,1) `
 	gr := ` GROUP BY 1,2,3,4,5,6 ORDER BY 2`
 
