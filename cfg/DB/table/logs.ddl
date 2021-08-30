@@ -19,7 +19,7 @@ alter table logs
             on update cascade on delete cascade;
 alter table logs
     add constraint logs_users_id_fk
-        foreign key (user_id) references users
+        foreign key (user_id) references public.users
             on update cascade on delete set default;
 -- alter table logs
 --     add constraint logs_company_id_fk

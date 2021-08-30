@@ -142,7 +142,7 @@ func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 	args = append(args,
 		auth.GetUserID(ctx), time.Now())
 
-	go func() {
+	go func(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 		_, err := db.LogsTable.Insert(ctx,
 			dbEngine.ColumnsForSelect(columns...),
 			dbEngine.ArgsForSelect(args...))
@@ -150,7 +150,7 @@ func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 		if err != nil {
 			logs.ErrorLog(err, "toLog")
 		}
-	}()
+	}(ctx, columns, args)
 }
 
 func toLogUpdateValues(columns []string, args []interface{}) (ret map[string]interface{}) {
