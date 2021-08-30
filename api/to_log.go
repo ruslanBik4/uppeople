@@ -10,6 +10,7 @@ import (
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
+	"golang.org/x/net/context"
 
 	"github.com/ruslanBik4/uppeople/auth"
 	"github.com/ruslanBik4/uppeople/db"
@@ -142,7 +143,7 @@ func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 	args = append(args,
 		auth.GetUserID(ctx), time.Now())
 
-	go func(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
+	go func(ctx context.Context, columns []string, args []interface{}) {
 		_, err := db.LogsTable.Insert(ctx,
 			dbEngine.ColumnsForSelect(columns...),
 			dbEngine.ArgsForSelect(args...))
@@ -150,7 +151,7 @@ func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 		if err != nil {
 			logs.ErrorLog(err, "toLog")
 		}
-	}(ctx, columns, args)
+	}(context.WithValue(ctx, "log", "temp"), columns, args)
 }
 
 func toLogUpdateValues(columns []string, args []interface{}) (ret map[string]interface{}) {
