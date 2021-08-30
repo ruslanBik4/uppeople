@@ -46,6 +46,10 @@ type UserRow struct {
 	SendCount   int32 `json:"sendCount"`
 }
 
+func NewUserRow() *UserRow {
+	return &UserRow{&db.UsersFields{}, 0, 0, 0}
+}
+
 func (u *UserRow) GetFields(columns []dbEngine.Column) []interface{} {
 	row := make([]interface{}, len(columns))
 	for i, col := range columns {
@@ -173,12 +177,12 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	r := make([]UserRow, 0)
-	row := &UserRow{}
 	users, _ := DB.Tables["all_staff"]
+	row := NewUserRow()
 	err := users.SelectAndScanEach(ctx,
 		func() error {
 			r = append(r, *row)
-			row = &UserRow{}
+			row = NewUserRow()
 			return nil
 		},
 		row,
