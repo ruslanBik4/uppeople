@@ -29,7 +29,7 @@ type UsersFields struct {
 	LastPage    sql.NullString `json:"last_page"`
 	Address     string         `json:"address"`
 	EmailPool   []string       `json:"emailpool"`
-	Phone       sql.NullString `json:"phone"`
+	Phone       string         `json:"phone"`
 	Languages   []string       `json:"languages"`
 	IdHomepages int32          `json:"id_homepages"`
 	CreateAt    time.Time      `json:"createat"`

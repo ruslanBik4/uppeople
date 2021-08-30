@@ -161,7 +161,7 @@ func request(req *fasthttp.Request, u *auth.User) error {
 			u.Name = user["name"].(string)
 			u.Email = user["email"].(string)
 			u.RoleId = int32(user["role_id"].(float64))
-			u.Phone.String, _ = user["tel"].(string)
+			u.Phone, _ = user["tel"].(string)
 
 			return nil
 		}

@@ -9,7 +9,6 @@ import (
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/logs"
 	"github.com/valyala/fasthttp"
 	"golang.org/x/crypto/bcrypt"
 
@@ -45,6 +44,24 @@ type UserRow struct {
 	CreateCount int32 `json:"createCount"`
 	UpdateCount int32 `json:"updateCount"`
 	SendCount   int32 `json:"sendCount"`
+}
+
+func (u *UserRow) GetFields(columns []dbEngine.Column) []interface{} {
+	row := make([]interface{}, len(columns))
+	for i, col := range columns {
+		switch col.Name() {
+		case "create_count":
+			row[i] = &u.CreateCount
+		case "update_count":
+			row[i] = &u.UpdateCount
+		case "send_count":
+			row[i] = &u.SendCount
+		default:
+			row[i] = u.RefColValue(col.Name())
+		}
+	}
+
+	return row
 }
 
 func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -156,29 +173,15 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	r := make([]UserRow, 0)
-	users, _ := db.NewUsers(DB)
-	err := users.SelectSelfScanEach(ctx,
-		func(record *db.UsersFields) error {
-			row := UserRow{users.Record, 0, 0, 0}
-
-			err := DB.Conn.SelectOneAndScan(ctx,
-				[]interface{}{&row.CreateCount, &row.UpdateCount, &row.SendCount},
-				`select count(*) FILTER ( WHERE action_code = $1 ),
-       count(*) FILTER ( WHERE action_code = $2 ),
-       count(*) FILTER ( WHERE action_code = $3 )
-from logs
-where age(date_create) < interval '7 day' and user_id = $4`,
-				db.GetLogInsertId(),
-				db.GetLogUpdateId(),
-				db.GetLogPerformId(),
-				users.Record.Id,
-			)
-			if err != nil {
-				logs.ErrorLog(err, "DB.Conn.SelectOneAndScan")
-			}
-			r = append(r, row)
+	row := &UserRow{}
+	users, _ := DB.Tables["all_staff"]
+	err := users.SelectAndScanEach(ctx,
+		func() error {
+			r = append(r, *row)
+			row = &UserRow{}
 			return nil
 		},
+		row,
 		dbEngine.OrderBy("name"),
 	)
 	if err != nil {
