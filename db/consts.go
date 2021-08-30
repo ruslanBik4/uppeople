@@ -166,4 +166,4 @@ var (
 	locationsSelected   SelectedUnits
 )
 
-var LogsTable *Logs
+var logsTable *Logs

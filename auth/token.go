@@ -8,7 +8,6 @@ import (
 	"database/sql"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
-	"github.com/ruslanBik4/httpgo/auth"
 	"github.com/ruslanBik4/logs"
 	"github.com/ruslanBik4/uppeople/db"
 	"github.com/valyala/fasthttp"
@@ -54,7 +53,7 @@ func (u *User) GetSchema() string {
 }
 
 func GetUserID(ctx *fasthttp.RequestCtx) int {
-	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	token, ok := ctx.UserValue(ValueTokenName).(*User)
 	if ok {
 		return token.GetUserID()
 	}
@@ -65,7 +64,7 @@ func GetUserID(ctx *fasthttp.RequestCtx) int {
 }
 
 func GetUserData(ctx *fasthttp.RequestCtx) *User {
-	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	token, ok := ctx.UserValue(ValueTokenName).(*User)
 	if ok {
 		return token
 	}
@@ -76,7 +75,7 @@ func GetUserData(ctx *fasthttp.RequestCtx) *User {
 }
 
 func PutEditCandidate(ctx *fasthttp.RequestCtx, data *db.CandidatesFields) bool {
-	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	token, ok := ctx.UserValue(ValueTokenName).(*User)
 	if ok {
 		token.LastEdit.Candidate = data
 	}
@@ -85,7 +84,7 @@ func PutEditCandidate(ctx *fasthttp.RequestCtx, data *db.CandidatesFields) bool 
 }
 
 func GetEditCandidate(ctx *fasthttp.RequestCtx) *db.CandidatesFields {
-	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	token, ok := ctx.UserValue(ValueTokenName).(*User)
 	if ok {
 		return token.LastEdit.Candidate
 	}
@@ -94,7 +93,7 @@ func GetEditCandidate(ctx *fasthttp.RequestCtx) *db.CandidatesFields {
 }
 
 func PutEditVacancy(ctx *fasthttp.RequestCtx, data *db.VacanciesFields) bool {
-	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	token, ok := ctx.UserValue(ValueTokenName).(*User)
 	if ok {
 		token.LastEdit.Vacancy = data
 	}
@@ -103,7 +102,7 @@ func PutEditVacancy(ctx *fasthttp.RequestCtx, data *db.VacanciesFields) bool {
 }
 
 func GetEditVacancy(ctx *fasthttp.RequestCtx) *db.VacanciesFields {
-	token, ok := ctx.UserValue(auth.UserValueToken).(*User)
+	token, ok := ctx.UserValue(ValueTokenName).(*User)
 	if ok {
 		return token.LastEdit.Vacancy
 	}

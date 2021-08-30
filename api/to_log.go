@@ -5,7 +5,7 @@
 package api
 
 import (
-	"time"
+	"fmt"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
@@ -17,30 +17,12 @@ import (
 )
 
 var (
-	columnsForCandidateLog        = []string{"candidate_id", "action_code", "changed", "user_id", "date_create"}
-	columnsForCandidateVacancyLog = []string{"candidate_id", "company_id", "vacancy_id", "action_code", "changed", "user_id", "date_create"}
-	columnsForVacancyLog          = []string{"company_id", "vacancy_id", "action_code", "changed", "user_id", "date_create"}
-	columnsForCompanyLog          = []string{"company_id", "action_code", "changed", "user_id", "date_create"}
-	columnsForCandidateStatusLog  = []string{"candidate_id", "vacancy_id", "action_code", "changed", "user_id", "date_create"}
+	columnsForCandidateLog        = []string{"candidate_id", "action_code", "changed"}
+	columnsForCandidateVacancyLog = []string{"candidate_id", "company_id", "vacancy_id", "action_code", "changed"}
+	columnsForVacancyLog          = []string{"company_id", "vacancy_id", "action_code", "changed"}
+	columnsForCompanyLog          = []string{"company_id", "action_code", "changed"}
+	columnsForCandidateStatusLog  = []string{"candidate_id", "vacancy_id", "action_code", "changed"}
 )
-
-func HandleReturnLogsForCand(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	return DB.Conn.SelectToMaps(ctx, LOG_VIEW, ctx.UserValue("id"), true)
-}
-
-func HandleReturnLogsForCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	return DB.Conn.SelectToMaps(ctx, LOG_VIEW, ctx.UserValue(ParamCompanyID.Name), false)
-}
 
 func toLogCandidateUpdate(ctx *fasthttp.RequestCtx, candidateId int32, text map[string]interface{}) {
 	toLogCandidate(ctx, candidateId, db.GetLogUpdateId(), text)
@@ -140,18 +122,24 @@ func toLog(ctx *fasthttp.RequestCtx, columns []string, args []interface{}) {
 		args = append(args[:len(args)-1], map[string]string{"text": val})
 	}
 
-	args = append(args,
-		auth.GetUserID(ctx), time.Now())
+	// todo: will decide about ctx params which will be added to content
+	const tokenName = auth.ValueTokenName
+	user, ok := ctx.Value(tokenName).(*auth.User)
+	if !ok {
+		logs.ErrorLog(dbEngine.ErrWrongType{
+			Name:     tokenName,
+			TypeName: fmt.Sprintf("%T", ctx.Value(tokenName)),
+		}, "can't write to Log")
+		return
+	}
 
-	go func(ctx context.Context, columns []string, args []interface{}) {
-		_, err := db.LogsTable.Insert(ctx,
-			dbEngine.ColumnsForSelect(columns...),
-			dbEngine.ArgsForSelect(args...))
+	args = append(args, auth.GetUserID(ctx))
+	columns = append(columns, "user_id")
 
-		if err != nil {
-			logs.ErrorLog(err, "toLog")
-		}
-	}(context.WithValue(ctx, "log", "temp"), columns, args)
+	ctxTodo := context.WithValue(context.TODO(), tokenName, user)
+	go db.InsertToLog(ctxTodo,
+		dbEngine.ColumnsForSelect(columns...),
+		dbEngine.ArgsForSelect(args...))
 }
 
 func toLogUpdateValues(columns []string, args []interface{}) (ret map[string]interface{}) {

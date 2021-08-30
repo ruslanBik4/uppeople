@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ruslanBik4/dbEngine/dbEngine"
+	"github.com/ruslanBik4/logs"
 	"golang.org/x/net/context"
 )
 
@@ -179,4 +180,13 @@ func (t *Logs) Update(ctx context.Context, Options ...dbEngine.BuildSqlOptions) 
 	}
 
 	return t.Table.Update(ctx, Options...)
+}
+
+func InsertToLog(ctx context.Context, options ...dbEngine.BuildSqlOptions) {
+	i, err := logsTable.Insert(ctx, options...)
+	if err != nil {
+		logs.ErrorLog(err, "toLog")
+	} else if i < 1 {
+		logs.DebugLog("wrong insert to Log: %d", i)
+	}
 }
