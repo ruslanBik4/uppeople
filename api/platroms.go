@@ -45,7 +45,7 @@ func HandleAddPlatform(ctx *fasthttp.RequestCtx) (interface{}, error) {
 func HandleAllPlatforms(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	id, ok := ctx.UserValue(ParamPageNum.Name).(int)
 	if !ok {
-		id = 0
+		id = 1
 	}
 
 	res := ResPlatforms{
@@ -61,18 +61,21 @@ func HandleAllPlatforms(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 	// TODO: write custom sorting algorithm for string slice with upper case and lower case first characters
 	sort.Strings(platformNames)
-	for _, platform := range platformNames {
-		if platformVal, ok := platformsMap[platform]; ok {
-			res.Platforms = append(res.Platforms, &platformVal)
+	for num, platform := range platformNames {
+		if (id-1)*pageItem <= num && num < id*pageItem {
+			if platformVal, ok := platformsMap[platform]; ok {
+				res.Platforms = append(res.Platforms, &platformVal)
+			}
 		}
 	}
 
-	if len(res.Platforms) < pageItem {
+	if len(platformNames) < pageItem {
 		res.ResList.TotalPage = 1
-		res.ResList.Count = len(res.Platforms)
 	} else {
-		res.ResList.TotalPage = len(db.GetPlatformsAsSelectedUnits()) / pageItem
+		res.ResList.TotalPage = len(platformNames) / pageItem
+
 	}
+	res.ResList.Count = len(platformNames)
 
 	return res, nil
 
