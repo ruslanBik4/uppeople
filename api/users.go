@@ -28,7 +28,7 @@ type DTOUser struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
-	Role     string `json:"role"`
+	Role     int32  `json:"role"`
 }
 
 func (d *DTOUser) GetValue() interface{} {
@@ -113,11 +113,23 @@ func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return "wrong DTO", apis.ErrWrongParamsList
 	}
 
+	columns := []string{"name", "email", "phone", "role_id"}
+	args := []interface{}{u.Name, u.Email, u.Phone, u.Role, u.Id}
+
+	if u.Password > "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, hash)
+		columns = append(columns, "password")
+	}
+
 	users, _ := db.NewUsers(DB)
 	i, err := users.Update(ctx,
-		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id"),
+		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Role, u.Id),
+		dbEngine.ArgsForSelect(args...),
 	)
 	if err != nil {
 		return createErrResult(err)

@@ -164,6 +164,7 @@ func (dst CitextArray) Get1() interface{} {
 	logs.DebugLog(dst)
 	return &res
 }
+
 func (dst *CitextArray) Set(src interface{}) error {
 	switch value := src.(type) {
 	case []string:
@@ -183,6 +184,7 @@ func (dst *CitextArray) Set(src interface{}) error {
 		return dst.TextArray.Set(src)
 	}
 }
+
 func (src CitextArray) EncodeText(ci *pgtype.ConnInfo, buf []byte) ([]byte, error) {
 	switch src.Status {
 	case pgtype.Null:

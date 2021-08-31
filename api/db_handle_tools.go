@@ -32,7 +32,10 @@ func getRecruiters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUn
 	err := DB.Conn.SelectAndScanEach(ctx,
 		nil,
 		&res,
-		"select id, name as label, LOWER(name) as value from public.users Order By name",
+		`select id, name as label, LOWER(name) as value from public.users 
+where schema = $1
+Order By name`,
+		db.GetSchema(ctx),
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")
