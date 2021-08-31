@@ -114,7 +114,7 @@ func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	columns := []string{"name", "email", "phone", "role_id"}
-	args := []interface{}{u.Name, u.Email, u.Phone, u.Role, u.Id}
+	args := []interface{}{u.Name, u.Email, u.Phone, u.Role}
 
 	if u.Password > "" {
 		hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
@@ -129,7 +129,7 @@ func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	i, err := users.Update(ctx,
 		dbEngine.ColumnsForSelect(columns...),
 		dbEngine.WhereForSelect("id"),
-		dbEngine.ArgsForSelect(args...),
+		dbEngine.ArgsForSelect(append(args, u.Id)...),
 	)
 	if err != nil {
 		return createErrResult(err)
