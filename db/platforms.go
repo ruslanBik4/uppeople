@@ -172,6 +172,10 @@ func GetPlatformsAsSelectedUnits() SelectedUnits {
 	return platformsSelected
 }
 
+func GetPlatformsAsMap() PlatformsIdMap {
+	return platformIds
+}
+
 func initPlatformIds(ctx context.Context, db *dbEngine.DB) (err error) {
 	platformIds = PlatformsIdMap{}
 	platformsTable, err := NewPlatforms(db)
