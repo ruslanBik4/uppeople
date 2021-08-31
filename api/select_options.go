@@ -31,11 +31,9 @@ type selectOpt struct {
 	Location      db.SelectedUnits `json:"location"`
 	RejectReasons db.SelectedUnits `json:"reject_reasons"`
 	RejectTag     db.SelectedUnits `json:"reject_tag"`
-	Recruiter     db.SelectedUnits `json:"recruiter"`
 	Seniorities   db.SelectedUnits `json:"seniorities"`
 	Tags          db.SelectedUnits `json:"tags"`
 	VacancyStatus db.SelectedUnits `json:"vacancyStatus"`
-	// vacancies
 }
 
 func NewSelectOpt(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) selectOpt {

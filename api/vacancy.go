@@ -132,6 +132,7 @@ func HandleEditVacancy(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			ParamID.Name: fmt.Sprintf("wrong type %T, expect int32 ", ctx.UserValue(ParamID.Name)),
 		}, apis.ErrWrongParamsList
 	}
+
 	u, ok := ctx.UserValue(apis.JSONParams).(*VacancyDTO)
 	if !ok {
 		return "wrong DTO", apis.ErrWrongParamsList

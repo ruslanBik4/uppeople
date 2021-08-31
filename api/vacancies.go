@@ -194,7 +194,6 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 	}
 
 	companies, _ := db.NewCompanies(DB)
-	locs, _ := db.NewLocationForVacancies(DB)
 	err := vacancies.SelectSelfScanEach(ctx,
 		func(record *db.VacanciesFields) error {
 			view := VacanciesView{
@@ -216,16 +215,7 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 			}
 
 			if record.LocationId > 0 {
-				err := locs.SelectOneAndScan(ctx,
-					&view.Location,
-					dbEngine.ColumnsForSelect("name"),
-					dbEngine.WhereForSelect("id"),
-					dbEngine.ArgsForSelect(record.LocationId),
-				)
-				if err != nil {
-					logs.ErrorLog(err, "locs.SelectOneAndScan")
-				}
-
+				view.Location = db.GetLocationFromId(record.LocationId).Name
 			}
 
 			view.Seniority = db.GetSeniorityFromId(record.SeniorityId).Name

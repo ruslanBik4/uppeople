@@ -17,7 +17,7 @@ func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUni
 		nil,
 		&res,
 		`select v.status as id, s.status  as label, lower(s.status) as value
-        from vacancies_to_candidates v join status_for_vacs s on (s.id = v.status)
+        from vacancies_to_candidates v join public.status_for_vacs s on (s.id = v.status)
 `,
 	)
 	if err != nil {
@@ -28,13 +28,11 @@ func getVacToCand(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUni
 }
 
 func getRecruiters(ctx *fasthttp.RequestCtx, DB *dbEngine.DB) (res db.SelectedUnits) {
-	users, _ := db.NewUsers(DB)
 
-	err := users.SelectAndScanEach(ctx,
+	err := DB.Conn.SelectAndScanEach(ctx,
 		nil,
 		&res,
-		dbEngine.ColumnsForSelect("id", "name as label", "LOWER(name) as value"),
-		dbEngine.OrderBy("name"),
+		"select id, name as label, LOWER(name) as value from public.users Order By name",
 	)
 	if err != nil {
 		logs.ErrorLog(err, "	")

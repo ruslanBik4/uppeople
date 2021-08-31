@@ -189,7 +189,7 @@ func HandleCommentsCompany(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	}
 
 	return DB.Conn.SelectToMaps(ctx,
-		`select *, (select name from users u where u.id = user_id) as name
+		`select *, (select name from public.users u where u.id = user_id) as name
 			 from comments_for_companies
 			 where company_id = $1
 			 order By time_create DESC`,

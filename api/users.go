@@ -16,7 +16,7 @@ import (
 )
 
 type UserResponse struct {
-	Users       []UserRow        `json:"users"`
+	Users       UserRows         `json:"users"`
 	Partners    db.SelectedUnits `json:"partners"`
 	Freelancers db.SelectedUnits `json:"freelancers"`
 	Recruiters  db.SelectedUnits `json:"recruiters"`
@@ -66,6 +66,15 @@ func (u *UserRow) GetFields(columns []dbEngine.Column) []interface{} {
 	}
 
 	return row
+}
+
+type UserRows []*UserRow
+
+func (a *UserRows) GetFields(columns []dbEngine.Column) []interface{} {
+	row := NewUserRow()
+	*a = append(*a, row)
+
+	return row.GetFields(columns)
 }
 
 func HandleGetUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
@@ -176,16 +185,11 @@ func HandleAllStaff(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, dbEngine.ErrDBNotFound
 	}
 
-	r := make([]UserRow, 0)
+	r := make(UserRows, 0)
 	users, _ := DB.Tables["all_staff"]
-	row := NewUserRow()
 	err := users.SelectAndScanEach(ctx,
-		func() error {
-			r = append(r, *row)
-			row = NewUserRow()
-			return nil
-		},
-		row,
+		nil,
+		&r,
 		dbEngine.OrderBy("name"),
 	)
 	if err != nil {
