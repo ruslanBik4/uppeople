@@ -5,9 +5,10 @@
 package api
 
 import (
+	"sort"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
-	"github.com/ruslanBik4/logs"
 	"github.com/ruslanBik4/uppeople/db"
 	"github.com/valyala/fasthttp"
 )
@@ -42,54 +43,39 @@ func HandleAddPlatform(ctx *fasthttp.RequestCtx) (interface{}, error) {
 }
 
 func HandleAllPlatforms(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	DB, ok := ctx.UserValue("DB").(*dbEngine.DB)
-	if !ok {
-		return nil, dbEngine.ErrDBNotFound
-	}
-
-	offset := 0
 	id, ok := ctx.UserValue(ParamPageNum.Name).(int)
-	if ok && id > 1 {
-		offset = id * pageItem
+	if !ok {
+		id = 1
 	}
 
-	platforms, _ := db.NewPlatforms(DB)
 	res := ResPlatforms{
 		ResList: NewResList(id),
 	}
 
-	optionsCount := []dbEngine.BuildSqlOptions{
-		dbEngine.ColumnsForSelect("count(*)"),
+	platformsMap := db.GetPlatformsAsMap()
+	platformNames := make([]string, len(platformsMap))
+	i := 0
+	for k := range platformsMap {
+		platformNames[i] = k
+		i++
 	}
-	options := []dbEngine.BuildSqlOptions{
-		dbEngine.OrderBy("name"),
-		dbEngine.FetchOnlyRows(pageItem),
-		dbEngine.Offset(offset),
-	}
-	err := platforms.SelectSelfScanEach(ctx,
-		func(record *db.PlatformsFields) error {
-			res.Platforms = append(res.Platforms, record)
-			return nil
-		},
-		options...,
-	)
-	if err != nil {
-		return createErrResult(err)
-	}
-
-	if len(res.Platforms) < pageItem {
-		res.ResList.TotalPage = 1
-		res.ResList.Count = len(res.Platforms)
-	} else {
-		err = platforms.SelectOneAndScan(ctx,
-			&res.ResList.Count,
-			optionsCount...)
-		if err != nil {
-			logs.ErrorLog(err, "count")
-		} else {
-			res.ResList.TotalPage = res.ResList.Count / pageItem
+	// TODO: write custom sorting algorithm for string slice with upper case and lower case first characters
+	sort.Strings(platformNames)
+	for num, platform := range platformNames {
+		if (id-1)*pageItem <= num && num < id*pageItem {
+			if platformVal, ok := platformsMap[platform]; ok {
+				res.Platforms = append(res.Platforms, &platformVal)
+			}
 		}
 	}
+
+	if len(platformNames) < pageItem {
+		res.ResList.TotalPage = 1
+	} else {
+		res.ResList.TotalPage = len(platformNames) / pageItem
+
+	}
+	res.ResList.Count = len(platformNames)
 
 	return res, nil
 
