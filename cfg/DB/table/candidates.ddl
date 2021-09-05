@@ -41,9 +41,20 @@ COMMENT ON COLUMN candidates.vacancies IS 'Vacancies {"suggestions":"/api/get_re
 create unique index candidates_name_uindex
     on candidates (name);
 
+create index candidates_date_index
+    on candidates (date);
+
+CREATE INDEX candidates_platforms_index on candidates USING GIN (platforms);
+
+CREATE INDEX candidates_platforms_index on candidates USING GIN (vacancies);
+
 create unique index candidates_email_uindex
     on candidates (email)
     where ((email)::text > ''::text);
+
+create unique index candidates_skype_uindex
+    on candidates (skype)
+    where ((skype)::text > ''::text);
 
 create unique index candidates_mobile_uindex
     on candidates (phone)
@@ -66,4 +77,9 @@ alter table candidates
 alter table candidates
     add constraint candidates_id_languages_fk
         foreign key (id_languages) references public.languages
+            on update cascade on delete set default;
+
+alter table candidates
+    add constraint candidates_users_id_fk
+        foreign key (recruter_id) references public.users
             on update cascade on delete set default;

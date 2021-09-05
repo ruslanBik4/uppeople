@@ -34,7 +34,7 @@ BEGIN
                 avatar::bytea,
                 coalesce(seniority_id,1),
                 date_follow_up,
-                array(select v.id from vacancies_to_candidates_tmp v where candidate_id = id AND status = 1)
+                array(select v.id from vacancies_to_candidates_tmp v where candidate_id = c.id AND status = 1)
          from candidates_tmp c
          where c.name >'' AND not exists(select null from candidates_tmp t
                                          where c.id < t.id AND

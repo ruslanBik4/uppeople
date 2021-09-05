@@ -4,5 +4,5 @@ FROM public.users
 WHERE schema = 'lviv'
 WITH CASCADED CHECK OPTION;
 
-COMMENT ON VIEW users IS '';
+COMMENT ON VIEW lviv.users IS '';
 

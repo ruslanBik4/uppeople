@@ -5,6 +5,8 @@
 package api
 
 import (
+	"regexp"
+
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/httpgo/apis"
 	"github.com/ruslanBik4/logs"
@@ -17,11 +19,6 @@ import (
 type ResCandidates struct {
 	*ResList
 	Candidates []*CandidateView `json:"candidates"`
-	// Company    db.SelectedUnits `json:"company"`
-	// Recruiter  db.SelectedUnits `json:"recruiter"`
-	// Reasons    db.SelectedUnits `json:"reasons"`
-	// Statuses   db.SelectedUnits `json:"statuses"`
-	// Tags       db.SelectedUnits `json:"tags"`
 }
 
 type SearchCandidates struct {
@@ -81,7 +78,7 @@ func HandleAllCandidates(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 		if dto.Name > "" {
 			where = append(where, "~name")
-			args = append(args, dto.Name)
+			args = append(args, regexp.QuoteMeta(dto.Name))
 		}
 		if dto.SelectRecruiter != nil {
 			where = append(where, "recruter_id")

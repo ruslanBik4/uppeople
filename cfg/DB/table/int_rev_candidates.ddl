@@ -14,11 +14,11 @@ alter table int_rev_candidates
         on update cascade on delete cascade;
 alter table int_rev_candidates
     add constraint int_rev_candidates_users_id_fk
-        foreign key (user_id) references users
+        foreign key (user_id) references public.users
             on update cascade on delete set default;
 alter table int_rev_candidates
     add constraint int_rev_candidates_status_fk
-        foreign key (status) references status_for_vacs
+        foreign key (status) references public.status_for_vacs
             on update cascade on delete set default;
 alter table int_rev_candidates
     add constraint int_rev_candidates_vacancies_id_fk
