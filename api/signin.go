@@ -99,6 +99,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	opts[1] = dbEngine.ArgsForSelect(time.Now(), getIP(ctx), a.Email)
 
+	logs.DebugLog("login %s: %v, %s", a.Email, time.Now(), getIP(ctx))
 	opts = append(opts,
 		dbEngine.ColumnsForSelect("last_login", "last_ip"),
 	)

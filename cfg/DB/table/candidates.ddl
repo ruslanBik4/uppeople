@@ -46,7 +46,7 @@ create index candidates_date_index
 
 CREATE INDEX candidates_platforms_index on candidates USING GIN (platforms);
 
-CREATE INDEX candidates_platforms_index on candidates USING GIN (vacancies);
+CREATE INDEX candidates_vacancies_index on candidates USING GIN (vacancies);
 
 create unique index candidates_email_uindex
     on candidates (email)
