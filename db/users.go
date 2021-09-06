@@ -25,7 +25,7 @@ type UsersFields struct {
 	LastLogin   time.Time      `json:"last_login"`
 	Schema      string         `json:"schema"`
 	LastIP      string         `json:"last_ip"`
-	Hash        int64          `json:"hash"`
+	Hash        string         `json:"hash"`
 	LastPage    sql.NullString `json:"last_page"`
 	Address     string         `json:"address"`
 	EmailPool   []string       `json:"emailpool"`

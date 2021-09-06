@@ -5,8 +5,6 @@
 package auth
 
 import (
-	"database/sql"
-
 	"github.com/ruslanBik4/dbEngine/dbEngine"
 	"github.com/ruslanBik4/logs"
 	"github.com/ruslanBik4/uppeople/db"
@@ -21,7 +19,6 @@ type lastEdit struct {
 type User struct {
 	*db.UsersFields
 	Companies map[int32]map[string]string `json:"companies"`
-	Pass      sql.NullString              `json:"password"`
 	Token     string                      `json:"access_token"`
 	LastEdit  lastEdit                    `json:"-"`
 }
@@ -30,8 +27,8 @@ func (u *User) GetFields(columns []dbEngine.Column) []interface{} {
 	values := make([]interface{}, len(columns))
 	for i, col := range columns {
 		switch name := col.Name(); name {
-		case "password":
-			values[i] = &u.Pass
+		case "access_token":
+			// values[i] = &u.Pass
 		default:
 			values[i] = u.RefColValue(col.Name())
 		}

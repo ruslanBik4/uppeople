@@ -64,7 +64,7 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	)
 	switch err {
 	case nil:
-		err := auth.CheckPass(u.Pass.String, a.Password)
+		err := auth.CheckPass(u.Hash, a.Password)
 		if err != nil {
 			// req := &fasthttp.Request{}
 			// ctx.Request.CopyTo(req)
@@ -110,8 +110,6 @@ func HandleAuthLogin(ctx *fasthttp.RequestCtx) (interface{}, error) {
 	if err != nil {
 		logs.ErrorLog(err, "users.Update")
 	}
-
-	u.Pass.String = ""
 
 	return u, nil
 }

@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW all_staff AS
+CREATE OR REPLACE VIEW lviv.all_staff AS
 SELECT *
 FROM public.users u,
      LATERAL (select count(*) FILTER ( WHERE name = 'CODE_LOG_INSERT') create_count,
