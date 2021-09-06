@@ -1,7 +1,7 @@
 CREATE TABLE comments_for_candidates
 (
     id           serial,
-    user_id      integer default 1 not null,
+    user_id      integer not null default 1,
     candidate_id integer           not null,
     comments     text,
     created_at   timestamp with time zone,
