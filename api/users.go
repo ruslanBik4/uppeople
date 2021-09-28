@@ -122,7 +122,7 @@ func HandleEditUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 			return nil, err
 		}
 		args = append(args, hash)
-		columns = append(columns, "password")
+		columns = append(columns, "hash")
 	}
 
 	users, _ := db.NewUsers(DB)
@@ -179,7 +179,7 @@ func HandleNewUser(ctx *fasthttp.RequestCtx) (interface{}, error) {
 
 	users, _ := db.NewUsers(DB)
 	id, err := users.Insert(ctx,
-		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id", "password"),
+		dbEngine.ColumnsForSelect("name", "email", "phone", "role_id", "hash"),
 		dbEngine.ArgsForSelect(u.Name, u.Email, u.Phone, u.Role, hash),
 	)
 	if err != nil {
