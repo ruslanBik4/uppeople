@@ -220,8 +220,16 @@ func HandleViewAllVacancyInCompany(ctx *fasthttp.RequestCtx) (interface{}, error
 
 			view.Seniority = db.GetSeniorityFromId(record.SeniorityId).Name
 
-			view.Platform = db.GetPlatformFromId(record.PlatformId).Name
-
+			platforms := db.GetPlatformFromId(record.PlatformId)
+			if platforms != nil {
+				view.Platform = platforms.Name
+			} else {
+				logs.ErrorLog(dbEngine.ErrWrongArgsLen{
+					Table:  "platforms",
+					Args:   []interface{}{record.PlatformId},
+					Filter: []string{"id"},
+				})
+			}
 			res.Vacancies = append(res.Vacancies, view)
 
 			return nil

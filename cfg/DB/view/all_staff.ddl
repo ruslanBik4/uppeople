@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW lviv.all_staff AS
+CREATE OR REPLACE VIEW all_staff AS
 SELECT *
 FROM public.users u,
      LATERAL (select count(*) FILTER ( WHERE name = 'CODE_LOG_INSERT') create_count,
@@ -6,7 +6,7 @@ FROM public.users u,
                      count(*) FILTER ( WHERE name = 'CODE_LOG_PEFORM') send_count
               from logs join public.log_actions a on (action_code = a.id)
               where age(date_create) < interval '7 day' and user_id = u.id ) j
-WHERE schema = 'lviv';
+WHERE schema = '';
 
 COMMENT ON VIEW all_staff IS 'view all users with statistics';
 

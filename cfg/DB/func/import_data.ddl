@@ -97,6 +97,7 @@ BEGIN
     PERFORM setval('comments_for_candidates_id_seq'::regclass, (select max(id) from comments_for_candidates));
 --     PERFORM setval('candidates_to_companies_id_seq'::regclass, (select max(id) from candidates_to_companies));
     PERFORM setval('contacts_id_seq'::regclass, (select max(id) from contacts));
+    select setval('platforms_id_seq'::regclass, (select max(id) from public.platforms));
     select  setval('logs_id_seq'::regclass, (select max(id) from logs));
 
 END;

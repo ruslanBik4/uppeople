@@ -1,14 +1,11 @@
 create table platforms
 (
     id   serial not null,
-    name varchar(255) not null,
+    name character varying not null,
     primary key (id)
 );
 
 COMMENT ON TABLE platforms IS 'platforms of candidates';
--- example comment with dataJSON
-COMMENT ON COLUMN platforms.name IS 'full name';
--- examply index
+COMMENT ON COLUMN platforms.name IS 'Unique name';
 create unique index platforms_name_idx
     ON platforms (name);
-
